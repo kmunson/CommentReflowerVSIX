@@ -1,5 +1,4 @@
-﻿This is a quick & dirty port of Christoph Nahr's quick & dirty port of Ian Nowland's extremely
-useful CommentReflower plugin for Visual Studio 2003 and 2005.
+﻿This is a quick & dirty port of Christoph Nahr's quick & dirty port of Ian Nowland's extremely useful CommentReflower plugin for Visual Studio 2003 and 2005.
 
 https://github.com/kmunson/CommentReflowerVSIX/
 

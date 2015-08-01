@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<CommentReflowerParameters>
+  <Version>1</Version>
+  <UseTabsToIndent>false</UseTabsToIndent>
+  <WrapWidth>80</WrapWidth>
+  <MinimumBlockWidth>30</MinimumBlockWidth>
+  <CommentBlock>
+    <Name>C style function block</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h</FileAssociations>
+    <BlockStartType>AlwaysOnOwnLine</BlockStartType>
+    <BlockStart>/\*\*\*+</BlockStart>
+    <IsBlockStartRegEx>true</IsBlockStartRegEx>
+    <BlockEndType>AlwaysOnOwnLine</BlockEndType>
+    <BlockEnd> \*\*\*+/</BlockEnd>
+    <IsBlockEndRegEx>true</IsBlockEndRegEx>
+    <LineStart> * </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>true</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Doxygen C style (/**)</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h</FileAssociations>
+    <BlockStartType>OnOwnLineIfBlockIsMoreThanOne</BlockStartType>
+    <BlockStart>/** </BlockStart>
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>OnOwnLineIfBlockIsMoreThanOne</BlockEndType>
+    <BlockEnd> */</BlockEnd>
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart> * </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Doxygen C style 2 (/*!), which may have text on first line</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h</FileAssociations>
+    <BlockStartType>NeverOnOwnLine</BlockStartType>
+    <BlockStart>/*! </BlockStart>
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>OnOwnLineIfBlockIsMoreThanOne</BlockEndType>
+    <BlockEnd> */</BlockEnd>
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart> * </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>C style</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h</FileAssociations>
+    <BlockStartType>NeverOnOwnLine</BlockStartType>
+    <BlockStart>/* </BlockStart>
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>OnOwnLineIfBlockIsMoreThanOne</BlockEndType>
+    <BlockEnd> */</BlockEnd>
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart> * </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>C++ style function block</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h; *.js</FileAssociations>
+    <BlockStartType>AlwaysOnOwnLine</BlockStartType>
+    <BlockStart>////+</BlockStart>
+    <IsBlockStartRegEx>true</IsBlockStartRegEx>
+    <BlockEndType>AlwaysOnOwnLine</BlockEndType>
+    <BlockEnd>////+</BlockEnd>
+    <IsBlockEndRegEx>true</IsBlockEndRegEx>
+    <LineStart>// </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>true</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Doxygen C++ style (///)</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h; *.js</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>/// </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Doxygen C++ style (///) with trailing tab</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h; *.js</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>///	</LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>C++ style</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h; *.js</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>// </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Doxygen C++ style 2 (//!)</Name>
+    <FileAssociations>*.c; *.cpp; *.cs; *.cc; *.h; *.js</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>//! </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Visual Basic Single Quote (') Function Block</Name>
+    <FileAssociations>*.vb; *.vbs</FileAssociations>
+    <BlockStartType>AlwaysOnOwnLine</BlockStartType>
+    <BlockStart>'''''+</BlockStart>
+    <IsBlockStartRegEx>true</IsBlockStartRegEx>
+    <BlockEndType>AlwaysOnOwnLine</BlockEndType>
+    <BlockEnd>'''''+</BlockEnd>
+    <IsBlockEndRegEx>true</IsBlockEndRegEx>
+    <LineStart>' </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>true</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Visual Basic Triple Quote (''')</Name>
+    <FileAssociations>*.vb; *.vbs</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>''' </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Visual Basic Double Quote ('')</Name>
+    <FileAssociations>*.vb; *.vbs</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>'' </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Visual Basic Single Quote (')</Name>
+    <FileAssociations>*.vb; *.vbs</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart>' </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name># Block</Name>
+    <FileAssociations>Jamfile; Jamrules; *.jam</FileAssociations>
+    <BlockStartType>AlwaysOnOwnLine</BlockStartType>
+    <BlockStart>\#\#\#+</BlockStart>
+    <IsBlockStartRegEx>true</IsBlockStartRegEx>
+    <BlockEndType>AlwaysOnOwnLine</BlockEndType>
+    <BlockEnd>\#\#\#+</BlockEnd>
+    <IsBlockEndRegEx>true</IsBlockEndRegEx>
+    <LineStart># </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>true</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name># Comment</Name>
+    <FileAssociations>Jamfile; Jamrules; *.jam</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart># </LineStart>
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <CommentBlock>
+    <Name>Empty Block for Text Files</Name>
+    <FileAssociations>*.txt</FileAssociations>
+    <BlockStartType>Empty</BlockStartType>
+    <BlockStart />
+    <IsBlockStartRegEx>false</IsBlockStartRegEx>
+    <BlockEndType>Empty</BlockEndType>
+    <BlockEnd />
+    <IsBlockEndRegEx>false</IsBlockEndRegEx>
+    <LineStart />
+    <OnlyEmptyLineBeforeStartOfBlock>false</OnlyEmptyLineBeforeStartOfBlock>
+  </CommentBlock>
+  <BulletPoint>
+    <Name>Numbered comment followed by a tag and a hyphen like '1) tag - '</Name>
+    <String>[0-9]+\) \w+ - </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BulletPoint>
+    <Name>Numbered comment like '1) '</Name>
+    <String>[0-9]+\) </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BulletPoint>
+    <Name>Hyphen at the start of a line '- '</Name>
+    <String>- </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BulletPoint>
+    <Name>Doxygen style tag followed by hyphen, like '@tag - '</Name>
+    <String>@\w+ - </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BulletPoint>
+    <Name>Doxygen style tag followed by space, like '@tag '</Name>
+    <String>@\w+ </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BulletPoint>
+    <Name>Doxygen style tag followed by space, like '\tag '</Name>
+    <String>\\\w+ </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BulletPoint>
+    <Name>Single character followed by hyphen, like '0 - '</Name>
+    <String>. - </String>
+    <IsRegEx>true</IsRegEx>
+    <WrapIsAtRight>true</WrapIsAtRight>
+  </BulletPoint>
+  <BreakFlowString>
+    <Name>HTML Line break tag</Name>
+    <String>&lt;BR&gt;</String>
+    <IsRegEx>false</IsRegEx>
+    <NeverReflowLine>false</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+  <BreakFlowString>
+    <Name>XML comment on a line by itself</Name>
+    <String>^\s*&lt;.+?&gt;\s*$</String>
+    <IsRegEx>true</IsRegEx>
+    <NeverReflowLine>true</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+  <BreakFlowString>
+    <Name>Consecutive spaces anywhere on the line between non-space elements</Name>
+    <String>[^\s]+?\s\s[^\s]+?</String>
+    <IsRegEx>true</IsRegEx>
+    <NeverReflowLine>true</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+  <BreakFlowString>
+    <Name>(Underline) consecutive -'s on a line by themselves</Name>
+    <String>^\s*--+\s*$</String>
+    <IsRegEx>true</IsRegEx>
+    <NeverReflowLine>true</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+  <BreakFlowString>
+    <Name>(Double Underline) consecutive ='s on a line by themselves</Name>
+    <String>^\s*==+\s*$</String>
+    <IsRegEx>true</IsRegEx>
+    <NeverReflowLine>true</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+  <BreakFlowString>
+    <Name>$Source rcs tag</Name>
+    <String>$Source</String>
+    <IsRegEx>false</IsRegEx>
+    <NeverReflowLine>true</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+  <BreakFlowString>
+    <Name>$Id rcs tag</Name>
+    <String>$Id</String>
+    <IsRegEx>false</IsRegEx>
+    <NeverReflowLine>true</NeverReflowLine>
+    <NeverReflowIntoNextLine>true</NeverReflowIntoNextLine>
+  </BreakFlowString>
+</CommentReflowerParameters>

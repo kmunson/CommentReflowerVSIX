@@ -1,0 +1,51 @@
+<Title>Bullet Point Settings</Title>
+<BODY>
+<H1>Bullet Point Settings</H1>
+<B>Bullet Point Settings</B> allows you to set up bullet points to be detected in Comment Blocks and handled appropriately. For the 
+purposes of this program bullet points are regular expressions matched at the start of a comment block line (following
+whitespace) that has two properties:
+<ul>
+<li>preceeding lines will never be reflowed into it</li>
+<li>it can be reflowed into subsequent lines with a different indentation to the first character of the matched string</li>
+</ul>
+The first thing you will encounter upon selecting the <B>Bullet Point Settings</B> tab is a a list box containing 
+the <B>names</B> of all the currently defined Bullet Points. The <B>Name</B> has no special function programatically 
+and is just for user identification, however it must be unique. Left clicking on any entry in the list shows its 
+settings in the controls below. Left clicking again allows renaming of the block. To the top right of the listbox 
+is 4 buttons to manipulate the entries in it:<BR>
+
+<DL>
+<DT><B>New</B></DT>
+<DD>Creates a new Bullet Point. It will need to have its settings set before use.</DD><BR><BR>
+
+<DT><B>Delete</B></DT>
+<DD>Permanantly deletes the currently selected Bullet Point.</DD><BR><BR>
+
+<DT><B>Up/ Down</B></DT>
+<DD>Moves the currently selected Bullet Point up and down in the seacrh order. Note that order <B>is</B> important. When a block of code is scanned for Bullet Points, it is scanned in the order of this list, and the first match found is the only one used to do further processing.</DD><BR><BR>
+</DL>
+
+The settings for any Bullet Point are:<BR>
+<DL>
+
+<DT><B>Match String</B></DT>
+<DD></DD>This is the string to match at the start of the line of a comment for it to be recognised as a bullet point. It
+is optionally a regular expression, set by ticking the <B>is RegEx</B> checkbox. Note that you should not use the
+start of line symbol "^" in the regular expression as this is automatically prepended as well as a sting to match any
+amount of whitespace before the bullet.<BR><BR>
+
+<DT><B>Wrap on Edge</B></DT>
+<DD>This can have values <I>left</I> and <I>right</I>. It indicates where subsequent lines of the bullet should
+be wrapped to if the bullet goes over multiple line. <I>Left</I> is the leftside of the Matched String, <I>right</I>
+is the right side. So say for instance the bullet point string is the non-regular expression "bullet - ", then the 
+following shows th left and right wrapping:
+<code><pre>
+    //          bullet - A indented bullet point with wrap on left edge will 
+    //          look like this
+    //
+    //              bullet - A indented bullet point with wrap on right edge 
+    //                       will look like this.
+</pre></code>
+</DL>
+</DD><BR><BR>
+</BODY>

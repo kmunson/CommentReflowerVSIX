@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ReadMe for Comment Reflower</title>
+</head>
+<body>
+  <h1>ReadMe for Comment Reflower</h1>
+  <p>This is a quick &amp; dirty port of Ian Nowland's extremely useful CommentReflower plugin for Visual Studio 2003 and 2005. You can find the original distribution at the <a href="http://commentreflower.sourceforge.net/">Comment Reflower home page</a>.</p>
+  <p>This port was first cobbled together by Christoph Nahr in June 2008, with several <a href="#History">later revisions</a>. I have no connection whatsoever with Ian Nowland and no experience with Visual Studio add-ins either, but since he hasn’t updated Comment Reflower in years I decided to give it a shot. Since I cannot update the original SourceForge project I’ve put my version up for download <a href="http://kynosarges.org/CommentReflower.html">at my own website</a>.</p>
+  <p><b>Important:</b> If Visual Studio refuses to load the add-in, please read my note on <a href="http://kynosarges.org/ZipArchive.html ">automatic execution blocking</a> when unpacking ZIP archives on Windows!</p>
+  <h2>Deployment for Visual Studio 2008</h2>
+  <p>The binary package for Visual Studio 2008 contains an older version of Comment Reflower that was compiled using VS2008. The only difference from a user perspective is that you need to substitute 2008 for 2010 in the file paths shown in the next section.</p>
+  <h2>Deployment for Visual Studio 2010</h2>
+  <p>Comment Reflower supports XCopy deployment. Simply extract the entire contents of the current binary package, <code>CommentReflower.zip</code>, to one of the directories that Visual Studio searches for add-ins. You can find the complete list of supported locations under Tools > Options > Environment > Add-in/Macros Security within Visual Studio 2010. See the MSDN page <a href="http://msdn.microsoft.com/en-us/library/1326zbk3.aspx">Visual Studio Add-In Security</a> for further details.</p>
+  <p>As an example, here is a possible location for a user-specific installation. Substitute your Windows user name for <em>&lt;User&gt;</em> to get the actual directory:</p>
+  <ul>
+    <li>\Documents and Settings\<em>&lt;User&gt;</em>\My Documents\Visual Studio 2010\AddIns (on Windows XP)</li>
+    <li>\Users\<em>&lt;User&gt;</em>\(My) Documents\Visual Studio 2010\AddIns (on Windows Vista and later)</li>
+  </ul>
+  <p>You will find the following files in your deployment folder:</p>
+  <ul>
+    <li>CommentReflower.AddIn – The mandatory add-in control file for Visual Studio 2010 (plus two copies, see below).</li>
+    <li>CommentReflower.dll &amp; CommentReflowerLib.dll – The two .NET assemblies that constitute the add-in, compiled in release mode.</li>
+    <li>CommentReflower.chm – The HTML Help file for the Comment Reflower Settings dialog in the Visual Studio Tools menu.</li>
+    <li>CommentReflowerReadMe.html – This file. The source package includes the same file under the name ReadMe.html.</li>
+    <li>CommentReflowerSetup.xml – The settings file created by the Comment Reflower Settings dialog.</li>
+  </ul>
+  <p>The settings file is not part of the distribution package but will be created the first time you use the Settings dialog. If you have a settings file from an older version of Comment Reflower, you can simply copy it to the deployment folder.</p>
+  <h2>Deployment for Visual Studio 2012</h2>
+  <p>I’m not using Visual Studio 2012 myself, but Shane Tolmie has <a href="http://stackoverflow.com/a/13090736/574171">discovered</a> that Comment Reflower works just fine with that version, provided you update the add-in control file with the new version number. To simplify matters, Comment Reflower now ships with three copies of the add-in control file:</p>
+  <ul>
+    <li>CommentReflower.AddIn – The add-in control file, by default a copy of CommentReflower.AddIn-2010.</li>
+    <li>CommentReflower.AddIn-2010 – The add-in control file for Visual Studio 2010 (version number 10.0).</li>
+    <li>CommentReflower.AddIn-2012 – The add-in control file for Visual Studio 2012 (version number 11.0).</li>
+  </ul>
+  <p>Comment Reflower comes preconfigured for use with Visual Studio 2010. To use Comment Reflower with Visual Studio 2012, adjust the deployment path in the previous section as needed, and then simply overwrite CommentReflower.AddIn with CommentReflower.AddIn-2012.</p>
+  <h2>Changes from the June 2008 Version</h2>
+  <p>All files required to run the add-in are now expected in the same deployment folder, which must be one of the Visual Studio\AddIns folders listed above. This has the following consequences:</p>
+  <ul>
+    <li>Simpler deployment from a separate binary package – you no longer need to unpack the entire source code package and manually edit the assembly location in the add-in control file.</li>
+    <li>Online help available for the Comment Reflower Settings dialog – the Help button and the F1 shortcut key now work as expected, since Comment Reflower no longer attempts to find the HTML Help file using a nonexistent registry key.</li>
+    <li>Changed location of the settings file – this is the one change that requires some work on your part.</li>
+  </ul>
+  <p>If you’re upgrading from the June 2008 version, you will want to copy your existing settings file to the new location. Substituting your user name for <em>&lt;User&gt;</em> and your Visual Studio version number for <em>&lt;Version&gt;</em>, you can find your old settings file at the following location (on Windows Vista):</p>
+  <ul>
+    <li>\Users\<em>&lt;User&gt;</em>\AppData\Roaming\Microsoft Corporation\Microsoft&reg; Visual Studio&reg; 2008\<em>&lt;Version&gt;</em>\CommentReflowerSetup.xml</li>
+  </ul>
+  <h2>Changes from the Original Version and Usage Details</h2>
+  <p>The following list shows all projects in the original 2005 distribution and what happened to them in the current source code package, <code>CommentReflowerSource.zip</code>:</p>
+  <ul>
+    <li>
+      <p>CommentReflower – The library assembly that connects the add-in to the Visual Studio IDE. Rewritten for Visual Studio 2010 with some changes as described below.</p></li>
+    <li>
+      <p>CommentReflowerHelp – The HTML Help 1.3 project that generates the help file. Updated to reflect the new command names and put in the root directory, otherwise unchanged. This project is not attached to the Visual Studio solution and must be built manually. The project folder already contains a prebuilt CHM file, however.</p></li>
+    <li>
+      <p>CommentReflowerLib – The library assembly that provides the actual reflowing logic. Unchanged.</p></li>
+    <li>
+      <p>CommentReflowerTest – A command-line executable that tests the CommentReflowerLib assembly. Unchanged, except that the command-line window now waits for a keystroke before closing. Check the execution directory in the project properties before attempting to run this project!</p></li>
+    <li>
+      <p>CommentReflowerResourceDll – A resource assembly providing a few command icons which are frankly quite ugly. Not included in this distribution; all commands are shown as text only.</p></li>
+    <li>
+      <p>CommentReflowerSetup – The setup project that creates the MSI distribution package. Not included in this distribution since I have no experience with the MSI technology and don’t know how to upgrade this project to VS2010 so that it actually runs on someone else’s machine. Ian Nowland’s original ReadMe.rtf file is located in the root directory, however.</p></li>
+  </ul>
+  <p>The settings file used to reside in LocalUserAppData, then moved to UserAppData in the June 2008 revision, i.e. the “Roaming” version of the same directory; and finally to the AddIns folder in the January 2009 revision.</p>
+  <p>Some internal names have changed as well. The CommentReflower add-in name is now simply CommentReflower.Connect, with no version suffix such as 2003, 2005, or 2008. Its GUID has changed as well, although it is currently unused. The command names provided by Comment Reflower were shortened and changed to the standard verb form, as follows:</p>
+  <table border="true">
+    <thead>
+      <tr>
+        <th>Command</th>
+        <th>Internal Name</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>Align Parameters at Cursor</td>
+      <td>CommentReflower.Connect.AlignParameters</td>
+    </tr><tr>
+      <td>Reflow Comment at Cursor</td>
+      <td>CommentReflower.Connect.ReflowPoint</td>
+    </tr><tr>
+      <td>Reflow All Comments in Selection</td>
+      <td>CommentReflower.Connect.ReflowSelection</td>
+    </tr><tr>
+      <td>Comment Reflower Settings</td>
+      <td>CommentReflower.Connect.Settings</td>
+    </tr>
+  </table>
+  <p>Each command has a corresponding entry in the Tools menu, and except for Settings also in the context menu of the code editor window. Moreover, each command can be bound to a keyboard shortcut using the Tools: Options: Keyboard dialog. The AlignParameters command is unavailable by default, and must be enabled explicitly using the “Enable Align Params” button in the Settings dialog.</p>
+  <p><b>Note:</b> Comment Reflower does not support block comments with non-empty Block Start &amp; Block End fields but an empty (or whitespace) Line Start field, e.g. traditional C-style block comments without leading asterisks on each line. Apparently the comment matching algorithm cannot detect such a combination. Try using the “Empty Block for Text Files” style instead if you require a style without Line Start characters.</p>
+  <h2><a name="History">Release History</a></h2>
+  <ul>
+    <li><p>October 2012 – Added AddIn control file for Visual Studio 2012, as advised by Shane Tolmie.</p></li>
+    <li><p>November 2011 – Restored original version of file CommentReflower\AssemblyInfo.cs.</p></li>
+    <li><p>July 2010 – Added note regarding empty Line Start field, as detected by David W Smith.</p></li>
+    <li><p>May 2010 – Corrected description of Visual Studio add-in locations, as advised by Martin Richter.</p></li>
+    <li><p>April 2010 – Recompiled and otherwise updated for Visual Studio 2010.</p></li>
+    <li><p>March 2010 – Fixed AlignParameters command. When the first parameter is preceded by one or more spaces or tabs, parameters on the following lines are now correctly aligned with the start of the first parameter, rather than with the first space character after the opening parenthesis. Bug report and fix were submitted by Arnt Witteveen.</p></li>
+    <li><p>January 2009 – Revised for XCopy deployment to the Visual Studio AddIns folder, as described above.</p></li>
+    <li><p>June 2008 – Original release for Visual Studio 2008.</p></li>
+  </ul>
+</body>
+</html>

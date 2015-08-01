@@ -17,9 +17,16 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Visual Studio user settings
+# CommentReflowerVSIX
+*.chm
+*.log
+*.opensdf
+*.sdf
 *.suo
 *.user
+CommentReflower/gpl.rtf
+obj/
+bin/
 
 # =========================
 # Operating System Files

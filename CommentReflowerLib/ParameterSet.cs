@@ -17,6 +17,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -31,7 +33,7 @@ namespace CommentReflowerLib
         /** Default constuctor creates a default ParameterSet */
         public ParameterSet()
         {
-            ArrayList cPlusPlusCba = new ArrayList();
+            var cPlusPlusCba = new List<string>();
             cPlusPlusCba.Add("*.c");
             cPlusPlusCba.Add("*.cpp");
             cPlusPlusCba.Add("*.cs");
@@ -39,7 +41,7 @@ namespace CommentReflowerLib
             cPlusPlusCba.Add("*.h");
             mCommentBlocks.Add(new CommentBlock(
                 "C style function block",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.AlwaysOnOwnLine,
                 @"/\*\*\*+",
                 true,
@@ -50,7 +52,7 @@ namespace CommentReflowerLib
                 true));
             mCommentBlocks.Add(new CommentBlock(
                 "Doxygen C style (/**)",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne,
                 "/** ",
                 false,
@@ -61,7 +63,7 @@ namespace CommentReflowerLib
                 false));
             mCommentBlocks.Add(new CommentBlock(
                 "Doxygen C style 2 (/*!), which may have text on first line",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.NeverOnOwnLine,
                 "/*! ",
                 false,
@@ -72,7 +74,7 @@ namespace CommentReflowerLib
                 false));
             mCommentBlocks.Add(new CommentBlock(
                 "C style",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.NeverOnOwnLine,
                 "/* ",
                 false,
@@ -86,7 +88,7 @@ namespace CommentReflowerLib
                                       // DONE!
             mCommentBlocks.Add(new CommentBlock(
                 "C++ style function block",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.AlwaysOnOwnLine,
                 @"////+",
                 true,
@@ -97,7 +99,7 @@ namespace CommentReflowerLib
                 true));
             mCommentBlocks.Add(new CommentBlock(
                 "Doxygen C++ style (///)",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.Empty,
                 "",
                 false,
@@ -108,7 +110,7 @@ namespace CommentReflowerLib
                 false));
             mCommentBlocks.Add(new CommentBlock(
                 "Doxygen C++ style (///) with trailing tab",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.Empty,
                 "",
                 false,
@@ -119,7 +121,7 @@ namespace CommentReflowerLib
                 false));
             mCommentBlocks.Add(new CommentBlock(
                 "C++ style",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.Empty,
                 "",
                 false,
@@ -130,7 +132,7 @@ namespace CommentReflowerLib
                 false));
             mCommentBlocks.Add(new CommentBlock(
                 "Doxygen C++ style 2 (//!)",
-                (ArrayList)cPlusPlusCba.Clone(),
+                cPlusPlusCba.ToArray(),
                 StartEndBlockType.Empty,
                 "",
                 false,
@@ -322,12 +324,13 @@ namespace CommentReflowerLib
             {
                 mBreakFlowStrings.Add(new BreakFlowString(lb));
             }
+            mEnableAlignParams = other.mEnableAlignParams;
         }
 
         /** Constructor from xml file. Throws exception on invalid file */
-        public ParameterSet(string xmlFileName)
+        public ParameterSet(Stream stream)
         {
-            XmlTextReader r = new XmlTextReader(xmlFileName);
+            XmlReader r = XmlReader.Create(stream);
 
             try
             {
@@ -343,7 +346,6 @@ namespace CommentReflowerLib
                 mMinimumBlockWidth = XmlConvert.ToInt32(r.ReadElementString("MinimumBlockWidth"));
                 validateGeneralSettings();
 
-                r.Read();
                 while (r.Name != "CommentReflowerParameters")
                 {
                     if (r.LocalName == "CommentBlock")
@@ -365,20 +367,20 @@ namespace CommentReflowerLib
                     {
                         throw new System.ArgumentException("Unknown element in Xml");
                     }
-                    r.Read();
                 }
             }
             finally 
             {
-                r.Close();
+                stream.Seek(0, SeekOrigin.Begin);
             }
         }
 
         /** Writes object to xml file */
-        public void writeToXmlFile(string xmlFileName)
+        public MemoryStream writeToXmlMemoryStream()
         {
-            XmlTextWriter w = new XmlTextWriter(xmlFileName,new System.Text.ASCIIEncoding());
-            w.Formatting = Formatting.Indented;
+            var memoryStream = new MemoryStream();
+            XmlWriter w = XmlWriter.Create(memoryStream);
+
             w.WriteStartDocument();
             w.WriteStartElement("CommentReflowerParameters");
             w.WriteElementString("Version", "1");
@@ -401,11 +403,13 @@ namespace CommentReflowerLib
             w.WriteEndElement();
 
             w.WriteEndDocument();
-            // Flush the xml document to the underlying stream and close the
-            // underlying stream. The data will not be written out to the stream
-            // until either the Flush() method is called or the Close() method
-            // is called.
-            w.Close();
+            // Flush the xml document to the underlying stream. The data will
+            // not be written out to the stream until the Flush() method is
+            // called.
+            w.Flush();
+
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream;
         }
 
         /**
@@ -608,9 +612,9 @@ namespace CommentReflowerLib
             }
         }
 
-        public ArrayList/*<CommentBlock>*/ getBlocksForFileName(string fileName)
+        public List<CommentBlock> getBlocksForFileName(string fileName)
         {
-            ArrayList ret = new ArrayList();
+            var ret = new List<CommentBlock>();
             foreach (CommentBlock cb in mCommentBlocks)
             {
                 foreach (string asoc in cb.mFileAssociations)
@@ -630,13 +634,13 @@ namespace CommentReflowerLib
         }
 
         /** The comment blocks */
-        public ArrayList/*<CommentBlock*/ mCommentBlocks = new ArrayList();
-        
+        public List<CommentBlock> mCommentBlocks = new List<CommentBlock>();
+
         /** The Bullets */
-        public ArrayList/*<Bullets>*/ mBulletPoints = new ArrayList();
+        public List<BulletPoint> mBulletPoints = new List<BulletPoint>();
 
         /** The force line breaks */
-        public ArrayList/*<BreakFlowStrings>*/ mBreakFlowStrings = new ArrayList();
+        public List<BreakFlowString> mBreakFlowStrings = new List<BreakFlowString>();
 
         /** Whether to use tabs to indent blocks */
         public bool mUseTabsToIndent;
@@ -649,5 +653,7 @@ namespace CommentReflowerLib
          * mWrapWidth to meet this
          */
         public int mMinimumBlockWidth;
+
+        public bool mEnableAlignParams;
     }
 }

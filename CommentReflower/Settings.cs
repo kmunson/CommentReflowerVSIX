@@ -1,4 +1,4 @@
-// Comment Reflower Settings Dialog
+﻿// Comment Reflower Settings Dialog
 // Copyright (C) 2004  Ian Nowland
 // Ported to Visual Studio 2010 by Christoph Nahr
 // 
@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
@@ -27,7 +28,6 @@ using System.Windows.Forms;
 
 using EnvDTE;
 using EnvDTE80;
-using Extensibility;
 using Microsoft.Win32;
 using Microsoft.VisualStudio.CommandBars;
 
@@ -102,14 +102,12 @@ namespace CommentReflower {
 
         /** the ParameterSet set by the dialog */
         public ParameterSet _params;
-        private DTE2 _applicationObject;
-        private AddIn _addInInstance;
+        private string _addInFolder;
 
-        public Settings(ParameterSet pset, DTE2 applicationObject, AddIn addInInstance) {
+        public Settings(ParameterSet pset, string addInFolder) {
             InitializeComponent();
 
-            _applicationObject = applicationObject;
-            _addInInstance = addInInstance;
+            _addInFolder = addInFolder;
             _params = new ParameterSet(pset);
 
             UseTabsToIndentCheck.Checked = _params.mUseTabsToIndent;
@@ -1193,7 +1191,7 @@ namespace CommentReflower {
             BulletList.Items[index].Text = BulletList.Items[index+1].Text;
             BulletList.Items[index+1].Text = s;
 
-            object o = _params.mBulletPoints[index];
+            BulletPoint o = _params.mBulletPoints[index];
             _params.mBulletPoints[index] = _params.mBulletPoints[index+1];
             _params.mBulletPoints[index+1] = o;
 
@@ -1209,7 +1207,7 @@ namespace CommentReflower {
             BulletList.Items[index].Text = BulletList.Items[index-1].Text;
             BulletList.Items[index-1].Text = s;
 
-            object o = _params.mBulletPoints[index];
+            BulletPoint o = _params.mBulletPoints[index];
             _params.mBulletPoints[index] = _params.mBulletPoints[index-1];
             _params.mBulletPoints[index-1] = o;
 
@@ -1285,7 +1283,7 @@ namespace CommentReflower {
             BreakFlowStringList.Items[index].Text = BreakFlowStringList.Items[index+1].Text;
             BreakFlowStringList.Items[index+1].Text = s;
 
-            object o = _params.mBreakFlowStrings[index];
+            BreakFlowString o = _params.mBreakFlowStrings[index];
             _params.mBreakFlowStrings[index] = _params.mBreakFlowStrings[index+1];
             _params.mBreakFlowStrings[index+1] = o;
 
@@ -1301,7 +1299,7 @@ namespace CommentReflower {
             BreakFlowStringList.Items[index].Text = BreakFlowStringList.Items[index-1].Text;
             BreakFlowStringList.Items[index-1].Text = s;
 
-            object o = _params.mBreakFlowStrings[index];
+            BreakFlowString o = _params.mBreakFlowStrings[index];
             _params.mBreakFlowStrings[index] = _params.mBreakFlowStrings[index-1];
             _params.mBreakFlowStrings[index-1] = o;
 
@@ -1374,10 +1372,10 @@ namespace CommentReflower {
             if (!validateSelectedBlock(true))
                 return;
 
-            ArrayList list = new ArrayList();
+            var list = new List<string>();
             list.Add("*.new");
             CommentBlock cb = new CommentBlock(
-                "New comment block", (ArrayList) list.Clone(),
+                "New comment block", list.ToArray(),
                 StartEndBlockType.Empty, "", false,
                 StartEndBlockType.Empty, "", false, "#", false);
 
@@ -1398,7 +1396,7 @@ namespace CommentReflower {
             BlockList.Items[index].Text = BlockList.Items[index+1].Text;
             BlockList.Items[index+1].Text = s;
 
-            object o = _params.mCommentBlocks[index];
+            CommentBlock o = _params.mCommentBlocks[index];
             _params.mCommentBlocks[index] = _params.mCommentBlocks[index+1];
             _params.mCommentBlocks[index+1] = o;
 
@@ -1414,7 +1412,7 @@ namespace CommentReflower {
             BlockList.Items[index].Text = BlockList.Items[index-1].Text;
             BlockList.Items[index-1].Text = s;
 
-            object o = _params.mCommentBlocks[index];
+            CommentBlock o = _params.mCommentBlocks[index];
             _params.mCommentBlocks[index] = _params.mCommentBlocks[index-1];
             _params.mCommentBlocks[index-1] = o;
 
@@ -1489,8 +1487,9 @@ namespace CommentReflower {
         }
 
         private void AboutBtn_Click(object sender, EventArgs args) {
-            MessageBox.Show(this, "Comment Reflower for Visual Studio 2005 1.4\n" +
-                "Copyright (C) 2006 Ian Nowland\nPorted to VS2008 by Christoph Nahr");
+            MessageBox.Show(this,
+                "Copyright (C) 2006 Ian Nowland\nPorted to VS2008 by Christoph Nahr\nPorted to VSIX by Kristofel Munson",
+                "Comment Reflower");
         }
 
         private const string _helpFile = "CommentReflowerHelp.chm";
@@ -1504,15 +1503,14 @@ namespace CommentReflower {
                 case 3: keyword = "BreakFlowStringsSettings.htm"; break;
                 default: return;
             }
-
-            string helpPath = Path.Combine(Connect.GetAddinFolder(), _helpFile);
-            Help.ShowHelp(this, helpPath, keyword);
+            Uri helpUrl = new Uri(Path.Combine(_addInFolder, _helpFile));
+            Help.ShowHelp(this, helpUrl.AbsoluteUri, keyword);
             hlpevent.Handled = true;
         }
 
         private void HelpBtn_Click(object sender, EventArgs args) {
-            string helpPath = Path.Combine(Connect.GetAddinFolder(), _helpFile);
-            Help.ShowHelp(this, helpPath, HelpNavigator.TableOfContents);
+            Uri helpUrl = new Uri(Path.Combine(_addInFolder, _helpFile));
+            Help.ShowHelp(this, helpUrl.AbsoluteUri, HelpNavigator.TableOfContents);
         }
 
         private string convertToDisplay(string str, bool isRegEx) {
@@ -1531,31 +1529,7 @@ namespace CommentReflower {
         }
 
         private void AlignBtn_Click(object sender, EventArgs args) {
-
-            // find editor context menu and "Tools" menu
-            CommandBar codeWindowBar; CommandBarPopup toolsPopup;
-            Connect.FindMenus(_applicationObject, out codeWindowBar, out toolsPopup);
-
-            // common parameters for command objects
-            const int commandStatusValue =
-                (int) vsCommandStatus.vsCommandStatusSupported +
-                (int) vsCommandStatus.vsCommandStatusEnabled;
-
-            const int commandStyleFlags = (int) vsCommandStyle.vsCommandStyleText;
-            const vsCommandControlType controlType = vsCommandControlType.vsCommandControlTypeButton;
-
-            object[] contextGUIDS = new object[] { };
-            Commands2 commands = (Commands2) _applicationObject.Commands;
-            try {
-                Command alignParametersCommand = commands.AddNamedCommand2(_addInInstance,
-                    "AlignParameters", "Align Parameters at Cursor",
-                    "Aligns the function parameters at the cursor", true, 59,
-                    ref contextGUIDS, commandStatusValue, commandStyleFlags, controlType);
-
-                alignParametersCommand.AddControl(toolsPopup.CommandBar, 1);
-                alignParametersCommand.AddControl(codeWindowBar, 1);
-            }
-            catch { }
+            _params.mEnableAlignParams = true;
         }
     }
 }

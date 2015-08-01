@@ -31,9 +31,15 @@ namespace CommentReflowerTest
         static int fileCompare(string fileName1,
                                string fileName2)
         {
-            using (StreamReader file1 = new StreamReader(fileName1))
+            return streamCompare(new FileStream(fileName1, FileMode.Open), new FileStream(fileName2, FileMode.Open));
+        }
+
+        static int streamCompare(Stream stream1,
+                                 Stream stream2)
+        {
+            using (StreamReader file1 = new StreamReader(stream1))
             {
-                using (StreamReader file2 = new StreamReader(fileName2))
+                using (StreamReader file2 = new StreamReader(stream2))
                 {
                     int lineNum=0;
                     string st1 = file1.ReadLine();
@@ -163,7 +169,7 @@ namespace CommentReflowerTest
 
         static void DoBlockTests()
         {
-            string fileName = "Input/Regression.cpp";
+            string fileName = @"..\..\Input\Regression.cpp";
             TestFileWrapper regressionFile = new TestFileWrapper(fileName);
 
             /////////////////////////////////////////
@@ -199,8 +205,8 @@ namespace CommentReflowerTest
                     }
                 }
             }
-            regressionFile.WriteToFile("Output/Regression.out.cpp");
-            int lineNum = fileCompare("Output/Regression.out.cpp", "Compare/Regression.compare.cpp");
+            regressionFile.WriteToFile(@"..\..\Output\Regression.out.cpp");
+            int lineNum = fileCompare(@"..\..\Output\Regression.out.cpp", @"..\..\Compare\Regression.compare.cpp");
             if (lineNum != -1)
             {
                 throw new System.ApplicationException(
@@ -216,8 +222,8 @@ namespace CommentReflowerTest
             EnvDTE.EditPoint tp2 = regressionFile2.CreateEditPoint(null);
             tp2.EndOfDocument();
             CommentReflowerObj.WrapAllBlocksInSelection(pset,fileName,tp1,tp2);
-            regressionFile2.WriteToFile("Output/Regression.out2.cpp");
-            lineNum = fileCompare("Output/Regression.out2.cpp", "Compare/Regression.compare.cpp");
+            regressionFile2.WriteToFile(@"..\..\Output\Regression.out2.cpp");
+            lineNum = fileCompare(@"..\..\Output\Regression.out2.cpp", @"..\..\Compare\Regression.compare.cpp");
             if (lineNum != -1)
             {
                 throw new System.ApplicationException(
@@ -228,8 +234,8 @@ namespace CommentReflowerTest
             tp1.StartOfDocument();
             tp2.EndOfDocument();
             CommentReflowerObj.WrapAllBlocksInSelection(pset,fileName,tp1,tp2);
-            regressionFile2.WriteToFile("Output/Regression.out3.cpp");
-            lineNum = fileCompare("Output/Regression.out3.cpp", "Compare/Regression.compare.cpp");
+            regressionFile2.WriteToFile(@"..\..\Output\Regression.out3.cpp");
+            lineNum = fileCompare(@"..\..\Output\Regression.out3.cpp", @"..\..\Compare\Regression.compare.cpp");
             if (lineNum != -1)
             {
                 throw new System.ApplicationException(
@@ -247,7 +253,7 @@ namespace CommentReflowerTest
             string fileNameSuffix
             )
         {
-            string fileName = "Input/"+fileNamePrefix+fileNameSuffix;
+            string fileName = @"..\..\Input\"+fileNamePrefix+fileNameSuffix;
             ParameterSet pset = new ParameterSet();
             pset.mUseTabsToIndent = true;
 
@@ -257,9 +263,9 @@ namespace CommentReflowerTest
             EnvDTE.EditPoint tp2 = regressionFile.CreateEditPoint(null);
             tp2.EndOfDocument();
             CommentReflowerObj.WrapAllBlocksInSelection(pset,fileName,tp1,tp2);
-            regressionFile.WriteToFile("Output/"+fileNamePrefix+".out"+fileNameSuffix);
-            int lineNum = fileCompare("Output/"+fileNamePrefix+".out"+fileNameSuffix, 
-                                      "Compare/"+fileNamePrefix+".compare"+fileNameSuffix);
+            regressionFile.WriteToFile(@"..\..\Output\"+fileNamePrefix+".out"+fileNameSuffix);
+            int lineNum = fileCompare(@"..\..\Output\"+fileNamePrefix+".out"+fileNameSuffix, 
+                                      @"..\..\Compare\"+fileNamePrefix+".compare"+fileNameSuffix);
             if (lineNum != -1)
             {
                 throw new System.ApplicationException(
@@ -270,9 +276,9 @@ namespace CommentReflowerTest
             tp1.StartOfDocument();
             tp2.EndOfDocument();
             CommentReflowerObj.WrapAllBlocksInSelection(pset,fileName,tp1,tp2);
-            regressionFile.WriteToFile("Output/"+fileNamePrefix+".out2"+fileNameSuffix);
-            lineNum = fileCompare("Output/"+fileNamePrefix+".out2"+fileNameSuffix, 
-                                  "Compare/"+fileNamePrefix+".compare"+fileNameSuffix);
+            regressionFile.WriteToFile(@"..\..\Output\"+fileNamePrefix+".out2"+fileNameSuffix);
+            lineNum = fileCompare(@"..\..\Output\"+fileNamePrefix+".out2"+fileNameSuffix, 
+                                  @"..\..\Compare\"+fileNamePrefix+".compare"+fileNameSuffix);
             if (lineNum != -1)
             {
                 throw new System.ApplicationException(
@@ -285,10 +291,10 @@ namespace CommentReflowerTest
         static void DoXmlFileTests()
         {
             ParameterSet pset = new ParameterSet();
-            pset.writeToXmlFile("Output/testconfig.xml");
-            pset = new ParameterSet("Output/testconfig.xml");
-            pset.writeToXmlFile("Output/testconfig2.xml");
-            int lineNum = fileCompare("Output/testconfig.xml", "Output/testconfig2.xml");
+            MemoryStream memorySteam = pset.writeToXmlMemoryStream();
+            pset = new ParameterSet(memorySteam);
+            MemoryStream memoryStream2 = pset.writeToXmlMemoryStream();
+            int lineNum = streamCompare(memorySteam, memoryStream2);
             if (lineNum != -1)
             {
                 throw new System.ApplicationException(

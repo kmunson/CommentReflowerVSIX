@@ -37,7 +37,7 @@ namespace CommentReflowerLib
         /** Constructor taking values */
         public CommentBlock(
             string mName,
-            ArrayList mFileAssociations,
+            string[] mFileAssociations,
             StartEndBlockType mBlockStartType,
             string mBlockStart,
             bool mIsBlockStartRegEx,
@@ -63,7 +63,7 @@ namespace CommentReflowerLib
         public CommentBlock(CommentBlock other)
         {
             this.mName = other.mName;
-            this.mFileAssociations = (ArrayList)other.mFileAssociations.Clone();
+            this.mFileAssociations = (string[])other.mFileAssociations.Clone();
             this.mBlockStartType = other.mBlockStartType;
             this.mBlockStart = other.mBlockStart;
             this.mIsBlockStartRegEx = other.mIsBlockStartRegEx;
@@ -109,18 +109,14 @@ namespace CommentReflowerLib
         }
 
         /** Creates a File Assoication List from a semicolon separated string */
-        public static ArrayList createFileAssocFromString(string st)
+        public static string[] createFileAssocFromString(string st)
         {
-            ArrayList ret = new ArrayList();
             if (st.Trim().Length == 0)
             {
                 throw new System.ArgumentException("File association string must not be empty");
             }
-            foreach (string next in st.Split(';'))
-            {
-                ret.Add(next.Trim());
-            }
-            return ret;
+            string[] ret = st.Split(';');
+            return Array.ConvertAll(ret, s => s.Trim());
         }
 
         /** Returns this objects file associations as a string */
@@ -469,8 +465,8 @@ namespace CommentReflowerLib
         public string mName;
 
         /** A list of file assoiations of the type '*.ext' (ie not regexes)*/
-        public ArrayList/*<string>*/ mFileAssociations;
-        
+        public string[] mFileAssociations;
+
         /** The type of the start block */
         public StartEndBlockType mBlockStartType;
 

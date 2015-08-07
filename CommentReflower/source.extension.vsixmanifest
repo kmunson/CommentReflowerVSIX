@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="df158482-14ea-4165-8977-6a57ececffe7" Version="1.0" Language="en-US" Publisher="Kristofel Munson" />
-    <DisplayName>CommentReflower</DisplayName>
+    <DisplayName>Comment Reflower</DisplayName>
     <Description>VSIX version of Comment Reflower.</Description>
     <MoreInfo>https://github.com/kmunson/CommentReflowerVSIX/</MoreInfo>
     <License>gpl.rtf</License>

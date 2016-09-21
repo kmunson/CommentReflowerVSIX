@@ -363,6 +363,10 @@ namespace CommentReflowerLib
                         mBreakFlowStrings.Add(new BreakFlowString(r));
                         validateBreakFlowString(mBreakFlowStrings.Count-1);
                     }
+                    else if (r.LocalName == "")
+                    {
+                        r.Read();
+                    }
                     else
                     {
                         throw new System.ArgumentException("Unknown element in Xml");

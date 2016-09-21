@@ -1,4 +1,4 @@
-﻿// Comment Reflower Settings Dialog
+// Comment Reflower Settings Dialog
 // Copyright (C) 2004  Ian Nowland
 // Ported to Visual Studio 2010 by Christoph Nahr
 // 
@@ -99,7 +99,9 @@ namespace CommentReflower {
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button AboutBtn;
         private System.Windows.Forms.Button AlignBtn;
-
+		private System.Windows.Forms.Button ExportBtn;
+        private System.Windows.Forms.Button ImportBtn;
+        
         /** the ParameterSet set by the dialog */
         public ParameterSet _params;
         private string _addInFolder;
@@ -452,6 +454,8 @@ namespace CommentReflower {
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Settings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.GeneralTab = new System.Windows.Forms.TabPage();
+            this.ExportBtn = new System.Windows.Forms.Button();
+            this.ImportBtn = new System.Windows.Forms.Button();
             this.AboutBtn = new System.Windows.Forms.Button();
             this.BlockMinimumWidthText = new System.Windows.Forms.TextBox();
             this.BlockWrapWidthText = new System.Windows.Forms.TextBox();
@@ -531,6 +535,8 @@ namespace CommentReflower {
             // 
             // GeneralTab
             // 
+            this.GeneralTab.Controls.Add(this.ExportBtn);
+            this.GeneralTab.Controls.Add(this.ImportBtn);
             this.GeneralTab.Controls.Add(this.AlignBtn);
             this.GeneralTab.Controls.Add(this.AboutBtn);
             this.GeneralTab.Controls.Add(this.BlockMinimumWidthText);
@@ -545,6 +551,25 @@ namespace CommentReflower {
             this.GeneralTab.Text = "General";
             this.GeneralTab.Validating += new System.ComponentModel.CancelEventHandler(this.GeneralTab_Validating);
             // 
+            // ExportBtn
+            // 
+            this.ExportBtn.Location = new System.Drawing.Point(288, 299);
+            this.ExportBtn.Name = "ExportBtn";
+            this.ExportBtn.Size = new System.Drawing.Size(75, 23);
+            this.ExportBtn.TabIndex = 8;
+            this.ExportBtn.Text = "Export...";
+            this.ExportBtn.UseVisualStyleBackColor = true;
+            this.ExportBtn.Click += new System.EventHandler(this.ExportBtn_Click);
+            // 
+            // ImportBtn
+            // 
+            this.ImportBtn.Location = new System.Drawing.Point(160, 299);
+            this.ImportBtn.Name = "ImportBtn";
+            this.ImportBtn.Size = new System.Drawing.Size(75, 23);
+            this.ImportBtn.TabIndex = 7;
+            this.ImportBtn.Text = "Import...";
+            this.ImportBtn.UseVisualStyleBackColor = true;
+            this.ImportBtn.Click += new System.EventHandler(this.ImportBtn_Click);
             // AboutBtn
             // 
             this.AboutBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -1531,5 +1556,56 @@ namespace CommentReflower {
         private void AlignBtn_Click(object sender, EventArgs args) {
             _params.mEnableAlignParams = true;
         }
+
+        private void ImportBtn_Click(object sender, EventArgs args)
+        {
+            try
+            {
+                OpenFileDialog dlg = new OpenFileDialog();
+                dlg.Filter = "XML files|*.xml";
+                dlg.Title = "Import Command Reflower Settings";
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    // MessageBox.Show(dlg.FileName);
+                    FileStream fs = new FileStream(dlg.FileName, FileMode.Open, FileAccess.Read);
+                    _params = new ParameterSet(fs);
+                    fs.Close();
+
+                    // Close dialog
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Import failed:\n" + e.Message, "CommentReflower Import Error");
+            }
+
+        }
+
+        private void ExportBtn_Click(object sender, EventArgs args)
+        {
+            try
+            {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.Filter = "XML files|*.xml";
+                dlg.Title = "Export Command Reflower Settings";
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    // MessageBox.Show(dlg.FileName);
+                    MemoryStream ms = _params.writeToXmlMemoryStream();
+                    FileStream fs = new FileStream(dlg.FileName, FileMode.Create, FileAccess.Write);
+                    ms.WriteTo(fs);
+                    fs.Close();
+                    ms.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Export failed:\n" + e.Message, "CommentReflower export Error");
+            }
+
+        }
+
     }
 }

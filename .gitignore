@@ -24,6 +24,8 @@ $RECYCLE.BIN/
 *.sdf
 *.suo
 *.user
+*.VC.db
+*.VC.VC.opendb
 CommentReflower/gpl.rtf
 obj/
 bin/

@@ -1,6 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C6D9CEE-7802-4AB8-8DF1-E2E18C7B69C7}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentReflower", "CommentReflower\CommentReflower.csproj", "{63D72A89-36E5-43FA-871D-61CE8E4221E0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8A754D5F-6005-4CD5-907F-D66B131CB387} = {8A754D5F-6005-4CD5-907F-D66B131CB387}
@@ -12,11 +19,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentReflowerTest", "CommentReflowerTest\CommentReflowerTest.csproj", "{8DA7DD2D-784D-421A-922D-63B0AC3867A0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommentReflowerHelp", "CommentReflowerHelp\CommentReflowerHelp.vcxproj", "{3D6627A1-3D77-4EBD-9897-F9DE06B4E69D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C6D9CEE-7802-4AB8-8DF1-E2E18C7B69C7}"
-	ProjectSection(SolutionItems) = preProject
-		ReadMe.txt = ReadMe.txt
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

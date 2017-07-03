@@ -29,6 +29,8 @@ $RECYCLE.BIN/
 CommentReflower/gpl.rtf
 obj/
 bin/
+/Backup*/
+/UpgradeLog*.htm
 
 # =========================
 # Operating System Files

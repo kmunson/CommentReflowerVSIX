@@ -193,6 +193,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+  <PropertyGroup>
+    <PreBuildEvent>copy /Y "$(ProjectDir)..\CommentReflowerHelp\CommentReflowerHelp.chm"
+if errorlevel 1 echo error: Failed to copy chm.
+copy /Y "$(ProjectDir)..\gpl.rtf"
+if errorlevel 1 echo error: Failed to copy license agreement.</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

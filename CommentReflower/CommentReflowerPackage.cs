@@ -30,6 +30,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.AsyncPackageHelpers;
 
 namespace CommentReflower
 {
@@ -48,18 +49,20 @@ namespace CommentReflower
     [PackageRegistration(UseManagedResourcesOnly = true)]
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration("#110", "#112", "1.2.1", IconResourceID = 400)]
+    [InstalledProductRegistration("#110", "#112", "1.2.2", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // Initialize the package when a text editor window is opened. This ensures that the visibility
     // state of reflow commands is set correctly before opening the menu. Otherwise
     // QueryStateCallback will not happen until after the settings command is invoked.
-    [ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string)]
+    [Microsoft.VisualStudio.AsyncPackageHelpers.ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [AsyncPackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(GuidList.guidCommentReflowerPkgString)]
-    public sealed class CommentReflowerPackage : Package
+    public sealed class CommentReflowerPackage : Package, IAsyncLoadablePackageInitialize
     {
         private CommentReflowerLib.ParameterSet Params { get; set; }
         private SettingsManager SettingsManager { get; set; }
+        private bool _isAsyncLoadSupported;
 
         /// <summary>
         /// Default constructor of the package. Inside this method you can place any initialization
@@ -69,12 +72,7 @@ namespace CommentReflower
         /// </summary>
         public CommentReflowerPackage()
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
-
-        /////////////////////////////////////////////////////////////////////////////
-        // Overridden Package Implementation
-        #region Package Members
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited,
@@ -83,9 +81,51 @@ namespace CommentReflower
         /// </summary>
         protected override void Initialize()
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
+            _isAsyncLoadSupported = this.IsAsyncPackageSupported();
+
+            // Only perform initialization if async package framework is not supported
+            if (!_isAsyncLoadSupported)
+            {
+                BackgroundThreadInitialization();
+                var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+                MainThreadInitialization(menuCommandService, isAsyncPath: false);
+            }
+        }
+
+        /// <summary>
+        /// Performs the asynchronous initialization for the package in cases where IDE supports AsyncPackage.
+        /// 
+        /// This method is always called from background thread initially.
+        /// </summary>
+        /// <param name="asyncServiceProvider">Async service provider instance to query services asynchronously</param>
+        /// <param name="pProfferService">Async service proffer instance</param>
+        /// <param name="IAsyncProgressCallback">Progress callback instance</param>
+        /// <returns></returns>
+        public IVsTask Initialize(IAsyncServiceProvider asyncServiceProvider, IProfferAsyncService pProfferService, IAsyncProgressCallback pProgressCallback)
+        {
+            if (!_isAsyncLoadSupported)
+            {
+                throw new InvalidOperationException("Async Initialize method should not be called when async load is not supported.");
+            }
+
+            return ThreadHelper.JoinableTaskFactory.RunAsync<object>(async () =>
+            {
+                BackgroundThreadInitialization();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+                MainThreadInitialization(menuCommandService, isAsyncPath: true);
+                return null;
+            }).AsVsTask();
+        }
+
+        private void BackgroundThreadInitialization()
+        {
+        }
+
+        private void MainThreadInitialization(OleMenuCommandService menuCommandService, bool isAsyncPath)
+        {
             SettingsManager = new ShellSettingsManager(this);
 
             WritableSettingsStore userSettingsStore = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
@@ -107,7 +147,7 @@ namespace CommentReflower
             }
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            var mcs = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
+            var mcs = menuCommandService;
 
             CommandID menuCommandID;
             OleMenuCommand menuItem;
@@ -128,7 +168,6 @@ namespace CommentReflower
             menuItem = new OleMenuCommand(MenuItemCallback, menuCommandID);
             mcs.AddCommand(menuItem);
         }
-        #endregion
 
         /// <summary>
         /// Sets visibility and enabled state of menu commands.
@@ -242,6 +281,8 @@ namespace CommentReflower
         /// </summary>
         private void ShowMessageBox(string title, string format, params object[] args)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             Guid clsid = Guid.Empty;
             int result;

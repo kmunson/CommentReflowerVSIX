@@ -9,4 +9,6 @@ rem hhc returns 0 on failure and 1 on success.
 if not errorlevel 1 (
 	echo Failed to compile help.
 	exit /B 1
+) else (
+	exit /B 0
 )

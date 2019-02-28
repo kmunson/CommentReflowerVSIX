@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="df158482-14ea-4165-8977-6a57ececffe7" Version="1.2.1" Language="en-US" Publisher="Kristofel Munson" />
+        <Identity Id="df158482-14ea-4165-8977-6a57ececffe7" Version="1.2.2" Language="en-US" Publisher="Kristofel Munson" />
         <DisplayName>Comment Reflower</DisplayName>
         <Description>VSIX version of Comment Reflower.</Description>
         <MoreInfo>https://github.com/kmunson/CommentReflowerVSIX/</MoreInfo>
@@ -10,7 +10,7 @@
         <PreviewImage>Resources\Package.ico</PreviewImage>
     </Metadata>
     <Installation InstalledByMsi="false">
-        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0, 17.0)" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />

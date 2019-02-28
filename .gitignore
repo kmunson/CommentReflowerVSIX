@@ -33,6 +33,7 @@ obj/
 bin/
 /Backup*/
 /UpgradeLog*.htm
+/MigrationBackup/
 
 # =========================
 # Operating System Files

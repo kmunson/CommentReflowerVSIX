@@ -39,9 +39,11 @@
     <None Include="BreakFlowStringsSettings.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="build.bat" />
     <None Include="BulletPointSettings.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="clean.bat" />
     <None Include="Commands.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -59,6 +61,7 @@
     <None Include="Introduction.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="rebuild.bat" />
     <None Include="Settings.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>

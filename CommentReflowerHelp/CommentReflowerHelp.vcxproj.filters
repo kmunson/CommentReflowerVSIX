@@ -11,5 +11,8 @@
     <None Include="GeneralSettings.htm" />
     <None Include="Introduction.htm" />
     <None Include="Settings.htm" />
+    <None Include="build.bat" />
+    <None Include="clean.bat" />
+    <None Include="rebuild.bat" />
   </ItemGroup>
 </Project>

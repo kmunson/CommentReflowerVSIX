@@ -30,7 +30,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.AsyncPackageHelpers;
+using System.Threading;
+using Task = System.Threading.Tasks.Task;
 
 namespace CommentReflower
 {
@@ -46,23 +47,21 @@ namespace CommentReflower
     /// </summary>
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
     // a package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration("#110", "#112", "1.2.2", IconResourceID = 400)]
+    [InstalledProductRegistration("#110", "#112", "1.3.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // Initialize the package when a text editor window is opened. This ensures that the visibility
     // state of reflow commands is set correctly before opening the menu. Otherwise
     // QueryStateCallback will not happen until after the settings command is invoked.
-    [Microsoft.VisualStudio.AsyncPackageHelpers.ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [AsyncPackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+    [ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(GuidList.guidCommentReflowerPkgString)]
-    public sealed class CommentReflowerPackage : Package, IAsyncLoadablePackageInitialize
+    public sealed class CommentReflowerPackage : AsyncPackage
     {
         private CommentReflowerLib.ParameterSet Params { get; set; }
         private SettingsManager SettingsManager { get; set; }
-        private bool _isAsyncLoadSupported;
 
         /// <summary>
         /// Default constructor of the package. Inside this method you can place any initialization
@@ -74,58 +73,11 @@ namespace CommentReflower
         {
         }
 
-        /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited,
-        /// so this is the place where you can put all the initialization code that rely on services
-        /// provided by VisualStudio.
-        /// </summary>
-        protected override void Initialize()
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            base.Initialize();
-
-            _isAsyncLoadSupported = this.IsAsyncPackageSupported();
-
-            // Only perform initialization if async package framework is not supported
-            if (!_isAsyncLoadSupported)
-            {
-                BackgroundThreadInitialization();
-                var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
-                MainThreadInitialization(menuCommandService, isAsyncPath: false);
-            }
-        }
-
-        /// <summary>
-        /// Performs the asynchronous initialization for the package in cases where IDE supports AsyncPackage.
-        /// 
-        /// This method is always called from background thread initially.
-        /// </summary>
-        /// <param name="asyncServiceProvider">Async service provider instance to query services asynchronously</param>
-        /// <param name="pProfferService">Async service proffer instance</param>
-        /// <param name="IAsyncProgressCallback">Progress callback instance</param>
-        /// <returns></returns>
-        public IVsTask Initialize(IAsyncServiceProvider asyncServiceProvider, IProfferAsyncService pProfferService, IAsyncProgressCallback pProgressCallback)
-        {
-            if (!_isAsyncLoadSupported)
-            {
-                throw new InvalidOperationException("Async Initialize method should not be called when async load is not supported.");
-            }
-
-            return ThreadHelper.JoinableTaskFactory.RunAsync<object>(async () =>
-            {
-                BackgroundThreadInitialization();
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var menuCommandService = (OleMenuCommandService)GetService(typeof(IMenuCommandService));
-                MainThreadInitialization(menuCommandService, isAsyncPath: true);
-                return null;
-            }).AsVsTask();
-        }
-
-        private void BackgroundThreadInitialization()
-        {
-        }
-
-        private void MainThreadInitialization(OleMenuCommandService menuCommandService, bool isAsyncPath)
-        {
+            // Switches to the UI thread in order to consume some services used in command initialization
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            
             SettingsManager = new ShellSettingsManager(this);
 
             WritableSettingsStore userSettingsStore = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
@@ -147,7 +99,14 @@ namespace CommentReflower
             }
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            var mcs = menuCommandService;
+            var mcsType = typeof(IMenuCommandService);
+            var mcs = (IMenuCommandService)await GetServiceAsync(mcsType);
+
+            // I would use Assumes.Present() here but that isn't available in VS2017.
+            if (mcs == null)
+            {
+                throw new MissingServiceException(mcsType);
+            }
 
             CommandID menuCommandID;
             OleMenuCommand menuItem;
@@ -174,7 +133,13 @@ namespace CommentReflower
         /// </summary>
         private void QueryStatusCallback(object sender, EventArgs e)
         {
-            var dte = (DTE)GetService(typeof(DTE));
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var dteType = typeof(DTE);
+            var dte = (DTE)GetService(dteType);
+            if (dte == null)
+            {
+                throw new MissingServiceException(dteType);
+            }
             Document document = dte.ActiveDocument;
             var menuCommand = (OleMenuCommand)sender;
             int commandID = menuCommand.CommandID.ID;
@@ -214,7 +179,13 @@ namespace CommentReflower
         /// </summary>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            var dte = (DTE)GetService(typeof(DTE));
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var dteType = typeof(DTE);
+            var dte = (DTE)GetService(dteType);
+            if (dte == null)
+            {
+                throw new MissingServiceException(dteType);
+            }
             Document document = dte.ActiveDocument;
             var menuCommand = (OleMenuCommand)sender;
             int commandID = menuCommand.CommandID.ID;
@@ -283,7 +254,12 @@ namespace CommentReflower
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+            var uiShellType = typeof(SVsUIShell);
+            var uiShell = (IVsUIShell)GetService(uiShellType);
+            if (uiShell == null)
+            {
+                throw new MissingServiceException(uiShellType);
+            }
             Guid clsid = Guid.Empty;
             int result;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(

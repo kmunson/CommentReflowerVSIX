@@ -7,7 +7,7 @@ Christoph Nahr's distribution: http://kynosarges.org/CommentReflower.html
 
 Ian Nowland's distribution: http://commentreflower.sourceforge.net/
 
-Deployment for Visual Studio 2013, 2015, 2017 and 2019: Simply run the VSIX installer to deploy.
+Deployment for Visual Studio 2017, 2019 and 2022: Simply run the VSIX installer to deploy.
 
-Requires the Visual Studio 2013 Isolated Shell to compile if VS2013 is not installed:
-https://aka.ms/VS2013/IsoShell/en-US
+Requires HTML Help Workshop to build the help file:
+https://web.archive.org/web/20200918004813/https://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31911.196
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C6D9CEE-7802-4AB8-8DF1-E2E18C7B69C7}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,11 +28,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentReflower2022", "Comm
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		CommentReflowerShared\CommentReflowerShared.projitems*{63d72a89-36e5-43fa-871d-61ce8e4221e0}*SharedItemsImports = 4
-		CommentReflowerShared\CommentReflowerShared.projitems*{9183950d-61c4-47d0-bb47-24f3142be007}*SharedItemsImports = 4
-		CommentReflowerShared\CommentReflowerShared.projitems*{98b51a43-7052-4bbc-8ccf-4085cfde0583}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -64,5 +59,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {061EF401-2FCA-4935-9928-CBA6B29F3E83}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CommentReflowerShared\CommentReflowerShared.projitems*{63d72a89-36e5-43fa-871d-61ce8e4221e0}*SharedItemsImports = 4
+		CommentReflowerShared\CommentReflowerShared.projitems*{9183950d-61c4-47d0-bb47-24f3142be007}*SharedItemsImports = 4
+		CommentReflowerShared\CommentReflowerShared.projitems*{98b51a43-7052-4bbc-8ccf-4085cfde0583}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

@@ -63,13 +63,11 @@ namespace CommentReflowerLib
             selStart.StartOfLine();
             while (selStart.LessThan(selectionEnd))
             {
-                CommentBlock block;
-                MatchedBlockData bdata;
                 if (GetBlockContainingPoint(pset,
                                             fileName,
                                             selStart,
-                                            out block,
-                                            out bdata))
+                                            out CommentBlock block,
+                                            out MatchedBlockData bdata))
                 {
                     blockFound = true;
                     selStart.LineDown((bdata.mEndLine-bdata.mStartLine)+1);
@@ -92,13 +90,11 @@ namespace CommentReflowerLib
             string fileName, 
             EnvDTE.TextPoint pt)
         {
-            CommentBlock block;
-            MatchedBlockData bdata;
             if (!GetBlockContainingPoint(pset,
                                          fileName,
                                          pt,
-                                         out block,
-                                         out bdata))
+                                         out CommentBlock block,
+                                         out MatchedBlockData bdata))
             {
                 return false;
             }
@@ -118,10 +114,7 @@ namespace CommentReflowerLib
             out MatchedBlockData bdata)
         {
             retblock = null;
-            bdata = new MatchedBlockData();
-            bdata.mEndLine = 0;
-            bdata.mStartLine = 0;
-            bdata.mIndentation = 0;
+            bdata = new MatchedBlockData { mEndLine = 0, mStartLine = 0, mIndentation = 0 };
 
             EnvDTE.EditPoint ep = pt.CreateEditPoint();
             EnvDTE.EditPoint enddoc = pt.CreateEditPoint();
@@ -401,9 +394,7 @@ namespace CommentReflowerLib
                 }
 
                 // work out indent for current line
-                int currentIndent = -1;
-                int thisIndent;
-                if (pset.matchesBulletPoint(GetRestOfLine(curPoint),out thisIndent, out currentIndent))
+                if (pset.matchesBulletPoint(GetRestOfLine(curPoint),out int thisIndent, out int currentIndent))
                 {
                     // We need to convert current indent to number of columns 
                     // as at the moment it is number of characters.

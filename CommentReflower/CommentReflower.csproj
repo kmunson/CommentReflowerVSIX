@@ -62,6 +62,9 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DeployExtension>False</DeployExtension>
+    <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>C:\Users\kmunson\AppData\Local\Microsoft\VisualStudio\15.0_c3f4eca2Exp\Extensions\Kristofel Munson\Comment Reflower</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">

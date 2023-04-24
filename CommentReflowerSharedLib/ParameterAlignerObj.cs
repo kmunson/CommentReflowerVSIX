@@ -1,3 +1,4 @@
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -19,7 +20,10 @@ namespace CommentReflowerLib
         static private bool AtLineEndIgnoringWhiteSpace(
             EnvDTE.EditPoint pt)
         {
-            EnvDTE.EditPoint temp = pt.CreateEditPoint();
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			EnvDTE.EditPoint temp = pt.CreateEditPoint();
             while ((!temp.AtEndOfLine) && 
                 ((temp.GetText(1) == " ") ||
                 (temp.GetText(1) == "\t")))
@@ -39,9 +43,12 @@ namespace CommentReflowerLib
             bool forceOneParamPerLine,
             bool recurseOnSubCalls*/)
         {
-            finishPt = null;
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			finishPt = null;
 
-            EnvDTE.EditPoint curPt = searchPt.CreateEditPoint();
+			EnvDTE.EditPoint curPt = searchPt.CreateEditPoint();
             // search right first for bracket
             // FIXME: "(" can't be in a string
             if ((curPt.GetText(1) != " ") && (curPt.GetText(1) != "\t"))

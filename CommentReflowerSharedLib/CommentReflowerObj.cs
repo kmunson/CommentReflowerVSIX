@@ -15,6 +15,7 @@
 // this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Text.RegularExpressions;
 
@@ -58,8 +59,11 @@ namespace CommentReflowerLib
             EnvDTE.TextPoint selectionStart, 
             EnvDTE.TextPoint selectionEnd)
         {
+#if !UNIT_TEST
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
             bool blockFound = false;
-            EnvDTE.EditPoint selStart = selectionStart.CreateEditPoint();
+			EnvDTE.EditPoint selStart = selectionStart.CreateEditPoint();
             selStart.StartOfLine();
             while (selStart.LessThan(selectionEnd))
             {
@@ -90,7 +94,10 @@ namespace CommentReflowerLib
             string fileName, 
             EnvDTE.TextPoint pt)
         {
-            if (!GetBlockContainingPoint(pset,
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			if (!GetBlockContainingPoint(pset,
                                          fileName,
                                          pt,
                                          out CommentBlock block,
@@ -113,10 +120,13 @@ namespace CommentReflowerLib
             out CommentBlock retblock,
             out MatchedBlockData bdata)
         {
-            retblock = null;
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			retblock = null;
             bdata = new MatchedBlockData { mEndLine = 0, mStartLine = 0, mIndentation = 0 };
 
-            EnvDTE.EditPoint ep = pt.CreateEditPoint();
+			EnvDTE.EditPoint ep = pt.CreateEditPoint();
             EnvDTE.EditPoint enddoc = pt.CreateEditPoint();
             enddoc.EndOfDocument();
             string line = GetUntabbedLine(enddoc,ep.Line);
@@ -190,7 +200,10 @@ namespace CommentReflowerLib
          */
         static private string GetUntabbedLine(EnvDTE.EditPoint enddoc, int lineNum)
         {
-            if ((lineNum < 1) || (lineNum > enddoc.Line))
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			if ((lineNum < 1) || (lineNum > enddoc.Line))
             {
                 return null;
             }
@@ -224,7 +237,10 @@ namespace CommentReflowerLib
             MatchedBlockData bdata,
             EnvDTE.TextPoint pt)
         {
-            int blockTabSize = pt.Parent.TabSize;
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			int blockTabSize = pt.Parent.TabSize;
             if (!pset.mUseTabsToIndent)
             {
                 blockTabSize = 0;
@@ -721,7 +737,10 @@ namespace CommentReflowerLib
         static private int SkipWhitespace(
             EnvDTE.EditPoint pt)
         {
-            int start = pt.DisplayColumn;
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			int start = pt.DisplayColumn;
             while (!pt.AtEndOfLine &&
                 ((pt.GetText(1) == " ") ||
                 (pt.GetText(1) == "\t")))
@@ -742,7 +761,10 @@ namespace CommentReflowerLib
             EnvDTE.EditPoint pt,
             int blockIndentation)
         {
-            int start = pt.DisplayColumn;
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			int start = pt.DisplayColumn;
             int startLine = pt.Line;
             while ((pt.DisplayColumn-start) < blockIndentation)
             {
@@ -787,17 +809,23 @@ namespace CommentReflowerLib
 
         static private void SkipString(EnvDTE.EditPoint pt, string wanted)
         {
-            string actual = GetTextOnLine(pt, wanted.Length);
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			string actual = GetTextOnLine(pt, wanted.Length);
             if (actual != wanted)
             {
                 throw new System.ArgumentException("Error parsing expected string", wanted);
             }
-            pt.CharRight(wanted.Length);
+			pt.CharRight(wanted.Length);
         }
 
         static private string GetTextOnLine(EnvDTE.EditPoint pt, int length)
         {
-            if (length > (pt.LineLength - (pt.LineCharOffset-1)))
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			if (length > (pt.LineLength - (pt.LineCharOffset-1)))
             {
                 length = pt.LineLength - (pt.LineCharOffset-1);
             }
@@ -807,7 +835,10 @@ namespace CommentReflowerLib
 
         static private string GetRestOfLine(EnvDTE.EditPoint pt)
         {
-            return pt.GetText(pt.LineLength - (pt.LineCharOffset-1));
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			return pt.GetText(pt.LineLength - (pt.LineCharOffset-1));
         }
 
         static private bool LineJustContainsContinuation(
@@ -817,7 +848,10 @@ namespace CommentReflowerLib
             ParameterSet pset,
             EnvDTE.TextPoint pt)
         {
-            EnvDTE.EditPoint temp = pt.CreateEditPoint();
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			EnvDTE.EditPoint temp = pt.CreateEditPoint();
             temp.MoveToLineAndOffset(lineNum,1);
             SkipColumns(temp, indentation);
             SkipString(temp, lineStart.TrimEnd());// note the trim here, which
@@ -831,7 +865,10 @@ namespace CommentReflowerLib
         static private bool AtLineEndIgnoringWhiteSpace(
             EnvDTE.EditPoint pt)
         {
-            EnvDTE.EditPoint temp = pt.CreateEditPoint();
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			EnvDTE.EditPoint temp = pt.CreateEditPoint();
             while ((!temp.AtEndOfLine) && 
                 ((temp.GetText(1) == " ") ||
                 (temp.GetText(1) == "\t")))
@@ -846,7 +883,10 @@ namespace CommentReflowerLib
         static private void GoToEndOfNextWord(
             EnvDTE.EditPoint pt)
         {
-            while ((pt.GetText(1) == " ") ||
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			while ((pt.GetText(1) == " ") ||
                 (pt.GetText(1) == "\t"))
             {
                 pt.CharRight(1);
@@ -862,7 +902,10 @@ namespace CommentReflowerLib
         static private void GoToEndOfPreviousWord(
             EnvDTE.EditPoint pt)
         {
-            pt.CharLeft(1);
+#if !UNIT_TEST
+			ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+			pt.CharLeft(1);
             while ((pt.GetText(1) != " ") &&
                 (pt.GetText(1) != "\t"))
             {

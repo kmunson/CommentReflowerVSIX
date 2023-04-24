@@ -49,6 +49,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>C:\Users\kmunson\AppData\Local\Microsoft\VisualStudio\15.0_c3f4eca2Exp\Extensions\Kristofel Munson\Comment Reflower</CopyVsixExtensionLocation>
+    <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -104,16 +107,13 @@
       <Link>gpl.rtf</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="Key.snk" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommentReflowerLib\CommentReflowerLib.csproj">
-      <Project>{8a754d5f-6005-4cd5-907f-d66b131cb387}</Project>
-      <Name>CommentReflowerLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CommentReflowerShared\Resources\Package.ico">
@@ -122,6 +122,7 @@
     </Content>
   </ItemGroup>
   <Import Project="..\CommentReflowerShared\CommentReflowerShared.projitems" Label="Shared" />
+  <Import Project="..\CommentReflowerSharedLib\CommentReflowerSharedLib.projitems" Label="Shared" />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

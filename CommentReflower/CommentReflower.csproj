@@ -62,15 +62,18 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DeployExtension>False</DeployExtension>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>C:\Users\kmunson\AppData\Local\Microsoft\VisualStudio\15.0_c3f4eca2Exp\Extensions\Kristofel Munson\Comment Reflower</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>17.3.2093</Version>
+      <Version>17.14.2120</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.VisualStudio.Sdk" Version="15.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Sdk" Version="17.14.40265" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

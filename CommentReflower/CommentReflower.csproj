@@ -49,8 +49,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
-    <CopyVsixExtensionLocation>C:\Users\kmunson\AppData\Local\Microsoft\VisualStudio\15.0_c3f4eca2Exp\Extensions\Kristofel Munson\Comment Reflower</CopyVsixExtensionLocation>
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -63,8 +61,6 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DeployExtension>False</DeployExtension>
-    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
-    <CopyVsixExtensionLocation>C:\Users\kmunson\AppData\Local\Microsoft\VisualStudio\15.0_c3f4eca2Exp\Extensions\Kristofel Munson\Comment Reflower</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">

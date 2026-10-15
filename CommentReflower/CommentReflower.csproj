@@ -98,10 +98,6 @@
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>
-    <Content Include="..\CommentReflowerHelp\CommentReflowerHelp.chm">
-      <Link>CommentReflowerHelp.chm</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="..\gpl.rtf">
       <Link>gpl.rtf</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

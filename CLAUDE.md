@@ -22,7 +22,6 @@ source code comments so the word wrapping is even. It supports Visual Studio
 | `CommentReflowerShared` | Shared project: the package (`CommentReflowerPackage.cs`), commands (`CommentReflower.vsct`) and the WinForms settings dialog (`Settings.cs`) |
 | `CommentReflowerSharedLib` | Shared project: the reflow engine (`CommentReflowerObj.cs`), parameter aligner, and settings model (`ParameterSet.cs`, `CommentBlock.cs`, `BulletPoint.cs`, `BreakFlowStrings.cs`) |
 | `CommentReflowerTest` | Console regression test runner |
-| `CommentReflowerHelp` | Legacy CHM help. Being replaced by `docs/` |
 
 User documentation is Markdown under `docs/`, converted from the CHM help.
 

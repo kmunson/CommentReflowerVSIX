@@ -65,9 +65,10 @@ with `Compare/`.
 
 ## Git workflow
 
-- `master` is the release branch.
-- `ai-generated` is a long-lived feature branch for all AI-written changes.
-  Never commit to it directly.
+- `ai-generated` holds all of Claude's changes. It is permanent and will never
+  be merged into `master`. Never commit to it directly.
+- Anything that refers to a branch, such as links to the docs on GitHub,
+  should use `ai-generated`, not `master`.
 - For each change, create a topic branch from `ai-generated` with a name
   specific to the change (e.g. `docs/markdown-help`), and open a PR with base
   `ai-generated`.

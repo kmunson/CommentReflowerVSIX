@@ -8,17 +8,17 @@ It does more than simply just wrapping all text in comment blocks. It attempts t
 - XML preformat blocks
 - HTML break commands
 
-For information on running Comment Reflower on a file see [Commands](commands.md).
+For information on running Comment Reflower on a file see [Commands](Commands.md).
 
 For information on configuring Comment Reflower to handle your particular settings for comment blocks, bullet points and
-break flow lines, see the [Settings section](settings.md).
+break flow lines, see the [Settings section](Settings.md).
 
 ## Contents
 
 - [Introduction](README.md)
-- [Commands](commands.md)
-- [Settings](settings.md)
-  - [General Settings](general-settings.md)
-  - [Comment Block Settings](comment-block-settings.md)
-  - [Bullet Point Settings](bullet-point-settings.md)
-  - [Break Flow Strings Settings](break-flow-strings-settings.md)
+- [Commands](Commands.md)
+- [Settings](Settings.md)
+  - [General Settings](GeneralSettings.md)
+  - [Comment Block Settings](CommentBlockSettings.md)
+  - [Bullet Point Settings](BulletPointSettings.md)
+  - [Break Flow Strings Settings](BreakFlowStringsSettings.md)

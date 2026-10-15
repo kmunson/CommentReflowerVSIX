@@ -104,12 +104,10 @@ namespace CommentReflower {
         
         /** the ParameterSet set by the dialog */
         public ParameterSet _params;
-        private string _addInFolder;
 
-        public Settings(ParameterSet pset, string addInFolder) {
+        public Settings(ParameterSet pset) {
             InitializeComponent();
 
-            _addInFolder = addInFolder;
             _params = new ParameterSet(pset);
 
             UseTabsToIndentCheck.Checked = _params.mUseTabsToIndent;
@@ -1517,25 +1515,37 @@ namespace CommentReflower {
                 "Comment Reflower");
         }
 
-        private const string _helpFile = "CommentReflowerHelp.chm";
+        private const string _helpUrl = "https://github.com/kmunson/CommentReflowerVSIX/blob/ai-generated/docs/";
 
         private void CommentReflowerSetup_HelpRequested(object sender, HelpEventArgs hlpevent) {
-            string keyword;
+            string page;
             switch (tabControl1.SelectedIndex) {
-                case 0: keyword = "GeneralSettings.htm"; break;
-                case 1: keyword = "CommentBlockSettings.htm"; break;
-                case 2: keyword = "BulletPointSettings.htm"; break;
-                case 3: keyword = "BreakFlowStringsSettings.htm"; break;
+                case 0: page = "general-settings.md"; break;
+                case 1: page = "comment-block-settings.md"; break;
+                case 2: page = "bullet-point-settings.md"; break;
+                case 3: page = "break-flow-strings-settings.md"; break;
                 default: return;
             }
-            Uri helpUrl = new Uri(Path.Combine(_addInFolder, _helpFile));
-            Help.ShowHelp(this, helpUrl.AbsoluteUri, keyword);
+            ShowHelpPage(page);
             hlpevent.Handled = true;
         }
 
         private void HelpBtn_Click(object sender, EventArgs args) {
-            Uri helpUrl = new Uri(Path.Combine(_addInFolder, _helpFile));
-            Help.ShowHelp(this, helpUrl.AbsoluteUri, HelpNavigator.TableOfContents);
+            ShowHelpPage("README.md");
+        }
+
+        private void ShowHelpPage(string page) {
+            string url = _helpUrl + page;
+            try {
+                // UseShellExecute hands the URL to the default browser. Start returns null in that
+                // case, as no new process is started.
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+            }
+            catch (Exception e) {
+                MessageBox.Show(this,
+                    "Unable to open the help page in your browser:\n" + e.Message + "\n\nThe help is at:\n" + url,
+                    "Comment Reflower");
+            }
         }
 
         private string convertToDisplay(string str, bool isRegEx) {

@@ -232,8 +232,7 @@ namespace CommentReflower
                     }
                     break;
                 case PkgCmdIDList.cmdidSettings:
-                    string installPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    using (Settings settings = new Settings(Params, installPath))
+                    using (Settings settings = new Settings(Params))
                     {
                         if (settings.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {

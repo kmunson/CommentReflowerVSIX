@@ -44,12 +44,6 @@ Then build each extension project:
 & $msbuild CommentReflower\CommentReflower.csproj -restore -p:Configuration=Debug -v:minimal -nologo
 ```
 
-`CommentReflower.csproj` hard-codes `CopyVsixExtensionLocation` to a path
-under `C:\Users\kmunson\...`. On any other machine its build compiles and
-produces the `.vsix`, then fails with MSB3021 "Access to the path is denied"
-while copying to that folder. Treat that error as unrelated to your change,
-but check that the DLL and `.vsix` were produced.
-
 ## Testing
 
 `CommentReflowerTest` is a console app built with the `UNIT_TEST` symbol. It

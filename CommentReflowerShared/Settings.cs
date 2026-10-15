@@ -1520,10 +1520,10 @@ namespace CommentReflower {
         private void CommentReflowerSetup_HelpRequested(object sender, HelpEventArgs hlpevent) {
             string page;
             switch (tabControl1.SelectedIndex) {
-                case 0: page = "general-settings.md"; break;
-                case 1: page = "comment-block-settings.md"; break;
-                case 2: page = "bullet-point-settings.md"; break;
-                case 3: page = "break-flow-strings-settings.md"; break;
+                case 0: page = "GeneralSettings.md"; break;
+                case 1: page = "CommentBlockSettings.md"; break;
+                case 2: page = "BulletPointSettings.md"; break;
+                case 3: page = "BreakFlowStringsSettings.md"; break;
                 default: return;
             }
             ShowHelpPage(page);

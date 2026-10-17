@@ -57,6 +57,8 @@ namespace CommentReflower
     // state of reflow commands is set correctly before opening the menu. Otherwise
     // QueryStateCallback will not happen until after the settings command is invoked.
     [ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string, PackageAutoLoadFlags.BackgroundLoad)]
+    // Include the settings in Tools > Import and Export Settings.
+    [ProvideProfile(typeof(SettingsProfile), "CommentReflower", "Settings", 110, 113, false, DescriptionResourceID = 114)]
     [Guid(GuidList.guidCommentReflowerPkgString)]
     public sealed class CommentReflowerPackage : AsyncPackage
     {
@@ -79,24 +81,12 @@ namespace CommentReflower
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             
             SettingsManager = new ShellSettingsManager(this);
-
-            WritableSettingsStore userSettingsStore = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            if (userSettingsStore.PropertyExists("Settings", "Params"))
+            LoadParams();
+            SettingsProfile.SettingsImported += (sender, e) =>
             {
-                try
-                {
-                    Params = new CommentReflowerLib.ParameterSet(userSettingsStore.GetMemoryStream("Settings", "Params"));
-                }
-                catch (Exception)
-                {
-                    ShowMessageBox("Comment Reflower Error", "Unable to read user settings. Resetting to default.");
-                    Params = new CommentReflowerLib.ParameterSet();
-                }
-            }
-            else
-            {
-                Params = new CommentReflowerLib.ParameterSet();
-            }
+                ThreadHelper.ThrowIfNotOnUIThread();
+                LoadParams();
+            };
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var mcsType = typeof(IMenuCommandService);
@@ -237,12 +227,27 @@ namespace CommentReflower
                         if (settings.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
                             Params = settings._params;
-                            WritableSettingsStore userSettingsStore = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-                            userSettingsStore.CreateCollection("Settings");
-                            userSettingsStore.SetMemoryStream("Settings", "Params", Params.writeToXmlMemoryStream());
+                            SettingsProfile.WriteToStore(SettingsManager, Params);
                         }
                     }
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Reads Params from the user settings store, or uses the defaults if there are none.
+        /// </summary>
+        private void LoadParams()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            try
+            {
+                Params = SettingsProfile.ReadFromStore(SettingsManager) ?? new CommentReflowerLib.ParameterSet();
+            }
+            catch (Exception)
+            {
+                ShowMessageBox("Comment Reflower Error", "Unable to read user settings. Resetting to default.");
+                Params = new CommentReflowerLib.ParameterSet();
             }
         }
 

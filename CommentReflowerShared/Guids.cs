@@ -9,5 +9,6 @@ namespace CommentReflower
         public const string guidCommentReflowerPkgString = "df158482-14ea-4165-8977-6a57ececffe7";
         public const string guidCommentReflowerCmdSetString = "edcfdb5f-228b-42d4-9609-1b2b7fa21e50";
         public static readonly Guid guidCommentReflowerCmdSet = new Guid(guidCommentReflowerCmdSetString);
+        public const string guidSettingsProfileString = "1fedc269-d9eb-436f-ab24-83ac3cbd05fc";
     };
 }

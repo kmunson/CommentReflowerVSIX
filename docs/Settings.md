@@ -1,10 +1,12 @@
 # Settings
 
-Comment reflower is completely configurable in terms of the file types it work on and in the
-bullet points and break flow strings it recognises. This can be done by going to the **Tools**
-menu and selecting **Comment Reflower** settings.
+Comment Reflower is completely configurable in terms of the file types it works
+on, and the bullet points and break flow strings it recognises. To change the
+settings, go to the **Tools** menu and select **Comment Reflower Settings**.
 
-This then brings up four tabs, one for [General](GeneralSettings.md) settings,
-one for [Comment Block](CommentBlockSettings.md) settings, one for
-[Bullet Point](BulletPointSettings.md) settings and another for
-[Break Flow Strings](BreakFlowStringsSettings.md) settings.
+The settings are split across four tabs:
+
+- [General](GeneralSettings.md)
+- [Comment Block](CommentBlockSettings.md)
+- [Bullet Point](BulletPointSettings.md)
+- [Break Flow Strings](BreakFlowStringsSettings.md)

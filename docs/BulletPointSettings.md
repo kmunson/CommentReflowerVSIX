@@ -1,45 +1,56 @@
 # Bullet Point Settings
 
-**Bullet Point Settings** allows you to set up bullet points to be detected in Comment Blocks and handled appropriately. For the
-purposes of this program bullet points are regular expressions matched at the start of a comment block line (following
-whitespace) that has two properties:
+**Bullet Point Settings** let you set up bullet points to be detected in comment
+blocks and handled appropriately. Here, a bullet point is a regular expression
+matched at the start of a comment block line (after any whitespace) that has two
+properties:
 
-- preceeding lines will never be reflowed into it
-- it can be reflowed into subsequent lines with a different indentation to the first character of the matched string
+- preceding lines are never reflowed into it
+- it can be reflowed into following lines with a different indentation from the
+  first character of the matched string
 
-The first thing you will encounter upon selecting the **Bullet Point Settings** tab is a a list box containing
-the **names** of all the currently defined Bullet Points. The **Name** has no special function programatically
-and is just for user identification, however it must be unique. Left clicking on any entry in the list shows its
-settings in the controls below. Left clicking again allows renaming of the block. To the top right of the listbox
-is 4 buttons to manipulate the entries in it:
+## The bullet point list
 
-## New
+The tab shows a list of the **names** of all the currently defined bullet
+points. The name has no special function and is just for identification, but it
+must be unique. Click an entry to show its settings in the controls below. Click
+it again to rename it.
 
-Creates a new Bullet Point. It will need to have its settings set before use.
+The buttons to the top right of the list are:
 
-## Delete
+### New
 
-Permanantly deletes the currently selected Bullet Point.
+Creates a new bullet point. Its settings must be filled in before it can be
+used.
 
-## Up/ Down
+### Delete
 
-Moves the currently selected Bullet Point up and down in the seacrh order. Note that order **is** important. When a block of code is scanned for Bullet Points, it is scanned in the order of this list, and the first match found is the only one used to do further processing.
+Permanently deletes the selected bullet point.
 
-The settings for any Bullet Point are:
+### Up / Down
 
-## Match String
+Moves the selected bullet point up or down in the search order. **Order is
+important.** Text is scanned for bullet points in the order of this list, and
+only the first match found is used for further processing.
 
-This is the string to match at the start of the line of a comment for it to be recognised as a bullet point. It
-is optionally a regular expression, set by ticking the **is RegEx** checkbox. Note that you should not use the
-start of line symbol "^" in the regular expression as this is automatically prepended as well as a sting to match any
-amount of whitespace before the bullet.
+## Bullet point settings
 
-## Wrap on Edge
+### Match String
 
-This can have values *left* and *right*. It indicates where subsequent lines of the bullet should
-be wrapped to if the bullet goes over multiple line. *Left* is the leftside of the Matched String, *right*
-is the right side. So say for instance the bullet point string is the non-regular expression "bullet - ", then the
-following shows th left and right wrapping:
+The string to match at the start of a comment line for it to be recognised as a
+bullet point. It can be a regular expression, set by ticking the **is RegEx**
+checkbox. Don't use the start-of-line symbol `^` in the regular expression. It
+is added automatically, along with a pattern that matches any amount of
+whitespace before the bullet.
+
+### Wrap on Edge
+
+Either *left* or *right*. This sets where the following lines of a bullet are
+wrapped to when the bullet runs over more than one line. *Left* is the left side
+of the matched string and *right* is the right side.
+
+For instance, if the bullet point string is the non-regular-expression
+`bullet - `, left and right wrapping look like this:
 
 ```
     //          bullet - A indented bullet point with wrap on left edge will 

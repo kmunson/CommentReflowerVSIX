@@ -1,59 +1,69 @@
 # Break Flow Strings Settings
 
-**Break Flow Strings Settings** allows you to set up different Break Flow String patterns to be detected in
-lines of a Commebt Block. A line which contains one of these patterns can have one of the following properties:
+**Break Flow Strings Settings** let you set up patterns to be detected in the
+lines of a comment block. A line that contains one of these patterns has one of
+these properties:
 
-- Either it will never be reflowed, no matter how long it is. This also means that preceeding lines will not be reflowed into it.
-- or it will never be reflowed into subsequent lines. This means that if the line is too long a new line
-  will be created to take the overflow before any proceeding lines
+- It is never reflowed, no matter how long it is. Preceding lines are not
+  reflowed into it either.
+- It is never reflowed into following lines. If the line is too long, a new line
+  is created to take the overflow, before any following lines.
 
-The first thing you will encounter upon selecting the **Break Flow Strings Settings** tab is a a list box
-containing the **names** of all the currently defined Break Flow Strings. The **Name** has no special
-function programatically and is just for user identification, however it must be unique. Left clicking on any
-entry in the list shows its settings in the controls below. Left clicking again allows renaming of the block.
-To the top right of the listbox is 4 buttons to manipulate the entries in it:
+## The break flow string list
 
-## New
+The tab shows a list of the **names** of all the currently defined break flow
+strings. The name has no special function and is just for identification, but
+it must be unique. Click an entry to show its settings in the controls below.
+Click it again to rename it.
 
-Creates a new Break Flow String. It will need to have its settings set before use.
+The buttons to the top right of the list are:
 
-## Delete
+### New
 
-Permanantly deletes the currently selected Break Flow String.
+Creates a new break flow string. Its settings must be filled in before it can be
+used.
 
-## Up/ Down
+### Delete
 
-Moves the currently selected Break Flow String up and down in the seacrh order. Note that order **is**
-important. When a block of code is scanned for Break Flow Strings, it is scanned in the order of this list,
-and the first match found is the only one used to do further processing.
+Permanently deletes the selected break flow string.
 
-The settings for any Break Flow String are:
+### Up / Down
 
-## Match String
+Moves the selected break flow string up or down in the search order. **Order is
+important.** Text is scanned for break flow strings in the order of this list,
+and only the first match found is used for further processing.
 
-This is the string to match anywhere in the line for it to be matches as a Break Flow line. It
-is optionally a regular expression, set by ticking the **is RegEx** checkbox.
+## Break flow string settings
 
-## Never reflow line with this string at all
+### Match String
 
-If this is selected the line will never be reflowed, no matter how long it is. Also preceeding lines
-will never be wrapped into it (new lines will be inserted to take the overflow instead).Bascially this
-setting means "if this line is a match never touch this line!"
+The string to match anywhere in a line for it to count as a break flow line. It
+can be a regular expression, set by ticking the **is RegEx** checkbox.
 
-## Never reflow line with this string into next
+### Never reflow line with this string at all
 
-If this is selected the line will be reflowed, and can be reflowed into, but the line will never
-be reflowed into proceeding lines (new lines will be inserted to take the overflow). Generally this
-setting only make sense if the pattern is the last thing on a line. An example of this setting is
-say if the match string is the non-regular expression "$", then:
+If this is selected, the line is never reflowed, no matter how long it is.
+Preceding lines are never wrapped into it either; new lines are inserted to take
+the overflow instead. In short: "if this line matches, never touch it".
+
+### Never reflow line with this string into next
+
+If this is selected, the line can be reflowed and can be reflowed into, but it
+is never reflowed into following lines; new lines are inserted to take the
+overflow. This setting generally only makes sense if the pattern is the last
+thing on a line.
+
+For example, if the match string is the non-regular-expression `$`:
 
 ```
 // A short line of text.
 // A really long line of text, so long that it will have to be reflowed, which at the end of it has the break flow string.$
 // A line following the break flow string
+```
 
 Becomes:
 
+```
 // A short line of text. A really long line of text, so long that it will have to be reflowed, which at 
 // the end of it has the break flow string.$
 // A line following the break flow string

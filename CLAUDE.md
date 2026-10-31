@@ -77,10 +77,10 @@ with `Compare/`.
 
 - It uses paths like `..\..\Input\Regression.cpp`, so run it from
   `CommentReflowerTest\bin\Debug` (or `bin\Release`).
-- It waits for a key press at the end, so give it input when running it
-  non-interactively.
-- It always exits with code 0. Read the console output for "does not match"
-  or "Test Failed" to find failures.
+- It waits for a key press at the end only when run from a console window. When
+  its input is redirected, as when run from a script, it exits without waiting.
+- It exits with code 0 if all the tests pass and 1 if one fails. The console
+  output says which test failed, for example with "does not match".
 
 ## Code conventions
 

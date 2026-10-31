@@ -39,9 +39,6 @@
       <Link>gpl.rtf</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="..\.editorconfig">
-      <Link>.editorconfig</Link>
-    </None>
     <None Update="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

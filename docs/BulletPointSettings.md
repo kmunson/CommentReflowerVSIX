@@ -54,7 +54,7 @@ wrapped to when the bullet runs over more than one line. *Left* is the left side
 of the matched string and *right* is the right side.
 
 For instance, if the bullet point string is the non-regular-expression
-`bullet - `, left and right wrapping look like this:
+`bullet - ​`, left and right wrapping look like this:
 
 ```C++
     //          bullet - A indented bullet point with wrap on left edge will 

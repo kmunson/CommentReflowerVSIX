@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using EnvDTE;
+using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -79,23 +80,13 @@ namespace CommentReflower
             // Switches to the UI thread in order to consume some services used in command initialization
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            var settingsManagerType = typeof(SVsUnifiedSettingsManager);
-            var settingsManager = (ISettingsManager)await GetServiceAsync(settingsManagerType);
-            if (settingsManager == null)
-            {
-                throw new MissingServiceException(settingsManagerType);
-            }
+            var settingsManager = (ISettingsManager)await GetServiceAsync(typeof(SVsUnifiedSettingsManager));
+            Assumes.Present(settingsManager);
             Settings = new UnifiedSettings(settingsManager.GetReader());
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            var mcsType = typeof(IMenuCommandService);
-            var mcs = (IMenuCommandService)await GetServiceAsync(mcsType);
-
-            // I would use Assumes.Present() here but that isn't available in VS2017.
-            if (mcs == null)
-            {
-                throw new MissingServiceException(mcsType);
-            }
+            var mcs = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService));
+            Assumes.Present(mcs);
 
             CommandID menuCommandID;
             OleMenuCommand menuItem;
@@ -125,12 +116,8 @@ namespace CommentReflower
         private void QueryStatusCallback(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var dteType = typeof(DTE);
-            var dte = (DTE)GetService(dteType);
-            if (dte == null)
-            {
-                throw new MissingServiceException(dteType);
-            }
+            var dte = (DTE)GetService(typeof(DTE));
+            Assumes.Present(dte);
             Document document = dte.ActiveDocument;
             var menuCommand = (OleMenuCommand)sender;
             int commandID = menuCommand.CommandID.ID;
@@ -177,12 +164,8 @@ namespace CommentReflower
         private void MenuItemCallback(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var dteType = typeof(DTE);
-            var dte = (DTE)GetService(dteType);
-            if (dte == null)
-            {
-                throw new MissingServiceException(dteType);
-            }
+            var dte = (DTE)GetService(typeof(DTE));
+            Assumes.Present(dte);
             Document document = dte.ActiveDocument;
             var menuCommand = (OleMenuCommand)sender;
             int commandID = menuCommand.CommandID.ID;
@@ -241,12 +224,8 @@ namespace CommentReflower
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var uiShellType = typeof(SVsUIShell);
-            var uiShell = (IVsUIShell)GetService(uiShellType);
-            if (uiShell == null)
-            {
-                throw new MissingServiceException(uiShellType);
-            }
+            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+            Assumes.Present(uiShell);
             Guid clsid = Guid.Empty;
             int result;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(

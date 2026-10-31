@@ -1,0 +1,45 @@
+<Title>General Settings</Title>
+<BODY>
+<H1>General Settings</H1>
+The general settings are:<BR>
+<DL>
+<DT><B>Use tabs to indent blocks</B></DT>
+<DD>Whether tabs are used to indent. If this is checked then tabs are used to indent new lines of blocks, 
+and new lines within blocks when they are crated. If not checked then only spaces are used. If tabs are used
+then they will have the width set for the current file type from the <I>Tools->Options->TextEditor->Tabs</I>
+dialog.
+</DD><BR><BR>
+<DT><B>Wrap Width</B></DT>
+<DD>This is the column number that reflowable text is wrapped at assuming the block start column is at least 
+<B>Minimum Block Width</B> columns less than it.</DD><BR><BR>
+<DT><B>Minimum Block Width</B></DT>
+<DD>This is the minimum wrap width of any block of text in a comment block. Basically for any block <B>Wrap Width</B> 
+will be exceeded if neccesary to meet this minimum. The purpose of the setting  is to ensure that blocks of text that start 
+on the far right of screen do not get wrapped stupidly (eg one word per line). Note that the starting column is taken 
+from the first column of text not the first column of the block. So for instance with a <B>Wrap Width</B> of 80
+ and a <B>Minimum Block Width</B> of 20:
+<code>
+<pre>
+          1         2         3         4         5         6         7         8         9
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+/**
+ *                                                                             A block starting very near the wrap width, so it will be wrapped to minimum block width from the start instead.
+ */
+
+Becomes:
+
+/**
+ *                                                                             A block starting very 
+ *                                                                             near the wrap width, 
+ *                                                                             so it will be wrapped 
+ *                                                                             to minimum block 
+ *                                                                             width from the start 
+ *                                                                             instead.
+ */
+
+
+</pre>
+</code>
+</DD><BR><BR>
+</DL>
+</BODY>

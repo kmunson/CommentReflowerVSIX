@@ -75,6 +75,11 @@ with `Compare/`.
 
 - Match the surrounding code's naming and style. The library uses `m`-prefixed
   public fields and camelCase method names from its original authors.
+- This is a Windows-only project, and every text file uses CRLF line endings,
+  in the repository and in the working tree. `.gitattributes` turns off line
+  ending conversion (`* -text`), so git stores files exactly as they are
+  written. Write new and edited files with CRLF, and before committing check
+  that `git ls-files --eol` shows `i/crlf` for every text file.
 
 ## Git workflow
 
@@ -115,5 +120,3 @@ with `Compare/`.
 
 - Report what was actually verified. If something wasn't built, run or checked
   (for example how Markdown looks on GitHub), say so.
-- `git` warns that LF line endings will be replaced by CRLF in new files.
-  That comes from `core.autocrlf` and does no harm.

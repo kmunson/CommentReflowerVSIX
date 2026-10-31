@@ -5,7 +5,6 @@ VisualStudioVersion = 18.11.12328.437
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C6D9CEE-7802-4AB8-8DF1-E2E18C7B69C7}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		ReadMe.txt = ReadMe.txt
 	EndProjectSection
 EndProject

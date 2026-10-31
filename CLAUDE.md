@@ -23,8 +23,11 @@ source code comments so the word wrapping is even. It supports Visual Studio
 | `CommentReflowerShared` | Shared project: the package (`CommentReflowerPackage.cs`), commands (`CommentReflower.vsct`) and the WinForms settings dialog (`Settings.cs`) |
 | `CommentReflowerSharedLib` | Shared project: the reflow engine (`CommentReflowerObj.cs`), parameter aligner, and settings model (`ParameterSet.cs`, `CommentBlock.cs`, `BulletPoint.cs`, `BreakFlowStrings.cs`) |
 | `CommentReflowerTest` | Console regression test runner |
+| `CommentReflowerHelp` | CHM help for `CommentReflower` and `CommentReflower2022`. Built with HTML Help Workshop |
 
-User documentation is Markdown under `docs/`, converted from the CHM help.
+`CommentReflower` and `CommentReflower2022` use the CHM help in
+`CommentReflowerHelp`. The Markdown docs under `docs/`, converted from the CHM
+help, are for `CommentReflowerAI` only.
 
 ## Building
 

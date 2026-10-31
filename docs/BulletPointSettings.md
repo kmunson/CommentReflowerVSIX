@@ -11,27 +11,31 @@ properties:
 
 ## The bullet point list
 
-The tab shows a list of the **names** of all the currently defined bullet
-points. The name has no special function and is just for identification, but it
-must be unique. Click an entry to show its settings in the controls below. Click
-it again to rename it.
+The **Bullets** page of *Tools > Options > Comment Reflower AI* shows a list of
+all the currently defined bullet points, with a column for each setting. The
+**Name** has no special function and is just for identification, but it must
+be unique.
 
-The buttons to the top right of the list are:
+The buttons below the list are:
 
-### New
+### Add
 
 Creates a new bullet point. Its settings must be filled in before it can be
 used.
 
-### Delete
+### Edit
 
-Permanently deletes the selected bullet point.
+Changes the settings of the selected bullet point.
 
-### Up / Down
+### Move up / Move down
 
 Moves the selected bullet point up or down in the search order. **Order is
 important.** Text is scanned for bullet points in the order of this list, and
 only the first match found is used for further processing.
+
+### Remove
+
+Permanently deletes the selected bullet point.
 
 ## Bullet point settings
 

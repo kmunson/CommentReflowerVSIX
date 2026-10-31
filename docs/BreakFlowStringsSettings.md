@@ -55,7 +55,7 @@ thing on a line.
 
 For example, if the match string is the non-regular-expression `$`:
 
-```
+```C++
 // A short line of text.
 // A really long line of text, so long that it will have to be reflowed, which at the end of it has the break flow string.$
 // A line following the break flow string
@@ -63,7 +63,7 @@ For example, if the match string is the non-regular-expression `$`:
 
 Becomes:
 
-```
+```C++
 // A short line of text. A really long line of text, so long that it will have to be reflowed, which at 
 // the end of it has the break flow string.$
 // A line following the break flow string

@@ -23,9 +23,7 @@ Note that the starting column is taken from the first column of text, not the
 first column of the block. For instance, with a **Wrap Width** of 80 and a
 **Minimum Block Width** of 20:
 
-```
-          1         2         3         4         5         6         7         8         9
-0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+```C++
 /**
  *                                                                             A block starting very near the wrap width, so it will be wrapped to minimum block width from the start instead.
  */
@@ -33,7 +31,7 @@ first column of the block. For instance, with a **Wrap Width** of 80 and a
 
 Becomes:
 
-```
+```C++
 /**
  *                                                                             A block starting very 
  *                                                                             near the wrap width, 

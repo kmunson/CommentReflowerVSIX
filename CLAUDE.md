@@ -57,6 +57,17 @@ build` works for `CommentReflowerTest` and `CommentReflowerAI` but not for
 embed the bitmaps in `Settings.resx`.
 Build those with Visual Studio's MSBuild as shown above.
 
+`CommentReflowerAI` uses the Visual Studio 2026 build tools, which only deploy
+the extension to the experimental instance when debugging from Visual Studio.
+To test a command-line build in the experimental instance, add
+`-p:DeployExtension=true`, and check that the deployed `CommentReflowerAI.dll`
+under `%LOCALAPPDATA%\Microsoft\VisualStudio\18.0_*Exp\Extensions` matches the
+one in `bin`:
+
+```pwsh
+& $msbuild CommentReflowerAI\CommentReflowerAI.csproj -restore -p:Configuration=Debug -p:DeployExtension=true -v:minimal -nologo
+```
+
 ## Testing
 
 `CommentReflowerTest` is a console app built with the `UNIT_TEST` symbol. It

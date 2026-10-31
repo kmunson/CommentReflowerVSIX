@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="72013fe4-9734-4e6d-9903-7f3213491b37" Version="1.3.3" Language="en-US" Publisher="Kristofel Munson" />
         <DisplayName>Comment Reflower AI</DisplayName>
-        <Description xml:space="preserve">VSIX version of Comment Reflower for Visual Studio 2026, separate from the Comment Reflower extension.</Description>
+        <Description xml:space="preserve">Comment Reflower with AI-generated code.</Description>
         <MoreInfo>https://github.com/kmunson/CommentReflowerVSIX/</MoreInfo>
         <License>gpl.rtf</License>
         <Icon>Resources\Package.ico</Icon>

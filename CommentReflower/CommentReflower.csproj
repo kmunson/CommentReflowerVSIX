@@ -1,65 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+<Project>
+  <!-- The SDK is imported explicitly so that the VSSDK targets can be imported after it. -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>4.0</OldToolsVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{63D72A89-36E5-43FA-871D-61CE8E4221E0}</ProjectGuid>
-    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>CommentReflower</RootNamespace>
     <AssemblyName>CommentReflower</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DeployExtension>False</DeployExtension>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <!-- Old-style projects copied package assemblies to the output, and the VSIX picks some of them up. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <UseCodebase>true</UseCodebase>
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
@@ -70,27 +22,8 @@
     </PackageReference>
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.VisualStudio.Sdk" Version="15.0.0" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="stdole">
-      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="..\CommentReflowerShared\CommentReflower.vsct">
@@ -105,8 +38,7 @@
     <None Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </None>
-    <None Include="Key.snk" />
-    <None Include="source.extension.vsixmanifest">
+    <None Update="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
@@ -118,20 +50,6 @@
   </ItemGroup>
   <Import Project="..\CommentReflowerShared\CommentReflowerShared.projitems" Label="Shared" />
   <Import Project="..\CommentReflowerSharedLib\CommentReflowerSharedLib.projitems" Label="Shared" />
-  <PropertyGroup>
-    <UseCodebase>true</UseCodebase>
-  </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

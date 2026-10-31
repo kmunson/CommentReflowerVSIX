@@ -1,28 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project>
+  <!-- The SDK is imported explicitly so that the VSSDK targets can be imported after it. -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{9183950D-61C4-47D0-BB47-24F3142BE007}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>CommentReflower</RootNamespace>
     <AssemblyName>CommentReflower2022</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <UseCodebase>true</UseCodebase>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
@@ -30,30 +16,9 @@
     <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
     <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
-    <StartAction>Program</StartAction>
-    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
-    <StartArguments>/rootsuffix Exp</StartArguments>
+    <!-- The VSSDK can't deploy to the experimental instance from 'dotnet build', which C# Dev Kit uses. -->
+    <DeployExtension Condition="'$(DeployExtension)' == '' and '$(MSBuildRuntimeType)' == 'Core'">false</DeployExtension>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
   <ItemGroup>
     <Content Include="..\CommentReflowerShared\Resources\Package.ico">
       <Link>Resources\Package.ico</Link>
@@ -63,16 +28,12 @@
       <Link>gpl.rtf</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="Key.snk" />
-    <None Include="source.extension.vsixmanifest">
+    <None Update="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime">
@@ -92,13 +53,6 @@
   </ItemGroup>
   <Import Project="..\CommentReflowerShared\CommentReflowerShared.projitems" Label="Shared" />
   <Import Project="..\CommentReflowerSharedLib\CommentReflowerSharedLib.projitems" Label="Shared" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

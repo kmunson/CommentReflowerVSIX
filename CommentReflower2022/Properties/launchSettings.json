@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "CommentReflower2022": {
+      "commandName": "Executable",
+      "executablePath": "$(DevEnvDir)devenv.exe",
+      "commandLineArgs": "/rootsuffix Exp"
+    }
+  }
+}

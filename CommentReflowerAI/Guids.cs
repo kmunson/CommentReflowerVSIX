@@ -1,5 +1,5 @@
 ﻿// Guids.cs
-// MUST match guids.h
+// MUST match the GuidSymbol values in CommentReflower.vsct
 using System;
 
 namespace CommentReflower

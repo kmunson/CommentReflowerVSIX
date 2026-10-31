@@ -1,5 +1,5 @@
 ﻿// PkgCmdID.cs
-// MUST match PkgCmdID.h
+// MUST match the IDSymbol values in CommentReflower.vsct
 using System;
 
 namespace CommentReflower

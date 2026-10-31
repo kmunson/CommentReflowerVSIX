@@ -16,7 +16,7 @@ source code comments so the word wrapping is even. It supports Visual Studio
 2017, 2019, 2022 and 2026.
 
 | Project | Purpose |
-|---|---|
+| --- | --- |
 | `CommentReflower` | VSIX for Visual Studio 2017/2019 |
 | `CommentReflower2022` | VSIX for Visual Studio 2022/2026 |
 | `CommentReflowerShared` | Shared project: the package (`CommentReflowerPackage.cs`), commands (`CommentReflower.vsct`) and the WinForms settings dialog (`Settings.cs`) |

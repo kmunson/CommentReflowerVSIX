@@ -56,7 +56,7 @@ or *never on own line*.
 - **not used**: the block has no start pattern. The first line of the block
   starts with the line start pattern, for instance:
 
-  ```
+  ```C++
   // this comment block
   // has no start pattern
   ```
@@ -64,7 +64,7 @@ or *never on own line*.
 - **always on own line**: the block start pattern is always on a line by itself
   and never has comment text after it, for instance the start of this block:
 
-  ```
+  ```C++
   /****************************************************
    * You never want text after the block start above
    ****************************************************/
@@ -76,7 +76,7 @@ or *never on own line*.
 - **never on own line**: the pattern is always on the same line as comment
   text, for instance:
 
-  ```
+  ```C++
   /* The block start (/*) has
    * a comment after it */
   ```
@@ -84,7 +84,7 @@ or *never on own line*.
 - **on own line if comment is >1 lines**: the pattern is on the same line as
   comment text only when the whole comment block is one line long:
 
-  ```
+  ```C++
   /** The start block is on the same line as comment text as the first line is short. */
 
   /** 
@@ -129,7 +129,7 @@ first continuation line if the block has no block start) is matched when there
 is anything other than whitespace before it on the line. For instance, with
 *must not contain text before start* selected, this block is not matched:
 
-```
+```C++
 int i = 0; // This block will not be matched as "must not contain text before start"
            // was selected. If "can contain text before start" was selected then
            // the block would be matched.

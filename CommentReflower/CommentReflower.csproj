@@ -69,7 +69,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.VisualStudio.Sdk" Version="17.14.40265" />
+    <PackageReference Include="Microsoft.VisualStudio.Sdk" Version="15.0.0" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

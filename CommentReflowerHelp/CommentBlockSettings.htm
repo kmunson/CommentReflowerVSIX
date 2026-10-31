@@ -1,0 +1,111 @@
+<Title>Comment Block Settings</Title>
+<BODY>
+<H1>Comment Block Settings</H1>
+<B>Comment Block Settings</B> allows you to set up different comment block patterns to be 
+detected in different file types with different behaviors. A comment block is characterised 
+by patterns matched at the same indentation level on consecutive lines of a source file. 
+The first line may have text before it, but subsequent lines can only have whitespace. There
+are three time of patterns that are matched as part of a block: start an end patterns
+that are optionally matched on the first and last lines of a block, and a line start pattern
+that must occur with the same indentation on all other lines. Once a comment block is matched 
+these patterns are stripped to enable processing of the text inside them, they are then
+reattached when processing is complete.
+<BR><BR>
+The first thing you will encounter upon selecting the <B>Comment Block Settings</B> tab is a a 
+list box containing the <B>names</B> of all the currently defined comment blocks. The <B>Name</B> 
+has no special function programatically and is just for user identification, however it must be 
+unique. Left clicking on any entry in the list shows its settings in the controls below. Left 
+clicking again allows renaming of the block. To the top right of the listbox is 4 buttons to 
+manipulate the entries in it:<BR>
+<DL>
+<DT><B>New</B></DT>
+<DD>Creates a new Comment Block. It will need to have its settings set before use.</DD><BR><BR>
+
+<DT><B>Delete</B></DT>
+<DD>Permanantly deletes the currently selected Comment Block.</DD><BR><BR>
+
+<DT><B>Up/ Down</B></DT>
+<DD>Moves the currently selected Comment Block up and down in the seacrh order. Note that order <B>is</B> important. 
+When a block of code is scanned for Comment Blocks, it is scanned in the order of this list, and the first match found
+ is the only one used to do further processing.</DD><BR><BR>
+</DL>
+The settings for any Comment Block are:<BR>
+<DL>
+<DT><B>File Types</B></DT>
+<DD>This is a semi-colon separated list of file names with "*" wildcards to associate 
+this comment block with. Only files matching one of these entries will be scanned for 
+this particular block.</DD><BR><BR>
+
+<DT><B>Block Start is</B></DT>
+<DD>This can have values <I>not used</I>, <I>always on own line</I>, <I>on own line if comment is >1 lines</I>, or <I>never on own line</I>.<BR>
+<ul>
+<li>The value <I>not used</I> indicates that the block has no particular start pattern - the first line of the block will start 
+with the line start pattern, for instance:<BR>
+<code><pre>
+// this comment block
+// has no start pattern
+</pre></code>
+</li>
+<li>The value <I>always on own line</I> indicates that the block start pattern is always on a line by itself - 
+it will never have comment text following it, for instance the start of the following block:
+<code><pre>
+/****************************************************
+ * You never want text after the block start above
+ ****************************************************/
+</pre></code>
+Note that the pattern can still have text optionally before it: see the <B>First Line of Block</B> setting. 
+</li>
+
+<li>The value <I>never on own line</I> indicates that the pattern is always on the same line as comment text, for instance:</li>
+<code><pre>
+/* The block start (/*) has
+ * a comment after it */
+</pre></code>
+
+<li>The value <I>on own line if comment is >1 lines</I> indicates that the pattern is on the same line as comment text
+only when the total length of the comment block is one line:
+<code><pre>
+/** The start block is on the same line as comment text as the first line is short. */
+
+/** 
+ * For the exact same matched block, the block start is now on a different line,
+ * because the text is too long to fit on a single line
+ */
+</pre></code>
+Note that if the block start string has a single trailing space then it will be trimmed if the block start is 
+placed on a line by itself.
+</ul>
+</DD><BR>
+
+<DT><B>Block Start</B></DT>
+<DD></DD>The actual string for the block start. This is optionally a regular expression, set by ticking the <B>is RegEx</B> checkbox.
+Note that you should not use the start of line symbol "^" in the regular expression as this is automatically prepended.<BR><BR>
+
+<DT><B>Block End is</B></DT>
+<DD>This can have values <I>not used</I>, <I>always on own line</I>, <I>on own line if comment is >1 lines</I>, or <I>never on own line</I>.
+These have the exact same meanings as for the <B>Block Start is</B> setting. Note that is the block end is not a line by itself
+then it will always have the line start pattern before it. </DD><BR><BR>
+
+<DT><B>Block End</B></DT>
+<DD></DD>The actual string for the block end. This is optionally a regular expression, set by ticking the <B>is RegEx</B> checkbox.
+Note that you should not use the start of line symbol "^" in the regular expression as this is automatically prepended.<BR><BR>
+
+<DT><B>Line Start</B></DT>
+<DD>The pattern for a continuation line of the block. This may not be a regular expression. Note that if
+the pattern has a trailing space it will also match a line with a carriage return in place of this space.</DD><BR><BR>
+
+<DT><B>First Line of Block</B></DT>
+<DD>This can have values <I>must not contain text before start</I> or <I>can contain text before start</I>.
+Basically they represent whether the very first line of the block (either the block start line or the first continuation line if the block
+has no block start) will be matched if there is anything other than whitespace on the line before it. So for instance with
+<I>must not contain text before start</I> selected the block below will not be matched:
+<code><pre>
+int i = 0; // This block will not be matched as "must not contain text before start"
+           // was selected. If <I>can contain text before start</I> was selected then
+           // the block would be matched.
+</pre></code>
+Note that no matter what is slected here, all lines after the first can only contain whitespace before the block.
+</DD><BR><BR>
+
+</DL>
+</BODY>

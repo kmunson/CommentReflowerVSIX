@@ -1,0 +1,28 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=CommentReflowerHelp.chm
+Contents file=Contents.hhc
+Default Window=Default
+Default topic=Introduction.htm
+Display compile progress=No
+Full-text search=Yes
+Index file=Index.hhk
+Language=0xc09 English (Australia)
+Title=Comment Reflower Help
+
+[WINDOWS]
+Default="Comment Reflower Help","Contents.hhc","Index.hhk","BulletPointSettings.htm",,,,,,0x2120,,0x3006,,,,,,,,0
+
+
+[FILES]
+BulletPointSettings.htm
+CommentBlockSettings.htm
+BreakFlowStringsSettings.htm
+GeneralSettings.htm
+Settings.htm
+Introduction.htm
+Commands.htm
+
+[INFOTYPES]
+

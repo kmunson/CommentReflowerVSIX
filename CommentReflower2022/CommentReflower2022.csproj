@@ -20,6 +20,10 @@
     <DeployExtension Condition="'$(DeployExtension)' == '' and '$(MSBuildRuntimeType)' == 'Core'">false</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\CommentReflowerHelp\CommentReflowerHelp.chm">
+      <Link>CommentReflowerHelp.chm</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="..\CommentReflowerShared\Resources\Package.ico">
       <Link>Resources\Package.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

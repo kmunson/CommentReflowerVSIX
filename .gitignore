@@ -19,6 +19,7 @@ $RECYCLE.BIN/
 
 # CommentReflowerVSIX
 *.cache
+*.chm
 *.log
 *.opensdf
 *.sdf

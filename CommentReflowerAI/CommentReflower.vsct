@@ -55,14 +55,6 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidCommentReflowerCmdSet" id="cmdidAlignParameters" priority="0x0100" type="Button">
-        <Parent guid="guidCommentReflowerCmdSet" id="groupMenuTools" />
-        <Strings>
-          <ButtonText>Align Parameters at Cursor</ButtonText>
-        </Strings>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-      </Button>
       <Button guid="guidCommentReflowerCmdSet" id="cmdidReflowPoint" priority="0x0101" type="Button">
         <Parent guid="guidCommentReflowerCmdSet" id="groupMenuTools" />
         <Strings>
@@ -79,20 +71,11 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
       </Button>
-      <Button guid="guidCommentReflowerCmdSet" id="cmdidSettings" priority="0x0103" type="Button">
-        <Parent guid="guidCommentReflowerCmdSet" id="groupMenuTools" />
-        <Strings>
-          <ButtonText>Comment Reflower Settings</ButtonText>
-        </Strings>
-      </Button>
     </Buttons>
   </Commands>
 
-  <!-- Don't show the settings button in the context menu. -->
+  <!-- Also show the reflow commands in the code window's context menu. -->
   <CommandPlacements>
-    <CommandPlacement guid="guidCommentReflowerCmdSet" id="cmdidAlignParameters" priority="0x0100">
-      <Parent guid="guidCommentReflowerCmdSet" id="groupCtxtCodeWin"/>
-    </CommandPlacement>
     <CommandPlacement guid="guidCommentReflowerCmdSet" id="cmdidReflowPoint" priority="0x0101">
       <Parent guid="guidCommentReflowerCmdSet" id="groupCtxtCodeWin"/>
     </CommandPlacement>
@@ -108,10 +91,8 @@
     <GuidSymbol name="guidCommentReflowerCmdSet" value="{b0b60bde-f731-40e3-8a6d-0750ad716ea0}">
       <IDSymbol name="groupMenuTools" value="0x1020" />
       <IDSymbol name="groupCtxtCodeWin" value="0x1021" />
-      <IDSymbol name="cmdidSettings" value="0x0100" />
       <IDSymbol name="cmdidReflowPoint" value="0x0101" />
       <IDSymbol name="cmdidReflowSelection" value="0x0102" />
-      <IDSymbol name="cmdidAlignParameters" value="0x0103" />
     </GuidSymbol>
   </Symbols>
 

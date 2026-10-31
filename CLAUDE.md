@@ -19,6 +19,7 @@ source code comments so the word wrapping is even. It supports Visual Studio
 | --- | --- |
 | `CommentReflower` | VSIX for Visual Studio 2017/2019 |
 | `CommentReflower2022` | VSIX for Visual Studio 2022/2026 |
+| `CommentReflowerAI` | Separate VSIX for Visual Studio 2026 with its own copy of the shared package code, GUIDs and settings store |
 | `CommentReflowerShared` | Shared project: the package (`CommentReflowerPackage.cs`), commands (`CommentReflower.vsct`) and the WinForms settings dialog (`Settings.cs`) |
 | `CommentReflowerSharedLib` | Shared project: the reflow engine (`CommentReflowerObj.cs`), parameter aligner, and settings model (`ParameterSet.cs`, `CommentBlock.cs`, `BulletPoint.cs`, `BreakFlowStrings.cs`) |
 | `CommentReflowerTest` | Console regression test runner |
@@ -34,6 +35,10 @@ $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere
 ```
 
 Then build each extension project:
+
+```pwsh
+& $msbuild CommentReflowerAI\CommentReflowerAI.csproj -restore -p:Configuration=Debug -v:minimal -nologo
+```
 
 ```pwsh
 & $msbuild CommentReflower2022\CommentReflower2022.csproj -restore -p:Configuration=Debug -v:minimal -nologo

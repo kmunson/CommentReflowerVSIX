@@ -18,6 +18,9 @@
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
     <!-- The VSSDK can't deploy to the experimental instance from 'dotnet build', which C# Dev Kit uses. -->
     <DeployExtension Condition="'$(DeployExtension)' == '' and '$(MSBuildRuntimeType)' == 'Core'">false</DeployExtension>
+    <!-- The Visual Studio 2026 build tools only deploy when debugging, so deploy on every build, as the
+         Visual Studio 2022 build tools did. -->
+    <DeployExtension Condition="'$(DeployExtension)' == ''">true</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Resources\Package.ico">

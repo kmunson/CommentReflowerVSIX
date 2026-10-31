@@ -129,9 +129,9 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="110" xml:space="preserve">
-    <value>Comment Reflower</value>
+    <value>Comment Reflower AI</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>VSIX version of Comment Reflower.</value>
+    <value>Comment Reflower with AI-generated code.</value>
   </data>
 </root>

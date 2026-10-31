@@ -43,6 +43,11 @@ Then build each extension project:
 & $msbuild CommentReflower\CommentReflower.csproj -restore -p:Configuration=Debug -v:minimal -nologo
 ```
 
+The projects are SDK-style, so C# Dev Kit in VS Code can load them. `dotnet
+build` works for `CommentReflowerTest` but not for the two extension
+projects: the .NET SDK's MSBuild can't embed the bitmaps in `Settings.resx`.
+Build those with Visual Studio's MSBuild as shown above.
+
 ## Testing
 
 `CommentReflowerTest` is a console app built with the `UNIT_TEST` symbol. It

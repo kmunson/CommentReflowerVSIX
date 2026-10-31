@@ -180,8 +180,10 @@ namespace CommentReflower
                     }
                     catch (ArgumentException error)
                     {
-                        ShowMessageBox("Comment Reflower Settings Error",
-                            "The settings in Tools > Options > Comment Reflower AI are invalid:\n{0}", error.Message);
+                        VsShellUtilities.ShowMessageBox(this,
+                            "The settings in Tools > Options > Comment Reflower AI are invalid:\n" + error.Message,
+                            "Comment Reflower Settings Error",
+                            OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                         break;
                     }
 
@@ -194,20 +196,21 @@ namespace CommentReflower
                             case PkgCmdIDList.cmdidReflowPoint:
                                 if (!CommentReflowerLib.CommentReflowerObj.WrapBlockContainingPoint(parameters,document.Name, selection.ActivePoint))
                                 {
-                                    ShowMessageBox("Comment Reflower", "There is no comment at the cursor.");
+                                    ShowStatusBarText("Comment Reflower: There is no comment at the cursor.");
                                 }
                                 break;
                             case PkgCmdIDList.cmdidReflowSelection:
                                 if (!CommentReflowerLib.CommentReflowerObj.WrapAllBlocksInSelection(parameters,document.Name, selection.TopPoint, selection.BottomPoint))
                                 {
-                                    ShowMessageBox("Comment Reflower", "There are no comments in the selection.");
+                                    ShowStatusBarText("Comment Reflower: There are no comments in the selection.");
                                 }
                                 break;
                         }
                     }
                     catch (Exception error)
                     {
-                        ShowMessageBox("Comment Reflower Error", error.ToString());
+                        VsShellUtilities.ShowMessageBox(this, error.ToString(), "Comment Reflower Error",
+                            OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                     }
                     finally
                     {
@@ -218,30 +221,22 @@ namespace CommentReflower
         }
 
         /// <summary>
-        /// Simple wrapper for IVsUIShell.ShowMessageBox
+        /// Shows a message in the status bar, for results that don't need the user to act.
         /// </summary>
-        private void ShowMessageBox(string title, string format, params object[] args)
+        private void ShowStatusBarText(string text)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            Assumes.Present(uiShell);
-            Guid clsid = Guid.Empty;
-            int result;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(
-                uiShell.ShowMessageBox(
-                0, // dwCompRole
-                ref clsid, // rclsidComp
-                title, // pszTitle
-                string.Format(format, args), // pszText
-                string.Empty, // pszHelpFile
-                0, // dwHelpContextID
-                OLEMSGBUTTON.OLEMSGBUTTON_OK, // msgbutton
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, // msgdefbutton
-                OLEMSGICON.OLEMSGICON_INFO, // msgicon
-                0, // fSysAlert
-                out result // pnResult
-                ));
+            var statusBar = (IVsStatusbar)GetService(typeof(SVsStatusbar));
+            Assumes.Present(statusBar);
+
+            // Don't overwrite the status bar while another component has frozen it.
+            int frozen;
+            statusBar.IsFrozen(out frozen);
+            if (frozen == 0)
+            {
+                statusBar.SetText(text);
+            }
         }
     }
 }

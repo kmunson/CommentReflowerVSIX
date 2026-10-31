@@ -11,27 +11,31 @@ these properties:
 
 ## The break flow string list
 
-The tab shows a list of the **names** of all the currently defined break flow
-strings. The name has no special function and is just for identification, but
-it must be unique. Click an entry to show its settings in the controls below.
-Click it again to rename it.
+The **Break Flow Strings** page of *Tools > Options > Comment Reflower AI*
+shows a list of all the currently defined break flow strings, with a column for
+each setting. The **Name** has no special function and is just for
+identification, but it must be unique.
 
-The buttons to the top right of the list are:
+The buttons below the list are:
 
-### New
+### Add
 
 Creates a new break flow string. Its settings must be filled in before it can be
 used.
 
-### Delete
+### Edit
 
-Permanently deletes the selected break flow string.
+Changes the settings of the selected break flow string.
 
-### Up / Down
+### Move up / Move down
 
 Moves the selected break flow string up or down in the search order. **Order is
 important.** Text is scanned for break flow strings in the order of this list,
 and only the first match found is used for further processing.
+
+### Remove
+
+Permanently deletes the selected break flow string.
 
 ## Break flow string settings
 

@@ -18,27 +18,31 @@ them can be processed. They are reattached when processing is complete.
 
 ## The comment block list
 
-The tab shows a list of the **names** of all the currently defined comment
-blocks. The name has no special function and is just for identification, but it
-must be unique. Click an entry to show its settings in the controls below. Click
-it again to rename it.
+The **Blocks** page of *Tools > Options > Comment Reflower AI* shows a list of
+all the currently defined comment blocks, with a column for each setting. The
+**Name** has no special function and is just for identification, but it must
+be unique.
 
-The buttons to the top right of the list are:
+The buttons below the list are:
 
-### New
+### Add
 
 Creates a new comment block. Its settings must be filled in before it can be
 used.
 
-### Delete
+### Edit
 
-Permanently deletes the selected comment block.
+Changes the settings of the selected comment block.
 
-### Up / Down
+### Move up / Move down
 
 Moves the selected comment block up or down in the search order. **Order is
 important.** Text is scanned for comment blocks in the order of this list, and
 only the first match found is used for further processing.
+
+### Remove
+
+Permanently deletes the selected comment block.
 
 ## Comment block settings
 
@@ -99,8 +103,8 @@ or *never on own line*.
 ### Block Start
 
 The string for the block start. It can be a regular expression, set by ticking
-the **is RegEx** checkbox. Don't use the start-of-line symbol `^` in the regular
-expression, because it is added automatically.
+the **Block Start is RegEx** checkbox. Don't use the start-of-line symbol `^`
+in the regular expression, because it is added automatically.
 
 ### Block End is
 
@@ -112,8 +116,8 @@ it always has the line start pattern before it.
 ### Block End
 
 The string for the block end. It can be a regular expression, set by ticking the
-**is RegEx** checkbox. Don't use the start-of-line symbol `^` in the regular
-expression, because it is added automatically.
+**Block End is RegEx** checkbox. Don't use the start-of-line symbol `^` in the
+regular expression, because it is added automatically.
 
 ### Line Start
 

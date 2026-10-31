@@ -18,10 +18,9 @@
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.Settings;
+using Microsoft.VisualStudio.Utilities.UnifiedSettings;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel.Design;
@@ -53,15 +52,17 @@ namespace CommentReflower
     [InstalledProductRegistration("#110", "#112", "1.3.3", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    // Initialize the package when a text editor window is opened. This ensures that the visibility
-    // state of reflow commands is set correctly before opening the menu. Otherwise
-    // QueryStateCallback will not happen until after the settings command is invoked.
+    // This attribute registers registration.json, which defines the settings shown in
+    // Tools > Options > Comment Reflower AI.
+    [ProvideSettingsManifest]
+    // Initialize the package when a text editor window is opened. The reflow commands are
+    // invisible until QueryStatusCallback shows them, and that won't happen until the package
+    // is loaded.
     [ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(GuidList.guidCommentReflowerPkgString)]
     public sealed class CommentReflowerPackage : AsyncPackage
     {
-        private CommentReflowerLib.ParameterSet Params { get; set; }
-        private SettingsManager SettingsManager { get; set; }
+        private UnifiedSettings Settings { get; set; }
 
         /// <summary>
         /// Default constructor of the package. Inside this method you can place any initialization
@@ -77,26 +78,14 @@ namespace CommentReflower
         {
             // Switches to the UI thread in order to consume some services used in command initialization
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            
-            SettingsManager = new ShellSettingsManager(this);
 
-            WritableSettingsStore userSettingsStore = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            if (userSettingsStore.PropertyExists("CommentReflowerAI", "Params"))
+            var settingsManagerType = typeof(SVsUnifiedSettingsManager);
+            var settingsManager = (ISettingsManager)await GetServiceAsync(settingsManagerType);
+            if (settingsManager == null)
             {
-                try
-                {
-                    Params = new CommentReflowerLib.ParameterSet(userSettingsStore.GetMemoryStream("CommentReflowerAI", "Params"));
-                }
-                catch (Exception)
-                {
-                    ShowMessageBox("Comment Reflower Error", "Unable to read user settings. Resetting to default.");
-                    Params = new CommentReflowerLib.ParameterSet();
-                }
+                throw new MissingServiceException(settingsManagerType);
             }
-            else
-            {
-                Params = new CommentReflowerLib.ParameterSet();
-            }
+            Settings = new UnifiedSettings(settingsManager.GetReader());
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var mcsType = typeof(IMenuCommandService);
@@ -111,10 +100,6 @@ namespace CommentReflower
             CommandID menuCommandID;
             OleMenuCommand menuItem;
 
-            menuCommandID = new CommandID(GuidList.guidCommentReflowerCmdSet, PkgCmdIDList.cmdidAlignParameters);
-            menuItem = new OleMenuCommand(MenuItemCallback, null, QueryStatusCallback, menuCommandID);
-            mcs.AddCommand(menuItem);
-
             menuCommandID = new CommandID(GuidList.guidCommentReflowerCmdSet, PkgCmdIDList.cmdidReflowPoint);
             menuItem = new OleMenuCommand(MenuItemCallback, null, QueryStatusCallback, menuCommandID);
             mcs.AddCommand(menuItem);
@@ -122,10 +107,16 @@ namespace CommentReflower
             menuCommandID = new CommandID(GuidList.guidCommentReflowerCmdSet, PkgCmdIDList.cmdidReflowSelection);
             menuItem = new OleMenuCommand(MenuItemCallback, null, QueryStatusCallback, menuCommandID);
             mcs.AddCommand(menuItem);
+        }
 
-            menuCommandID = new CommandID(GuidList.guidCommentReflowerCmdSet, PkgCmdIDList.cmdidSettings);
-            menuItem = new OleMenuCommand(MenuItemCallback, menuCommandID);
-            mcs.AddCommand(menuItem);
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && Settings != null)
+            {
+                Settings.Dispose();
+                Settings = null;
+            }
+            base.Dispose(disposing);
         }
 
         /// <summary>
@@ -145,15 +136,21 @@ namespace CommentReflower
             int commandID = menuCommand.CommandID.ID;
             switch (commandID)
             {
-                case PkgCmdIDList.cmdidAlignParameters:
                 case PkgCmdIDList.cmdidReflowPoint:
                 case PkgCmdIDList.cmdidReflowSelection:
-                    if (commandID == PkgCmdIDList.cmdidAlignParameters && !Params.mEnableAlignParams)
+                    // If the settings are invalid, the commands stay available so that running
+                    // one reports the problem.
+                    bool hasBlocks;
+                    try
                     {
-                        menuCommand.Visible = false;
-                        menuCommand.Enabled = false;
+                        hasBlocks = document != null && Settings.GetParams().getBlocksForFileName(document.Name).Count > 0;
                     }
-                    else if (document == null || Params.getBlocksForFileName(document.Name).Count == 0)
+                    catch (ArgumentException)
+                    {
+                        hasBlocks = document != null;
+                    }
+
+                    if (!hasBlocks)
                     {
                         menuCommand.Visible = false;
                         menuCommand.Enabled = false;
@@ -191,31 +188,34 @@ namespace CommentReflower
             int commandID = menuCommand.CommandID.ID;
             switch (commandID)
             {
-                case PkgCmdIDList.cmdidAlignParameters:
                 case PkgCmdIDList.cmdidReflowPoint:
                 case PkgCmdIDList.cmdidReflowSelection:
+                    CommentReflowerLib.ParameterSet parameters;
+                    try
+                    {
+                        parameters = Settings.GetParams();
+                    }
+                    catch (ArgumentException error)
+                    {
+                        ShowMessageBox("Comment Reflower Settings Error",
+                            "The settings in Tools > Options > Comment Reflower AI are invalid:\n{0}", error.Message);
+                        break;
+                    }
+
                     var selection = (TextSelection)document.Selection;
                     selection.DTE.UndoContext.Open("CommentReflower");
                     try
                     {
                         switch (commandID)
                         {
-                            case PkgCmdIDList.cmdidAlignParameters:
-                                EditPoint finishPt;
-                                if (!CommentReflowerLib.ParameterAlignerObj.go(selection.ActivePoint, out finishPt))
-                                {
-                                    ShowMessageBox("Comment Reflower", "There is no parameter list at the cursor.");
-                                }
-                                break;
-
                             case PkgCmdIDList.cmdidReflowPoint:
-                                if (!CommentReflowerLib.CommentReflowerObj.WrapBlockContainingPoint(Params, document.Name, selection.ActivePoint))
+                                if (!CommentReflowerLib.CommentReflowerObj.WrapBlockContainingPoint(parameters,document.Name, selection.ActivePoint))
                                 {
                                     ShowMessageBox("Comment Reflower", "There is no comment at the cursor.");
                                 }
                                 break;
                             case PkgCmdIDList.cmdidReflowSelection:
-                                if (!CommentReflowerLib.CommentReflowerObj.WrapAllBlocksInSelection(Params, document.Name, selection.TopPoint, selection.BottomPoint))
+                                if (!CommentReflowerLib.CommentReflowerObj.WrapAllBlocksInSelection(parameters,document.Name, selection.TopPoint, selection.BottomPoint))
                                 {
                                     ShowMessageBox("Comment Reflower", "There are no comments in the selection.");
                                 }
@@ -229,18 +229,6 @@ namespace CommentReflower
                     finally
                     {
                         selection.DTE.UndoContext.Close();
-                    }
-                    break;
-                case PkgCmdIDList.cmdidSettings:
-                    using (Settings settings = new Settings(Params))
-                    {
-                        if (settings.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                        {
-                            Params = settings._params;
-                            WritableSettingsStore userSettingsStore = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-                            userSettingsStore.CreateCollection("CommentReflowerAI");
-                            userSettingsStore.SetMemoryStream("CommentReflowerAI", "Params", Params.writeToXmlMemoryStream());
-                        }
                     }
                     break;
             }

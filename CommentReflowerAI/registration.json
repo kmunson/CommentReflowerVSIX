@@ -1,0 +1,550 @@
+{
+  "properties": {
+    "commentReflowerAI.general.wrapWidth": {
+      "type": "integer",
+      "title": "Wrap Width",
+      "description": "The column to wrap comments at.",
+      "default": 80,
+      "minimum": 10,
+      "order": 0
+    },
+    "commentReflowerAI.general.minimumBlockWidth": {
+      "type": "integer",
+      "title": "Minimum Block Width",
+      "description": "The minimum width of the text in a comment. Comments extend past the wrap width to meet it.",
+      "default": 30,
+      "minimum": 10,
+      "order": 1
+    },
+    "commentReflowerAI.general.useTabsToIndent": {
+      "type": "boolean",
+      "title": "Use tabs to indent",
+      "default": false,
+      "order": 2
+    },
+    "commentReflowerAI.blocks.commentBlocks": {
+      "type": "array",
+      "title": "Blocks",
+      "description": "The comment styles that can be reflowed. They are tried in order, and the first one that matches is used.",
+      "itemsAreOrdered": true,
+      "allowItemEditing": true,
+      "allowAdditionsAndRemovals": true,
+      "initialFocusProperty": "name",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "New comment block",
+            "minLength": 1,
+            "uniqueness": "exact",
+            "order": 0
+          },
+          "fileTypes": {
+            "type": "string",
+            "title": "File Types",
+            "description": "The file names to use this block for, separated by semicolons, for example *.c; *.h",
+            "default": "*.new",
+            "minLength": 1,
+            "order": 1
+          },
+          "blockStartType": {
+            "type": "string",
+            "title": "Block Start is",
+            "enum": [
+              "empty",
+              "alwaysOnOwnLine",
+              "onOwnLineIfBlockIsMoreThanOne",
+              "neverOnOwnLine"
+            ],
+            "enumItemLabels": [
+              "not used",
+              "always on own line",
+              "on own line if comment is >1 lines",
+              "never on own line"
+            ],
+            "default": "empty",
+            "order": 2
+          },
+          "blockStart": {
+            "type": "string",
+            "title": "Block Start",
+            "description": "The text that starts the comment block. Type \\t for a tab.",
+            "default": "",
+            "order": 3
+          },
+          "blockStartIsRegex": {
+            "type": "boolean",
+            "title": "Block Start is RegEx",
+            "default": false,
+            "order": 4
+          },
+          "blockEndType": {
+            "type": "string",
+            "title": "Block End is",
+            "enum": [
+              "empty",
+              "alwaysOnOwnLine",
+              "onOwnLineIfBlockIsMoreThanOne",
+              "neverOnOwnLine"
+            ],
+            "enumItemLabels": [
+              "not used",
+              "always on own line",
+              "on own line if comment is >1 lines",
+              "never on own line"
+            ],
+            "default": "empty",
+            "order": 5
+          },
+          "blockEnd": {
+            "type": "string",
+            "title": "Block End",
+            "description": "The text that ends the comment block. Type \\t for a tab.",
+            "default": "",
+            "order": 6
+          },
+          "blockEndIsRegex": {
+            "type": "boolean",
+            "title": "Block End is RegEx",
+            "default": false,
+            "order": 7
+          },
+          "lineStart": {
+            "type": "string",
+            "title": "Line Start",
+            "description": "The text at the start of each line of the comment. Type \\t for a tab.",
+            "default": "#",
+            "order": 8
+          },
+          "firstLine": {
+            "type": "string",
+            "title": "First Line of Block",
+            "enum": [
+              "mustNotContainTextBeforeStart",
+              "canContainTextBeforeStart"
+            ],
+            "enumItemLabels": [
+              "must not contain text before start",
+              "can contain text before start"
+            ],
+            "default": "canContainTextBeforeStart",
+            "order": 9
+          }
+        }
+      },
+      "default": [
+        {
+          "name": "C style function block",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h",
+          "blockStartType": "alwaysOnOwnLine",
+          "blockStart": "/\\*\\*\\*+",
+          "blockStartIsRegex": true,
+          "blockEndType": "alwaysOnOwnLine",
+          "blockEnd": " \\*\\*\\*+/",
+          "blockEndIsRegex": true,
+          "lineStart": " * ",
+          "firstLine": "mustNotContainTextBeforeStart"
+        },
+        {
+          "name": "Doxygen C style (/**)",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h",
+          "blockStartType": "onOwnLineIfBlockIsMoreThanOne",
+          "blockStart": "/** ",
+          "blockStartIsRegex": false,
+          "blockEndType": "onOwnLineIfBlockIsMoreThanOne",
+          "blockEnd": " */",
+          "blockEndIsRegex": false,
+          "lineStart": " * ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Doxygen C style 2 (/*!), which may have text on first line",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h",
+          "blockStartType": "neverOnOwnLine",
+          "blockStart": "/*! ",
+          "blockStartIsRegex": false,
+          "blockEndType": "onOwnLineIfBlockIsMoreThanOne",
+          "blockEnd": " */",
+          "blockEndIsRegex": false,
+          "lineStart": " * ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "C style",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h",
+          "blockStartType": "neverOnOwnLine",
+          "blockStart": "/* ",
+          "blockStartIsRegex": false,
+          "blockEndType": "onOwnLineIfBlockIsMoreThanOne",
+          "blockEnd": " */",
+          "blockEndIsRegex": false,
+          "lineStart": " * ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "C++ style function block",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h; *.js",
+          "blockStartType": "alwaysOnOwnLine",
+          "blockStart": "////+",
+          "blockStartIsRegex": true,
+          "blockEndType": "alwaysOnOwnLine",
+          "blockEnd": "////+",
+          "blockEndIsRegex": true,
+          "lineStart": "// ",
+          "firstLine": "mustNotContainTextBeforeStart"
+        },
+        {
+          "name": "Doxygen C++ style (///)",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h; *.js",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "/// ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Doxygen C++ style (///) with trailing tab",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h; *.js",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "///\\t",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "C++ style",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h; *.js",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "// ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Doxygen C++ style 2 (//!)",
+          "fileTypes": "*.c; *.cpp; *.cs; *.cc; *.h; *.js",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "//! ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Visual Basic Single Quote (') Function Block",
+          "fileTypes": "*.vb; *.vbs",
+          "blockStartType": "alwaysOnOwnLine",
+          "blockStart": "'''''+",
+          "blockStartIsRegex": true,
+          "blockEndType": "alwaysOnOwnLine",
+          "blockEnd": "'''''+",
+          "blockEndIsRegex": true,
+          "lineStart": "' ",
+          "firstLine": "mustNotContainTextBeforeStart"
+        },
+        {
+          "name": "Visual Basic Triple Quote (''')",
+          "fileTypes": "*.vb; *.vbs",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "''' ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Visual Basic Double Quote ('')",
+          "fileTypes": "*.vb; *.vbs",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "'' ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Visual Basic Single Quote (')",
+          "fileTypes": "*.vb; *.vbs",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "' ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "# Block",
+          "fileTypes": "Jamfile; Jamrules; *.jam",
+          "blockStartType": "alwaysOnOwnLine",
+          "blockStart": "\\#\\#\\#+",
+          "blockStartIsRegex": true,
+          "blockEndType": "alwaysOnOwnLine",
+          "blockEnd": "\\#\\#\\#+",
+          "blockEndIsRegex": true,
+          "lineStart": "# ",
+          "firstLine": "mustNotContainTextBeforeStart"
+        },
+        {
+          "name": "# Comment",
+          "fileTypes": "Jamfile; Jamrules; *.jam",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "# ",
+          "firstLine": "canContainTextBeforeStart"
+        },
+        {
+          "name": "Empty Block for Text Files",
+          "fileTypes": "*.txt",
+          "blockStartType": "empty",
+          "blockStart": "",
+          "blockStartIsRegex": false,
+          "blockEndType": "empty",
+          "blockEnd": "",
+          "blockEndIsRegex": false,
+          "lineStart": "",
+          "firstLine": "canContainTextBeforeStart"
+        }
+      ]
+    },
+    "commentReflowerAI.bullets.bulletPoints": {
+      "type": "array",
+      "title": "Bullets",
+      "description": "Text at the start of a line that marks a bullet point. They are tried in order.",
+      "itemsAreOrdered": true,
+      "allowItemEditing": true,
+      "allowAdditionsAndRemovals": true,
+      "initialFocusProperty": "name",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "New Bullet Point",
+            "minLength": 1,
+            "uniqueness": "exact",
+            "order": 0
+          },
+          "matchString": {
+            "type": "string",
+            "title": "Match String",
+            "description": "The text or regular expression that marks the bullet point. Type \\t for a tab.",
+            "default": ".*",
+            "order": 1
+          },
+          "isRegex": {
+            "type": "boolean",
+            "title": "is RegEx",
+            "default": true,
+            "order": 2
+          },
+          "wrapOnEdge": {
+            "type": "string",
+            "title": "Wrap on Edge",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "enumItemLabels": [
+              "Left",
+              "Right"
+            ],
+            "default": "right",
+            "order": 3
+          }
+        }
+      },
+      "default": [
+        {
+          "name": "Numbered comment followed by a tag and a hyphen like '1) tag - '",
+          "matchString": "[0-9]+\\) \\w+ - ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        },
+        {
+          "name": "Numbered comment like '1) '",
+          "matchString": "[0-9]+\\) ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        },
+        {
+          "name": "Hyphen at the start of a line '- '",
+          "matchString": "- ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        },
+        {
+          "name": "Doxygen style tag followed by hyphen, like '@tag - '",
+          "matchString": "@\\w+ - ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        },
+        {
+          "name": "Doxygen style tag followed by space, like '@tag '",
+          "matchString": "@\\w+ ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        },
+        {
+          "name": "Doxygen style tag followed by space, like '\\tag '",
+          "matchString": "\\\\\\w+ ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        },
+        {
+          "name": "Single character followed by hyphen, like '0 - '",
+          "matchString": ". - ",
+          "isRegex": true,
+          "wrapOnEdge": "right"
+        }
+      ]
+    },
+    "commentReflowerAI.breakFlowStrings.breakFlowStrings": {
+      "type": "array",
+      "title": "Break Flow Strings",
+      "description": "Text that stops lines from being reflowed together.",
+      "itemsAreOrdered": true,
+      "allowItemEditing": true,
+      "allowAdditionsAndRemovals": true,
+      "initialFocusProperty": "name",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "New break flow string",
+            "minLength": 1,
+            "uniqueness": "exact",
+            "order": 0
+          },
+          "matchString": {
+            "type": "string",
+            "title": "Match String",
+            "description": "The text or regular expression to match. Type \\t for a tab.",
+            "default": "string to break flow",
+            "order": 1
+          },
+          "isRegex": {
+            "type": "boolean",
+            "title": "is RegEx",
+            "default": false,
+            "order": 2
+          },
+          "neverReflowLine": {
+            "type": "boolean",
+            "title": "Never reflow line with this string at all",
+            "default": true,
+            "order": 3
+          },
+          "neverReflowIntoNextLine": {
+            "type": "boolean",
+            "title": "Never reflow line with this string into next",
+            "default": true,
+            "order": 4
+          }
+        }
+      },
+      "default": [
+        {
+          "name": "HTML Line break tag",
+          "matchString": "<BR>",
+          "isRegex": false,
+          "neverReflowLine": false,
+          "neverReflowIntoNextLine": true
+        },
+        {
+          "name": "XML comment on a line by itself",
+          "matchString": "^\\s*<.+?>\\s*$",
+          "isRegex": true,
+          "neverReflowLine": true,
+          "neverReflowIntoNextLine": true
+        },
+        {
+          "name": "Consecutive spaces anywhere on the line between non-space elements",
+          "matchString": "[^\\s]+?\\s\\s[^\\s]+?",
+          "isRegex": true,
+          "neverReflowLine": true,
+          "neverReflowIntoNextLine": true
+        },
+        {
+          "name": "(Underline) consecutive -'s on a line by themselves",
+          "matchString": "^\\s*--+\\s*$",
+          "isRegex": true,
+          "neverReflowLine": true,
+          "neverReflowIntoNextLine": true
+        },
+        {
+          "name": "(Double Underline) consecutive ='s on a line by themselves",
+          "matchString": "^\\s*==+\\s*$",
+          "isRegex": true,
+          "neverReflowLine": true,
+          "neverReflowIntoNextLine": true
+        },
+        {
+          "name": "$Source rcs tag",
+          "matchString": "$Source",
+          "isRegex": false,
+          "neverReflowLine": true,
+          "neverReflowIntoNextLine": true
+        },
+        {
+          "name": "$Id rcs tag",
+          "matchString": "$Id",
+          "isRegex": false,
+          "neverReflowLine": true,
+          "neverReflowIntoNextLine": true
+        }
+      ]
+    }
+  },
+  "categories": {
+    "commentReflowerAI": {
+      "title": "Comment Reflower AI",
+      "helpUri": "https://github.com/kmunson/CommentReflowerVSIX/blob/ai-generated/docs/README.md"
+    },
+    "commentReflowerAI.general": {
+      "title": "General",
+      "order": 0,
+      "helpUri": "https://github.com/kmunson/CommentReflowerVSIX/blob/ai-generated/docs/GeneralSettings.md"
+    },
+    "commentReflowerAI.blocks": {
+      "title": "Blocks",
+      "order": 1,
+      "helpUri": "https://github.com/kmunson/CommentReflowerVSIX/blob/ai-generated/docs/CommentBlockSettings.md"
+    },
+    "commentReflowerAI.bullets": {
+      "title": "Bullets",
+      "order": 2,
+      "helpUri": "https://github.com/kmunson/CommentReflowerVSIX/blob/ai-generated/docs/BulletPointSettings.md"
+    },
+    "commentReflowerAI.breakFlowStrings": {
+      "title": "Break Flow Strings",
+      "order": 3,
+      "helpUri": "https://github.com/kmunson/CommentReflowerVSIX/blob/ai-generated/docs/BreakFlowStringsSettings.md"
+    }
+  }
+}

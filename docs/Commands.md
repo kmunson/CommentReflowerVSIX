@@ -19,5 +19,12 @@ Selection**.
 
 ## Commands not available
 
-If these menu items are not enabled, the current file does not have any comment
+If these menu items are not shown, the current file does not have any comment
 block file associations. See [Comment Block Settings](CommentBlockSettings.md#file-types).
+
+**Reflow All Comments in Selection** is shown but not enabled when no text is
+selected.
+
+If the settings have a problem, such as a regular expression that isn't valid,
+running either command shows a message describing it instead of reflowing. See
+[Invalid settings](Settings.md#invalid-settings).

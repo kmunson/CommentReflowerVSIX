@@ -1,5 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# This is a Windows-only project. Files are stored with CRLF line endings,
+# exactly as they are in the working tree, with no line ending conversion.
+* -text
 
 # Custom for Visual Studio
 *.cs     diff=csharp

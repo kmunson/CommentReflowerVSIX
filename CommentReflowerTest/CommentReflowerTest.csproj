@@ -10,6 +10,10 @@
     <!-- The test reads ..\..\Input, so it has to run from bin\Debug or bin\Release. -->
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefineConstants>$(DefineConstants);UNIT_TEST</DefineConstants>
+    <!-- UNIT_TEST compiles out the ThreadHelper.ThrowIfNotOnUIThread() calls in
+         CommentReflowerSharedLib, which still uses the EnvDTE interfaces that the mock
+         editor objects implement, so the threading analyzer would flag every use of them. -->
+    <NoWarn>$(NoWarn);VSTHRD010</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

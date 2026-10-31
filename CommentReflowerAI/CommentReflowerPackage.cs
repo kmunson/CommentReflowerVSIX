@@ -42,10 +42,6 @@ namespace CommentReflower
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
     // a package.
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    // This attribute registers the product name and description. Visual Studio 2026's Help >
-    // About dialog doesn't list installed products, so no icon is registered: an icon resource
-    // would stop 'dotnet build' from building VSPackage.resx.
-    [InstalledProductRegistration("#110", "#112", "1.3.3")]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers registration.json, which defines the settings shown in

@@ -19,7 +19,7 @@ source code comments so the word wrapping is even. It supports Visual Studio
 | --- | --- |
 | `CommentReflower` | VSIX for Visual Studio 2017/2019 |
 | `CommentReflower2022` | VSIX for Visual Studio 2022/2026 |
-| `CommentReflowerAI` | Separate VSIX for Visual Studio 2026 with its own copy of the shared package code, GUIDs and settings store |
+| `CommentReflowerAI` | Separate VSIX for Visual Studio 2026 with its own copy of the package code and its own GUIDs. Its settings are in Tools > Options (Unified Settings), defined in `registration.json` and read by `UnifiedSettings.cs`; it has no settings dialog |
 | `CommentReflowerShared` | Shared project: the package (`CommentReflowerPackage.cs`), commands (`CommentReflower.vsct`) and the WinForms settings dialog (`Settings.cs`) |
 | `CommentReflowerSharedLib` | Shared project: the reflow engine (`CommentReflowerObj.cs`), parameter aligner, and settings model (`ParameterSet.cs`, `CommentBlock.cs`, `BulletPoint.cs`, `BreakFlowStrings.cs`) |
 | `CommentReflowerTest` | Console regression test runner |
@@ -49,8 +49,9 @@ Then build each extension project:
 ```
 
 The projects are SDK-style, so C# Dev Kit in VS Code can load them. `dotnet
-build` works for `CommentReflowerTest` but not for the two extension
-projects: the .NET SDK's MSBuild can't embed the bitmaps in `Settings.resx`.
+build` works for `CommentReflowerTest` and `CommentReflowerAI` but not for
+`CommentReflower` and `CommentReflower2022`: the .NET SDK's MSBuild can't
+embed the bitmaps in `Settings.resx`.
 Build those with Visual Studio's MSBuild as shown above.
 
 ## Testing

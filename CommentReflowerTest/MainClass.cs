@@ -306,9 +306,11 @@ namespace CommentReflowerTest
         /// <summary>
         /// The main entry point for the application. 
         /// </summary>
+        /// <returns>0 if all the tests pass, or 1 if any fail.</returns>
         [STAThread]
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
+            int exitCode = 0;
             try
             {
                 DoBlockTests();
@@ -319,14 +321,22 @@ namespace CommentReflowerTest
                 DoSimpleSingleFileTest("Jamfile","Regression",".JAM");
                 DoSimpleSingleFileTest("Text file","Regression",".txt");
                 DoXmlFileTests();
-
-                Console.WriteLine("\nPress any key to end this program...");
-                Console.ReadKey();
             }
             catch (Exception e)
             {
                 Console.WriteLine("An exception occurred: " + e.Message + ". Test Failed\n");
+                exitCode = 1;
             }
+
+            // Only wait when run from a console window, so the results can be read before it
+            // closes. Console.ReadKey throws when input is redirected.
+            if (!Console.IsInputRedirected)
+            {
+                Console.WriteLine("\nPress any key to end this program...");
+                Console.ReadKey();
+            }
+
+            return exitCode;
         }
     }
 }

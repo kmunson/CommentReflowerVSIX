@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.Build.NoTargets/3.7.56">
+  <!-- Compiles the CHM help with HTML Help Workshop. The project builds no assembly. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <HhcPath>$(MSBuildProgramFiles32)\HTML Help Workshop\hhc.exe</HhcPath>
+    <HelpProjectFile>$(MSBuildProjectName).hhp</HelpProjectFile>
+    <HelpFile>$(MSBuildProjectDirectory)\$(MSBuildProjectName).chm</HelpFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <HelpSource Include="$(HelpProjectFile);*.htm;*.hhc;*.hhk" />
+    <None Remove="*.chm;*.log" />
+  </ItemGroup>
+  <Target Name="CompileHelp" AfterTargets="Build" Inputs="@(HelpSource)" Outputs="$(HelpFile)">
+    <Error Condition="!Exists('$(HhcPath)')" Text="HTML Help Workshop is not installed. https://web.archive.org/web/20200918004813/https://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe" />
+    <!-- hhc returns 0 on failure and 1 on success. -->
+    <Exec Command="&quot;$(HhcPath)&quot; $(HelpProjectFile)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true">
+      <Output TaskParameter="ExitCode" PropertyName="HhcExitCode" />
+    </Exec>
+    <Error Condition="'$(HhcExitCode)' != '1'" Text="Failed to compile help." />
+  </Target>
+  <Target Name="CleanHelp" AfterTargets="Clean">
+    <Delete Files="$(HelpFile)" />
+  </Target>
+</Project>

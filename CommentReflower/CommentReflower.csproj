@@ -26,6 +26,12 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Builds CommentReflowerHelp.chm before this project packages it. -->
+    <ProjectReference Include="..\CommentReflowerHelp\CommentReflowerHelp.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <VSCTCompile Include="..\CommentReflowerShared\CommentReflower.vsct">
       <Link>CommentReflower.vsct</Link>
       <ResourceName>Menus.ctmenu</ResourceName>

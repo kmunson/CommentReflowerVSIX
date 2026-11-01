@@ -16,8 +16,6 @@
     <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
     <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
-    <!-- The VSSDK can't deploy to the experimental instance from 'dotnet build', which C# Dev Kit uses. -->
-    <DeployExtension Condition="'$(DeployExtension)' == '' and '$(MSBuildRuntimeType)' == 'Core'">false</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="..\CommentReflowerHelp\CommentReflowerHelp.chm">

@@ -68,6 +68,17 @@ testing in the experimental instance, check that the deployed
 `%LOCALAPPDATA%\Microsoft\VisualStudio\18.0_*Exp\Extensions` matches the one
 in `bin`.
 
+`CommentReflower` and `CommentReflower2022` use `Microsoft.VSSDK.BuildTools`
+17.14.2120, which has a bug: an incremental build doesn't update the VSIX's
+manifest when a change to `source.extension.vsixmanifest` keeps the file the
+same length, for example a version change from 1.3.3 to 1.3.4. The
+`DetokenizeVsixManifestSource` task only rewrites
+`obj\<Configuration>\extension.vsixmanifest` when the new content has a
+different length or is identical to the old content. After changing a
+manifest, rebuild the project, and check the version in the built `.vsix`.
+Versions 18.5.40034 and 18.9.820 don't have the bug, so `CommentReflowerAI`,
+which uses 18.9.820, isn't affected.
+
 ## Testing
 
 `CommentReflowerTest` is a console app built with the `UNIT_TEST` symbol. It

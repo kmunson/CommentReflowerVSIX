@@ -572,7 +572,6 @@ namespace CommentReflower {
             this.ImportBtn.Click += new System.EventHandler(this.ImportBtn_Click);
             // AboutBtn
             // 
-            this.AboutBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.AboutBtn.Location = new System.Drawing.Point(288, 328);
             this.AboutBtn.Name = "AboutBtn";
             this.AboutBtn.Size = new System.Drawing.Size(72, 24);

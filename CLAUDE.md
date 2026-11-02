@@ -105,18 +105,28 @@ with `Compare/`.
 
 ## Pull requests and commit messages
 
+- PR descriptions cover what changed, why, what reviewers should know, how it
+  was verified, and what is not included.
+- What reviewers should know goes in a `## Notes for reviewers` section, which
+  is only in the PR description, never in the commit message. That includes
+  every question for reviewers and every caveat, such as what wasn't built,
+  run or checked. Keep them out of the other sections, including
+  `## How it was verified`, which lists only what was verified.
+- List every change to user-facing text in a `## User-facing text` section.
+  Keep it out of `## Notes for reviewers`, so that the commit message has it
+  too. Leave the section out if no user-facing text changed.
 - The commit message is the PR title as the subject line, followed by the PR
-  description copied exactly.
+  description copied exactly, without the `## Notes for reviewers` section.
 - Commit with `git commit --cleanup=verbatim`. The default cleanup deletes
   lines starting with `#`, which removes `##` headings.
-- If the PR description changes, amend the commit message to match.
+- If the PR description changes, amend the commit message to match. If the
+  commit message changes, update the PR description to match. After every
+  change to either, check that they match exactly, apart from
+  `## Notes for reviewers`.
 - Both the PR description and the commit message end with a `Co-Authored-By`
   line for the model that did the work, e.g.
   `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Don't add a
   "Generated with" footer.
-- PR descriptions cover what changed, why, what reviewers should know, how it
-  was verified, and what is not included. List every change to user-facing
-  text.
 
 ## Conversions and documentation
 
@@ -130,4 +140,5 @@ with `Compare/`.
 ## Reporting
 
 - Report what was actually verified. If something wasn't built, run or checked
-  (for example how Markdown looks on GitHub), say so.
+  (for example how Markdown looks on GitHub), say so. In a PR, say it in
+  `## Notes for reviewers`.

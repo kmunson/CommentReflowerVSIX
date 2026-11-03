@@ -16,7 +16,6 @@
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace CommentReflowerLib;
 
@@ -50,32 +49,6 @@ public class BulletPoint
 		this.mString = other.mString;
 		this.mIsRegEx = other.mIsRegEx;
 		this.mWrapIsAtRight = other.mWrapIsAtRight;
-	}
-
-	/// <summary>
-	/// Constructor from xml file
-	/// </summary>
-	public BulletPoint(XmlReader r)
-	{
-		r.ReadStartElement("BulletPoint");
-		mName = r.ReadElementString("Name");
-		mString = r.ReadElementString("String");
-		mIsRegEx = XmlConvert.ToBoolean(r.ReadElementString("IsRegEx"));
-		mWrapIsAtRight = XmlConvert.ToBoolean(r.ReadElementString("WrapIsAtRight"));
-		r.ReadEndElement();
-	}
-
-	/// <summary>
-	/// Dumps the object to xml file
-	/// </summary>
-	public void DumpToXml(XmlWriter w)
-	{
-		w.WriteStartElement("BulletPoint");
-		w.WriteElementString("Name", mName);
-		w.WriteElementString("String", mString);
-		w.WriteElementString("IsRegEx", XmlConvert.ToString(mIsRegEx));
-		w.WriteElementString("WrapIsAtRight", XmlConvert.ToString(mWrapIsAtRight));
-		w.WriteEndElement();
 	}
 
 	/// <summary>

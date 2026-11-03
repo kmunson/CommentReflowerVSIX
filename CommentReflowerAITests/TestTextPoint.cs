@@ -16,11 +16,9 @@
 
 using System;
 
-namespace CommentReflowerTest;
-
 /// <summary>
 /// This class implements enough of the EnvDTE.TextPoint and
-/// EnvDTE.EditPoint intefaces to allow regression testing
+/// EnvDTE.EditPoint interfaces to allow regression testing
 /// </summary>
 public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 {

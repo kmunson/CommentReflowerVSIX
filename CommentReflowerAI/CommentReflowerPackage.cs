@@ -244,8 +244,7 @@ public sealed class CommentReflowerPackage : AsyncPackage
 		Assumes.Present(statusBar);
 
 		// Don't overwrite the status bar while another component has frozen it.
-		int frozen;
-		statusBar.IsFrozen(out frozen);
+		statusBar.IsFrozen(out int frozen);
 		if (frozen == 0)
 		{
 			statusBar.SetText(text);

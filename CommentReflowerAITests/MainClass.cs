@@ -20,8 +20,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace CommentReflowerTest;
-
 /// <summary>
 /// Summary description for Class1.
 /// </summary>

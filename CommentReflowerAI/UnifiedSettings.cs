@@ -204,8 +204,7 @@ internal sealed class UnifiedSettings : IDisposable
 
 	private static object GetProperty(IReadOnlyDictionary<string, object> item, string name)
 	{
-		object value;
-		if (!item.TryGetValue(name, out value) || value == null)
+		if (!item.TryGetValue(name, out object value) || value == null)
 		{
 			throw new ArgumentException(string.Format("Missing value for \"{0}\"", name));
 		}

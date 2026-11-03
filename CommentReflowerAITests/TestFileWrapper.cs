@@ -18,8 +18,6 @@ using System;
 using System.Collections;
 using System.IO;
 
-namespace CommentReflowerTest;
-
 /// <summary>
 /// This class implements enough of EnvDTE.TextDocument for regression
 /// testing.

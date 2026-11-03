@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentReflowerAI", "Commen
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommentReflowerSharedLib", "CommentReflowerSharedLib\CommentReflowerSharedLib.shproj", "{C17CB2E5-13BC-457C-A450-7CC81136B6AD}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommentReflowerAISharedLib", "CommentReflowerAISharedLib\CommentReflowerAISharedLib.shproj", "{D3441F43-BA54-488D-8854-7A430D42AFDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentReflowerAITests", "CommentReflowerAITests\CommentReflowerAITests.csproj", "{1F88BBF0-C27C-426A-B1CD-0AEC4F4F61BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,10 @@ Global
 		{E71C40FF-3A16-44EE-BBEC-8D210BE7B212}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E71C40FF-3A16-44EE-BBEC-8D210BE7B212}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E71C40FF-3A16-44EE-BBEC-8D210BE7B212}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1F88BBF0-C27C-426A-B1CD-0AEC4F4F61BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F88BBF0-C27C-426A-B1CD-0AEC4F4F61BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F88BBF0-C27C-426A-B1CD-0AEC4F4F61BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F88BBF0-C27C-426A-B1CD-0AEC4F4F61BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +74,8 @@ Global
 		CommentReflowerShared\CommentReflowerShared.projitems*{9183950d-61c4-47d0-bb47-24f3142be007}*SharedItemsImports = 5
 		CommentReflowerShared\CommentReflowerShared.projitems*{98b51a43-7052-4bbc-8ccf-4085cfde0583}*SharedItemsImports = 13
 		CommentReflowerSharedLib\CommentReflowerSharedLib.projitems*{c17cb2e5-13bc-457c-a450-7cc81136b6ad}*SharedItemsImports = 13
-		CommentReflowerSharedLib\CommentReflowerSharedLib.projitems*{e71c40ff-3a16-44ee-bbec-8d210be7b212}*SharedItemsImports = 5
+		CommentReflowerAISharedLib\CommentReflowerAISharedLib.projitems*{1f88bbf0-c27c-426a-b1cd-0aec4f4f61ba}*SharedItemsImports = 5
+		CommentReflowerAISharedLib\CommentReflowerAISharedLib.projitems*{d3441f43-ba54-488d-8854-7a430d42afde}*SharedItemsImports = 13
+		CommentReflowerAISharedLib\CommentReflowerAISharedLib.projitems*{e71c40ff-3a16-44ee-bbec-8d210be7b212}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

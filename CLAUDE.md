@@ -19,10 +19,12 @@ source code comments so the word wrapping is even. It supports Visual Studio
 | --- | --- |
 | `CommentReflower` | VSIX for Visual Studio 2017/2019 |
 | `CommentReflower2022` | VSIX for Visual Studio 2022/2026 |
-| `CommentReflowerAI` | Separate VSIX for Visual Studio 2026 with its own copy of the package code and its own GUIDs. Its settings are in Tools > Options (Unified Settings), defined in `registration.json` and read by `UnifiedSettings.cs`; it has no settings dialog |
+| `CommentReflowerAI` | Separate VSIX for Visual Studio 2026 with its own copy of the package code, its own reflow engine in `CommentReflowerAISharedLib` and its own GUIDs. Its settings are in Tools > Options (Unified Settings), defined in `registration.json` and read by `UnifiedSettings.cs`; it has no settings dialog |
 | `CommentReflowerShared` | Shared project: the package (`CommentReflowerPackage.cs`), commands (`CommentReflower.vsct`) and the WinForms settings dialog (`Settings.cs`) |
-| `CommentReflowerSharedLib` | Shared project: the reflow engine (`CommentReflowerObj.cs`), parameter aligner, and settings model (`ParameterSet.cs`, `CommentBlock.cs`, `BulletPoint.cs`, `BreakFlowStrings.cs`) |
-| `CommentReflowerTest` | Console regression test runner |
+| `CommentReflowerSharedLib` | Shared project: the reflow engine (`CommentReflowerObj.cs`), parameter aligner, and settings model (`ParameterSet.cs`, `CommentBlock.cs`, `BulletPoint.cs`, `BreakFlowStrings.cs`), used by `CommentReflower`, `CommentReflower2022` and `CommentReflowerTest` |
+| `CommentReflowerAISharedLib` | Shared project: `CommentReflowerAI`'s copy of the reflow engine, copied from `CommentReflowerSharedLib`, used by `CommentReflowerAI` and `CommentReflowerAITests`. Changes to it don't affect the other extensions |
+| `CommentReflowerTest` | Console regression test runner for `CommentReflowerSharedLib` |
+| `CommentReflowerAITests` | Console regression test runner for `CommentReflowerAISharedLib`, copied from `CommentReflowerTest` with its own `Input/`, `Compare/` and `Output/` |
 | `CommentReflowerHelp` | CHM help for `CommentReflower` and `CommentReflower2022`. An MSBuild project that runs HTML Help Workshop's `hhc.exe`; both extensions reference it, so building either one builds the help first |
 
 `CommentReflower` and `CommentReflower2022` use the CHM help in
@@ -52,7 +54,7 @@ Then build each extension project:
 ```
 
 The projects are SDK-style, so C# Dev Kit in VS Code can load them. `dotnet
-build` works for `CommentReflowerTest`, `CommentReflowerAI` and
+build` works for `CommentReflowerTest`, `CommentReflowerAITests`, `CommentReflowerAI` and
 `CommentReflowerHelp` but not for
 `CommentReflower` and `CommentReflower2022`: the .NET SDK's MSBuild can't
 embed the bitmaps in `Settings.resx`.
@@ -81,16 +83,19 @@ which uses 18.9.820, isn't affected.
 
 ## Testing
 
-`CommentReflowerTest` is a console app built with the `UNIT_TEST` symbol. It
-runs the reflow engine against mock editor objects (`TestFileWrapper`,
-`TestTextPoint`), reads `Input/`, writes `Output/`, and compares the output
-with `Compare/`.
+`CommentReflowerTest` and `CommentReflowerAITests` are console apps built with
+the `UNIT_TEST` symbol. `CommentReflowerTest` tests the reflow engine in
+`CommentReflowerSharedLib`, and `CommentReflowerAITests` tests the one in
+`CommentReflowerAISharedLib`. Each runs its engine against mock editor objects
+(`TestFileWrapper`, `TestTextPoint`), reads `Input/`, writes `Output/`, and
+compares the output with `Compare/`.
 
-- It uses paths like `..\..\Input\Regression.cpp`, so run it from
-  `CommentReflowerTest\bin\Debug` (or `bin\Release`).
-- It waits for a key press at the end only when run from a console window. When
-  its input is redirected, as when run from a script, it exits without waiting.
-- It exits with code 0 if all the tests pass and 1 if one fails. The console
+- Each uses paths like `..\..\Input\Regression.cpp`, so run it from its own
+  `bin\Debug` (or `bin\Release`), for example `CommentReflowerAITests\bin\Debug`.
+- Each waits for a key press at the end only when run from a console window.
+  When its input is redirected, as when run from a script, it exits without
+  waiting.
+- Each exits with code 0 if all the tests pass and 1 if one fails. The console
   output says which test failed, for example with "does not match".
 
 ## Code conventions

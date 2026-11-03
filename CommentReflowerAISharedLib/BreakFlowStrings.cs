@@ -1,4 +1,3 @@
-// Comment Reflower Force Line Break class
 // Copyright (C) 2004  Ian Nowland
 //
 // This program is free software; you can redistribute it and/or modify it under
@@ -73,7 +72,7 @@ public class BreakFlowString
 	/// <summary>
 	/// Dumps the object to xml file
 	/// </summary>
-	public void dumpToXml(XmlWriter w)
+	public void DumpToXml(XmlWriter w)
 	{
 		w.WriteStartElement("BreakFlowString");
 		w.WriteElementString("Name", mName);
@@ -87,7 +86,7 @@ public class BreakFlowString
 	/// <summary>
 	/// Returns true if this object occurs in the given string
 	/// </summary>
-	public bool matches(string st, bool ontoNextLineAsWell)
+	public bool Matches(string st, bool ontoNextLineAsWell)
 	{
 		if (mNeverReflowLine ||
 			(ontoNextLineAsWell && mNeverReflowIntoNextLine))
@@ -101,7 +100,7 @@ public class BreakFlowString
 			{
 				regstr = Regex.Escape(mString);
 			}
-			Regex regex = new Regex(regstr);
+			Regex regex = new(regstr);
 			return regex.Match(st).Success;
 		}
 		else

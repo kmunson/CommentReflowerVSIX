@@ -27,41 +27,37 @@ namespace CommentReflowerTest;
 /// </summary>
 class MainClass
 {
-	static int fileCompare(
+	static int FileCompare(
 		string fileName1,
 		string fileName2
 	)
 	{
-		return streamCompare(new FileStream(fileName1, FileMode.Open), new FileStream(fileName2, FileMode.Open));
+		return StreamCompare(new FileStream(fileName1, FileMode.Open), new FileStream(fileName2, FileMode.Open));
 	}
 
-	static int streamCompare(
+	static int StreamCompare(
 		Stream stream1,
 		Stream stream2
 	)
 	{
-		using (StreamReader file1 = new StreamReader(stream1))
+		using StreamReader file1 = new(stream1);
+		using StreamReader file2 = new(stream2);
+		int lineNum = 0;
+		string st1 = file1.ReadLine();
+		while (st1 != null)
 		{
-			using (StreamReader file2 = new StreamReader(stream2))
+			string st2 = file2.ReadLine();
+			if ((st2 == null) ||
+				(st1.CompareTo(st2) != 0))
 			{
-				int lineNum = 0;
-				string st1 = file1.ReadLine();
-				while (st1 != null)
-				{
-					string st2 = file2.ReadLine();
-					if ((st2 == null) ||
-						(st1.CompareTo(st2) != 0))
-					{
-						return lineNum;
-					}
-					lineNum++;
-					st1 = file1.ReadLine();
-				}
-				if (file2.ReadLine() != null)
-				{
-					return lineNum;
-				}
+				return lineNum;
 			}
+			lineNum++;
+			st1 = file1.ReadLine();
+		}
+		if (file2.ReadLine() != null)
+		{
+			return lineNum;
 		}
 		return -1;
 	}
@@ -83,24 +79,24 @@ class MainClass
 			this.retCommentBlockName = retCommentBlockName;
 		}
 
-		public void doTest(TestFileWrapper regressionFile, string fileName)
+		public void DoTest(TestFileWrapper regressionFile, string fileName)
 		{
-			ParameterSet pset = new ParameterSet();
-			pset.mUseTabsToIndent = true;
+			ParameterSet pset = new()
+			{
+				mUseTabsToIndent = true
+			};
 
 			for (int lineNumber = this.retStartLine; lineNumber <= this.retEndLine; lineNumber++)
 			{
 				EnvDTE.EditPoint tp1 = regressionFile.CreateEditPoint(null);
 				tp1.MoveToLineAndOffset(lineNumber, 1);
 				bool retSuccess;
-				MatchedBlockData retBdata;
-				CommentBlock retBlock;
 				retSuccess = CommentReflowerObj.GetBlockContainingPoint(
 					pset,
 					fileName,
 					tp1,
-					out retBlock,
-					out retBdata
+					out CommentBlock retBlock,
+					out MatchedBlockData retBdata
 				);
 				if (retSuccess != this.retSuccess)
 				{
@@ -150,50 +146,52 @@ class MainClass
 		public string retCommentBlockName;
 	}
 
-	private static GetBlockFromPointRegression[] mBlockPointValues =
+	private static readonly GetBlockFromPointRegression[] mBlockPointValues =
 	{
-		new GetBlockFromPointRegression( true,  1,  1,  0, "Doxygen C style (/**)"),
-		new GetBlockFromPointRegression(false,  2,  4,  0, ""),
-		new GetBlockFromPointRegression( true,  5,  5,  4, "Doxygen C style (/**)"),
-		new GetBlockFromPointRegression( true,  6, 10,  0, "Doxygen C style (/**)"),
-		new GetBlockFromPointRegression( true, 11, 15,  4, "Doxygen C style (/**)"),
-		new GetBlockFromPointRegression( true, 21, 21,  0, "C style"),
-		new GetBlockFromPointRegression( true, 27, 27,  7, "C style"),
-		new GetBlockFromPointRegression( true, 28, 28,  7, "C style"),
-		new GetBlockFromPointRegression( true, 34, 35,  0, "C style"),
-		new GetBlockFromPointRegression( true, 41, 42,  7, "C style"),
-		new GetBlockFromPointRegression( true, 48, 51,  0, "C style function block"),
-		new GetBlockFromPointRegression( true, 58, 58,  0, "C++ style"),
-		new GetBlockFromPointRegression( true, 60, 60, 11, "C++ style"),
-		new GetBlockFromPointRegression( true, 61, 61, 11, "C++ style"),
-		new GetBlockFromPointRegression( true, 63, 65,  0, "C++ style"),
-		new GetBlockFromPointRegression( true, 67, 68, 11, "C++ style"),
-		new GetBlockFromPointRegression( true, 69, 71,  0, "C++ style"),
-		new GetBlockFromPointRegression( true, 73, 76,  0, "C++ style function block"),
-		new GetBlockFromPointRegression( true, 78, 80, 12, "C++ style function block"),
-		new GetBlockFromPointRegression( true, 81, 83, 16, "C++ style function block"),
-		new GetBlockFromPointRegression( true, 85, 87, 12, "C++ style function block"),
-		new GetBlockFromPointRegression( true, 88, 90, 12, "C++ style function block"),
+		new( true,  1,  1,  0, "Doxygen C style (/**)"),
+		new(false,  2,  4,  0, ""),
+		new( true,  5,  5,  4, "Doxygen C style (/**)"),
+		new( true,  6, 10,  0, "Doxygen C style (/**)"),
+		new( true, 11, 15,  4, "Doxygen C style (/**)"),
+		new( true, 21, 21,  0, "C style"),
+		new( true, 27, 27,  7, "C style"),
+		new( true, 28, 28,  7, "C style"),
+		new( true, 34, 35,  0, "C style"),
+		new( true, 41, 42,  7, "C style"),
+		new( true, 48, 51,  0, "C style function block"),
+		new( true, 58, 58,  0, "C++ style"),
+		new( true, 60, 60, 11, "C++ style"),
+		new( true, 61, 61, 11, "C++ style"),
+		new( true, 63, 65,  0, "C++ style"),
+		new( true, 67, 68, 11, "C++ style"),
+		new( true, 69, 71,  0, "C++ style"),
+		new( true, 73, 76,  0, "C++ style function block"),
+		new( true, 78, 80, 12, "C++ style function block"),
+		new( true, 81, 83, 16, "C++ style function block"),
+		new( true, 85, 87, 12, "C++ style function block"),
+		new( true, 88, 90, 12, "C++ style function block"),
 	};
 
 	static void DoBlockTests()
 	{
 		string fileName = @"..\..\Input\Regression.cpp";
-		TestFileWrapper regressionFile = new TestFileWrapper(fileName);
+		TestFileWrapper regressionFile = new(fileName);
 
 		/////////////////////////////////////////
 		// first detection tests
 		/////////////////////////////////////////
 		foreach (GetBlockFromPointRegression val in mBlockPointValues)
 		{
-			val.doTest(regressionFile, fileName);
+			val.DoTest(regressionFile, fileName);
 		}
 
 		//////////////////////////////////////////
 		// now formatting tests one by one
 		//////////////////////////////////////////
-		ParameterSet pset = new ParameterSet();
-		pset.mUseTabsToIndent = true;
+		ParameterSet pset = new()
+		{
+			mUseTabsToIndent = true
+		};
 		EnvDTE.EditPoint[] tp = new EnvDTE.EditPoint[mBlockPointValues.Length];
 		for (int i = 0; i < mBlockPointValues.Length; i++)
 		{
@@ -215,7 +213,7 @@ class MainClass
 			}
 		}
 		regressionFile.WriteToFile(@"..\..\Output\Regression.out.cpp");
-		int lineNum = fileCompare(@"..\..\Output\Regression.out.cpp", @"..\..\Compare\Regression.compare.cpp");
+		int lineNum = FileCompare(@"..\..\Output\Regression.out.cpp", @"..\..\Compare\Regression.compare.cpp");
 		if (lineNum != -1)
 		{
 			throw new System.ApplicationException(
@@ -226,14 +224,14 @@ class MainClass
 		////////////////////////////////////////
 		// now formatting tests all at once
 		////////////////////////////////////////
-		TestFileWrapper regressionFile2 = new TestFileWrapper(fileName);
+		TestFileWrapper regressionFile2 = new(fileName);
 		EnvDTE.EditPoint tp1 = regressionFile2.CreateEditPoint(null);
 		tp1.StartOfDocument();
 		EnvDTE.EditPoint tp2 = regressionFile2.CreateEditPoint(null);
 		tp2.EndOfDocument();
 		CommentReflowerObj.WrapAllBlocksInSelection(pset, fileName, tp1, tp2);
 		regressionFile2.WriteToFile(@"..\..\Output\Regression.out2.cpp");
-		lineNum = fileCompare(@"..\..\Output\Regression.out2.cpp", @"..\..\Compare\Regression.compare.cpp");
+		lineNum = FileCompare(@"..\..\Output\Regression.out2.cpp", @"..\..\Compare\Regression.compare.cpp");
 		if (lineNum != -1)
 		{
 			throw new System.ApplicationException(
@@ -246,7 +244,7 @@ class MainClass
 		tp2.EndOfDocument();
 		CommentReflowerObj.WrapAllBlocksInSelection(pset, fileName, tp1, tp2);
 		regressionFile2.WriteToFile(@"..\..\Output\Regression.out3.cpp");
-		lineNum = fileCompare(@"..\..\Output\Regression.out3.cpp", @"..\..\Compare\Regression.compare.cpp");
+		lineNum = FileCompare(@"..\..\Output\Regression.out3.cpp", @"..\..\Compare\Regression.compare.cpp");
 		if (lineNum != -1)
 		{
 			throw new System.ApplicationException(
@@ -264,17 +262,19 @@ class MainClass
 		)
 	{
 		string fileName = @"..\..\Input\" + fileNamePrefix + fileNameSuffix;
-		ParameterSet pset = new ParameterSet();
-		pset.mUseTabsToIndent = true;
+		ParameterSet pset = new()
+		{
+			mUseTabsToIndent = true
+		};
 
-		TestFileWrapper regressionFile = new TestFileWrapper(fileName);
+		TestFileWrapper regressionFile = new(fileName);
 		EnvDTE.EditPoint tp1 = regressionFile.CreateEditPoint(null);
 		tp1.StartOfDocument();
 		EnvDTE.EditPoint tp2 = regressionFile.CreateEditPoint(null);
 		tp2.EndOfDocument();
 		CommentReflowerObj.WrapAllBlocksInSelection(pset, fileName, tp1, tp2);
 		regressionFile.WriteToFile(@"..\..\Output\" + fileNamePrefix + ".out" + fileNameSuffix);
-		int lineNum = fileCompare(
+		int lineNum = FileCompare(
 			@"..\..\Output\" + fileNamePrefix + ".out" + fileNameSuffix,
 			@"..\..\Compare\" + fileNamePrefix + ".compare" + fileNameSuffix
 		);
@@ -290,7 +290,7 @@ class MainClass
 		tp2.EndOfDocument();
 		CommentReflowerObj.WrapAllBlocksInSelection(pset, fileName, tp1, tp2);
 		regressionFile.WriteToFile(@"..\..\Output\" + fileNamePrefix + ".out2" + fileNameSuffix);
-		lineNum = fileCompare(
+		lineNum = FileCompare(
 			@"..\..\Output\" + fileNamePrefix + ".out2" + fileNameSuffix,
 			@"..\..\Compare\" + fileNamePrefix + ".compare" + fileNameSuffix
 		);
@@ -305,11 +305,11 @@ class MainClass
 
 	static void DoXmlFileTests()
 	{
-		ParameterSet pset = new ParameterSet();
-		MemoryStream memorySteam = pset.writeToXmlMemoryStream();
+		ParameterSet pset = new();
+		MemoryStream memorySteam = pset.WriteToXmlMemoryStream();
 		pset = new ParameterSet(memorySteam);
-		MemoryStream memoryStream2 = pset.writeToXmlMemoryStream();
-		int lineNum = streamCompare(memorySteam, memoryStream2);
+		MemoryStream memoryStream2 = pset.WriteToXmlMemoryStream();
+		int lineNum = StreamCompare(memorySteam, memoryStream2);
 		if (lineNum != -1)
 		{
 			throw new System.ApplicationException(
@@ -324,7 +324,7 @@ class MainClass
 	/// </summary>
 	/// <returns>0 if all the tests pass, or 1 if any fail.</returns>
 	[STAThread]
-	static int Main(string[] args)
+	static int Main()
 	{
 		int exitCode = 0;
 		try

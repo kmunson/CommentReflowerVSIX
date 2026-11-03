@@ -1,4 +1,3 @@
-// Comment Reflower Bullet Point Class
 // Copyright (C) 2004  Ian Nowland
 //
 // This program is free software; you can redistribute it and/or modify it under
@@ -69,7 +68,7 @@ public class BulletPoint
 	/// <summary>
 	/// Dumps the object to xml file
 	/// </summary>
-	public void dumpToXml(XmlWriter w)
+	public void DumpToXml(XmlWriter w)
 	{
 		w.WriteStartElement("BulletPoint");
 		w.WriteElementString("Name", mName);
@@ -84,7 +83,7 @@ public class BulletPoint
 	/// sets the indentation of this line and the indentation of any
 	/// following text for the bullet.
 	/// </summary>
-	public bool matches(string st, out int thisIndent, out int nextLineIndent)
+	public bool Matches(string st, out int thisIndent, out int nextLineIndent)
 	{
 		string regstr = @"^(\s*?)";
 
@@ -100,7 +99,7 @@ public class BulletPoint
 		{
 			regstr += "(" + Regex.Escape(mString) + ")";
 		}
-		Regex regex = new Regex(regstr);
+		Regex regex = new(regstr);
 		Match match = regex.Match(st);
 		if (match.Success)
 		{

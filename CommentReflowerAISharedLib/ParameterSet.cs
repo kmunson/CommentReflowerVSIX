@@ -33,12 +33,14 @@ public class ParameterSet
 	/// </summary>
 	public ParameterSet()
 	{
-		var cPlusPlusCba = new List<string>();
-		cPlusPlusCba.Add("*.c");
-		cPlusPlusCba.Add("*.cpp");
-		cPlusPlusCba.Add("*.cs");
-		cPlusPlusCba.Add("*.cc");
-		cPlusPlusCba.Add("*.h");
+		List<string> cPlusPlusCba = new()
+		{
+			"*.c",
+			"*.cpp",
+			"*.cs",
+			"*.cc",
+			"*.h"
+		};
 		mCommentBlocks.Add(new CommentBlock(
 			"C style function block",
 			cPlusPlusCba.ToArray(),
@@ -154,7 +156,7 @@ public class ParameterSet
 
 		mCommentBlocks.Add(new CommentBlock(
 			"Visual Basic Single Quote (') Function Block",
-			CommentBlock.createFileAssocFromString("*.vb;*.vbs"),
+			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.AlwaysOnOwnLine,
 			@"'''''+",
 			true,
@@ -166,7 +168,7 @@ public class ParameterSet
 		));
 		mCommentBlocks.Add(new CommentBlock(
 			"Visual Basic Triple Quote (''')",
-			CommentBlock.createFileAssocFromString("*.vb;*.vbs"),
+			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.Empty,
 			"",
 			false,
@@ -178,7 +180,7 @@ public class ParameterSet
 		));
 		mCommentBlocks.Add(new CommentBlock(
 			"Visual Basic Double Quote ('')",
-			CommentBlock.createFileAssocFromString("*.vb;*.vbs"),
+			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.Empty,
 			"",
 			false,
@@ -190,7 +192,7 @@ public class ParameterSet
 		));
 		mCommentBlocks.Add(new CommentBlock(
 			"Visual Basic Single Quote (')",
-			CommentBlock.createFileAssocFromString("*.vb;*.vbs"),
+			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.Empty,
 			"",
 			false,
@@ -203,7 +205,7 @@ public class ParameterSet
 
 		mCommentBlocks.Add(new CommentBlock(
 			"# Block",
-			CommentBlock.createFileAssocFromString("Jamfile;Jamrules;*.jam"),
+			CommentBlock.CreateFileAssocFromString("Jamfile;Jamrules;*.jam"),
 			StartEndBlockType.AlwaysOnOwnLine,
 			@"\#\#\#+",
 			true,
@@ -215,7 +217,7 @@ public class ParameterSet
 		));
 		mCommentBlocks.Add(new CommentBlock(
 			"# Comment",
-			CommentBlock.createFileAssocFromString("Jamfile;Jamrules;*.jam"),
+			CommentBlock.CreateFileAssocFromString("Jamfile;Jamrules;*.jam"),
 			StartEndBlockType.Empty,
 			"",
 			false,
@@ -227,7 +229,7 @@ public class ParameterSet
 		));
 		mCommentBlocks.Add(new CommentBlock(
 			"Empty Block for Text Files",
-			CommentBlock.createFileAssocFromString("*.txt"),
+			CommentBlock.CreateFileAssocFromString("*.txt"),
 			StartEndBlockType.Empty,
 			"",
 			false,
@@ -377,24 +379,24 @@ public class ParameterSet
 			mUseTabsToIndent = XmlConvert.ToBoolean(r.ReadElementString("UseTabsToIndent"));
 			mWrapWidth = XmlConvert.ToInt32(r.ReadElementString("WrapWidth"));
 			mMinimumBlockWidth = XmlConvert.ToInt32(r.ReadElementString("MinimumBlockWidth"));
-			validateGeneralSettings();
+			ValidateGeneralSettings();
 
 			while (r.Name != "CommentReflowerParameters")
 			{
 				if (r.LocalName == "CommentBlock")
 				{
 					mCommentBlocks.Add(new CommentBlock(r));
-					validateCommentBlock(mCommentBlocks.Count - 1);
+					ValidateCommentBlock(mCommentBlocks.Count - 1);
 				}
 				else if (r.LocalName == "BulletPoint")
 				{
 					mBulletPoints.Add(new BulletPoint(r));
-					validateBullet(mBulletPoints.Count - 1);
+					ValidateBullet(mBulletPoints.Count - 1);
 				}
 				else if (r.LocalName == "BreakFlowString")
 				{
 					mBreakFlowStrings.Add(new BreakFlowString(r));
-					validateBreakFlowString(mBreakFlowStrings.Count - 1);
+					ValidateBreakFlowString(mBreakFlowStrings.Count - 1);
 				}
 				else if (r.LocalName == "")
 				{
@@ -415,7 +417,7 @@ public class ParameterSet
 	/// <summary>
 	/// Writes object to xml file
 	/// </summary>
-	public MemoryStream writeToXmlMemoryStream()
+	public MemoryStream WriteToXmlMemoryStream()
 	{
 		var memoryStream = new MemoryStream();
 		XmlWriter w = XmlWriter.Create(memoryStream);
@@ -429,15 +431,15 @@ public class ParameterSet
 
 		foreach (CommentBlock cb in mCommentBlocks)
 		{
-			cb.dumpToXml(w);
+			cb.DumpToXml(w);
 		}
 		foreach (BulletPoint bp in mBulletPoints)
 		{
-			bp.dumpToXml(w);
+			bp.DumpToXml(w);
 		}
 		foreach (BreakFlowString lb in mBreakFlowStrings)
 		{
-			lb.dumpToXml(w);
+			lb.DumpToXml(w);
 		}
 		w.WriteEndElement();
 
@@ -456,13 +458,13 @@ public class ParameterSet
 	/// if so sets the indentation of this line and the indentation of any
 	/// following text for the bullet.
 	/// </summary>
-	public bool matchesBulletPoint(string st, out int thisIndent, out int nextLineIndent)
+	public bool MatchesBulletPoint(string st, out int thisIndent, out int nextLineIndent)
 	{
 		thisIndent = 0;
 		nextLineIndent = 0;
 		foreach (BulletPoint bp in mBulletPoints)
 		{
-			if (bp.matches(st, out thisIndent, out nextLineIndent))
+			if (bp.Matches(st, out thisIndent, out nextLineIndent))
 			{
 				return true;
 			}
@@ -473,21 +475,19 @@ public class ParameterSet
 	/// <summary>
 	/// Returns true if the given string matches any bullet point string.
 	/// </summary>
-	public bool matchesBulletPoint(string st)
+	public bool MatchesBulletPoint(string st)
 	{
-		int temp1;
-		int temp2;
-		return this.matchesBulletPoint(st, out temp1, out temp2);
+		return this.MatchesBulletPoint(st, out _, out _);
 	}
 
 	/// <summary>
 	/// Returns true if the given string matches any force line break string.
 	/// </summary>
-	public bool matchesBreakFlowString(string st, bool ontoNextLineAsWell)
+	public bool MatchesBreakFlowString(string st, bool ontoNextLineAsWell)
 	{
 		foreach (BreakFlowString flb in mBreakFlowStrings)
 		{
-			if (flb.matches(st, ontoNextLineAsWell))
+			if (flb.Matches(st, ontoNextLineAsWell))
 			{
 				return true;
 			}
@@ -495,7 +495,7 @@ public class ParameterSet
 		return false;
 	}
 
-	public void validateGeneralSettings()
+	public void ValidateGeneralSettings()
 	{
 		if (mWrapWidth < 10)
 		{
@@ -511,7 +511,7 @@ public class ParameterSet
 	/// Validates the comment block at the given index, throws an exception
 	/// if it is invalis
 	/// </summary>
-	public void validateCommentBlock(int index)
+	public void ValidateCommentBlock(int index)
 	{
 		CommentBlock cb = (CommentBlock)mCommentBlocks[index];
 
@@ -545,7 +545,7 @@ public class ParameterSet
 			{
 				try
 				{
-					Regex regex = new Regex(cb.mBlockStart);
+					Regex regex = new(cb.mBlockStart);
 				}
 				catch (Exception)
 				{
@@ -569,7 +569,7 @@ public class ParameterSet
 			{
 				try
 				{
-					Regex regex = new Regex(cb.mBlockEnd);
+					Regex regex = new(cb.mBlockEnd);
 				}
 				catch (Exception)
 				{
@@ -583,7 +583,7 @@ public class ParameterSet
 	/// Validates the bullet at the given index, throws an exception if it is
 	/// invalid.
 	/// </summary>
-	public void validateBullet(int index)
+	public void ValidateBullet(int index)
 	{
 		BulletPoint bp = (BulletPoint)mBulletPoints[index];
 
@@ -606,7 +606,7 @@ public class ParameterSet
 		{
 			try
 			{
-				Regex regex = new Regex(bp.mString);
+				Regex regex = new(bp.mString);
 			}
 			catch (Exception)
 			{
@@ -619,7 +619,7 @@ public class ParameterSet
 	/// Validates the force line break at the given index, throws an
 	/// exception if it is invalid
 	/// </summary>
-	public void validateBreakFlowString(int index)
+	public void ValidateBreakFlowString(int index)
 	{
 		BreakFlowString bp = (BreakFlowString)mBreakFlowStrings[index];
 
@@ -642,7 +642,7 @@ public class ParameterSet
 		{
 			try
 			{
-				Regex regex = new Regex(bp.mString);
+				Regex regex = new(bp.mString);
 			}
 			catch (Exception)
 			{
@@ -651,7 +651,7 @@ public class ParameterSet
 		}
 	}
 
-	public List<CommentBlock> getBlocksForFileName(string fileName)
+	public List<CommentBlock> GetBlocksForFileName(string fileName)
 	{
 		var ret = new List<CommentBlock>();
 		foreach (CommentBlock cb in mCommentBlocks)
@@ -661,7 +661,7 @@ public class ParameterSet
 				string regexString = asoc.ToLower();
 				regexString = regexString.Replace(".", "\\.");
 				regexString = regexString.Replace("*", ".*?");
-				Regex re = new Regex(regexString);
+				Regex re = new(regexString);
 				if (re.IsMatch(fileName.ToLower()))
 				{
 					ret.Add(cb);
@@ -675,17 +675,17 @@ public class ParameterSet
 	/// <summary>
 	/// The comment blocks
 	/// </summary>
-	public List<CommentBlock> mCommentBlocks = new List<CommentBlock>();
+	public List<CommentBlock> mCommentBlocks = new();
 
 	/// <summary>
 	/// The Bullets
 	/// </summary>
-	public List<BulletPoint> mBulletPoints = new List<BulletPoint>();
+	public List<BulletPoint> mBulletPoints = new();
 
 	/// <summary>
 	/// The force line breaks
 	/// </summary>
-	public List<BreakFlowString> mBreakFlowStrings = new List<BreakFlowString>();
+	public List<BreakFlowString> mBreakFlowStrings = new();
 
 	/// <summary>
 	/// Whether to use tabs to indent blocks

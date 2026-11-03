@@ -29,26 +29,22 @@ public class TestFileWrapper : EnvDTE.TextDocument
 	public TestFileWrapper(string fileName)
 	{
 		mCurrentPoints = new ArrayList();
-		using (StreamReader sr = new StreamReader(fileName))
+		using StreamReader sr = new(fileName);
+		String line;
+		// Read and display lines from the file until the end of the
+		// file is reached.
+		mLines = new ArrayList();
+		while ((line = sr.ReadLine()) != null)
 		{
-			String line;
-			// Read and display lines from the file until the end of the
-			// file is reached.
-			mLines = new ArrayList();
-			while ((line = sr.ReadLine()) != null)
-			{
-				mLines.Add(line);
-			}
+			mLines.Add(line);
 		}
 	}
 	public void WriteToFile(string fileName)
 	{
-		using (StreamWriter sw = new StreamWriter(fileName))
+		using StreamWriter sw = new(fileName);
+		for (int i = 0; i < mLines.Count; i++)
 		{
-			for (int i = 0; i < mLines.Count; i++)
-			{
-				sw.WriteLine(mLines[i]);
-			}
+			sw.WriteLine(mLines[i]);
 		}
 	}
 	public void ClearBookmarks()
@@ -157,14 +153,14 @@ public class TestFileWrapper : EnvDTE.TextDocument
 	)
 	{
 		TestTextPoint endPoint;
-		if (obj is int)
+		if (obj is int val)
 		{
 			endPoint = (TestTextPoint)startPoint.CreateEditPoint();
-			endPoint.CharRight((int)obj);
+			endPoint.CharRight(val);
 		}
-		else if (obj is TestTextPoint)
+		else if (obj is TestTextPoint point)
 		{
-			endPoint = (TestTextPoint)obj;
+			endPoint = point;
 		}
 		else
 		{
@@ -245,7 +241,7 @@ public class TestFileWrapper : EnvDTE.TextDocument
 	{
 		int startLine = startPoint.mLineNum;
 		int startChar = startPoint.mCharPosition;
-		int charsPushedOnNextLine = 0;// chars after last carriage return
+		int charsPushedOnNextLine;// chars after last carriage return
 		int linesPushedDown = 0;// number carriage returns
 
 		if (st[0] == '\n')
@@ -317,7 +313,7 @@ public class TestFileWrapper : EnvDTE.TextDocument
 	}
 
 	// no line break characters here!!
-	private ArrayList/*<string>*/ mLines;
+	private readonly ArrayList/*<string>*/ mLines;
 
-	private ArrayList/*<WeakRefernce<TestTextPoint>>*/ mCurrentPoints;
+	private readonly ArrayList/*<WeakRefernce<TestTextPoint>>*/ mCurrentPoints;
 }

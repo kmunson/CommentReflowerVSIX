@@ -342,10 +342,8 @@ public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 	{
 		// FIXME: this function is not implemented to handle multiple lines!!!!
 
-		if (obj is int)
+		if (obj is int val)
 		{
-			int val = (int)obj;
-
 			if ((val == -1) && (mCharPosition == 0))
 			{
 				// ugly hack!
@@ -355,9 +353,8 @@ public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 			return mParent.GetLine(mLineNum).Substring(mCharPosition, val);
 
 		}
-		else if (obj is TestTextPoint)
+		else if (obj is TestTextPoint end)
 		{
-			TestTextPoint end = (TestTextPoint)obj;
 			return mParent.GetLine(mLineNum).Substring(mCharPosition, end.mCharPosition - mCharPosition);
 		}
 
@@ -419,7 +416,7 @@ public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 	{
 	}
 
-	private TestFileWrapper mParent;
+	private readonly TestFileWrapper mParent;
 	public int mLineNum;
 	public int mCharPosition;
 

@@ -146,9 +146,9 @@ public class CommentReflowerObj
 		enddoc.EndOfDocument();
 		string line = GetUntabbedLine(enddoc, ep.Line);
 
-		foreach (CommentBlock block in pset.getBlocksForFileName(fileName))
+		foreach (CommentBlock block in pset.GetBlocksForFileName(fileName))
 		{
-			if (block.lineHasBlockPattern(line, out bdata.mIndentation))
+			if (block.LineHasBlockPattern(line, out bdata.mIndentation))
 			{
 				int currentLineNumber = ep.Line;
 				// scan up for block start
@@ -158,7 +158,7 @@ public class CommentReflowerObj
 					string currentLine = GetUntabbedLine(enddoc, currentLineNumber);
 					string previousLine = GetUntabbedLine(enddoc, currentLineNumber - 1);
 					string nextLine = GetUntabbedLine(enddoc, currentLineNumber + 1);
-					if (block.lineIsStartOfBlock(
+					if (block.LineIsStartOfBlock(
 						currentLine,
 						previousLine,
 						bdata.mIndentation,
@@ -169,8 +169,8 @@ public class CommentReflowerObj
 						foundStart = true;
 						break;
 					}
-					else if (!block.lineIsBlockContinuation(currentLine, bdata.mIndentation) &&
-						!block.lineIsEndOfBlock(currentLine, nextLine, bdata.mIndentation, out bdata.mMatchedBlockEnd))
+					else if (!block.LineIsBlockContinuation(currentLine, bdata.mIndentation) &&
+						!block.LineIsEndOfBlock(currentLine, nextLine, bdata.mIndentation, out bdata.mMatchedBlockEnd))
 					{
 						break;
 					}
@@ -182,14 +182,14 @@ public class CommentReflowerObj
 					{
 						string currentLine = GetUntabbedLine(enddoc, currentLineNumber);
 						string nextLine = GetUntabbedLine(enddoc, currentLineNumber + 1);
-						if (block.lineIsEndOfBlock(currentLine, nextLine, bdata.mIndentation, out bdata.mMatchedBlockEnd))
+						if (block.LineIsEndOfBlock(currentLine, nextLine, bdata.mIndentation, out bdata.mMatchedBlockEnd))
 						{
 							bdata.mEndLine = currentLineNumber;
 							foundEnd = true;
 							break;
 						}
 						else if ((currentLineNumber != bdata.mStartLine) &&
-							(!block.lineIsBlockContinuation(currentLine, bdata.mIndentation)))
+							(!block.LineIsBlockContinuation(currentLine, bdata.mIndentation)))
 						{
 							break;
 						}
@@ -409,7 +409,7 @@ public class CommentReflowerObj
 			// check all cases that stop wrapping of this line to the next
 			if (isInPreformmatedBlock ||
 				AtLineEndIgnoringWhiteSpace(curPoint) ||
-				pset.matchesBreakFlowString(GetRestOfLine(curPoint), false))
+				pset.MatchesBreakFlowString(GetRestOfLine(curPoint), false))
 			{
 				if ((lastEndPre != -1) && (lastEndPre > lastStartPre))
 				{
@@ -418,7 +418,7 @@ public class CommentReflowerObj
 				curPoint.LineDown(1);
 				continue;
 			}
-			bool breakLine = pset.matchesBreakFlowString(GetRestOfLine(curPoint), true);
+			bool breakLine = pset.MatchesBreakFlowString(GetRestOfLine(curPoint), true);
 
 			// work out if we are in a preformatted block
 			if ((lastEndPre != -1) && (lastEndPre > lastStartPre))
@@ -427,7 +427,7 @@ public class CommentReflowerObj
 			}
 
 			// work out indent for current line
-			if (pset.matchesBulletPoint(GetRestOfLine(curPoint), out int thisIndent, out int currentIndent))
+			if (pset.MatchesBulletPoint(GetRestOfLine(curPoint), out int thisIndent, out int currentIndent))
 			{
 				// We need to convert current indent to number of columns
 				// as at the moment it is number of characters.
@@ -480,8 +480,8 @@ public class CommentReflowerObj
 				else
 				{
 					SkipString(nextLinePoint, block.mLineStart);
-					if (!pset.matchesBulletPoint(GetRestOfLine(nextLinePoint)) &&
-						!pset.matchesBreakFlowString(GetRestOfLine(nextLinePoint), false) &&
+					if (!pset.MatchesBulletPoint(GetRestOfLine(nextLinePoint)) &&
+						!pset.MatchesBreakFlowString(GetRestOfLine(nextLinePoint), false) &&
 						(SkipWhitespace(nextLinePoint) == currentIndent))
 					{
 						wrapIntoNextLine = true;
@@ -881,8 +881,8 @@ public class CommentReflowerObj
 		// lines
 		SkipString(temp, lineStart.TrimEnd());
 		return AtLineEndIgnoringWhiteSpace(temp) ||
-			pset.matchesBreakFlowString(GetRestOfLine(temp), false) ||
-			pset.matchesBulletPoint(GetRestOfLine(temp));
+			pset.MatchesBreakFlowString(GetRestOfLine(temp), false) ||
+			pset.MatchesBulletPoint(GetRestOfLine(temp));
 	}
 
 	private static bool AtLineEndIgnoringWhiteSpace(

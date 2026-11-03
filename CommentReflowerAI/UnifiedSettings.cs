@@ -95,7 +95,7 @@ internal sealed class UnifiedSettings : IDisposable
 		p.mWrapWidth = GetValue<int>(WrapWidth);
 		p.mMinimumBlockWidth = GetValue<int>(MinimumBlockWidth);
 		p.mUseTabsToIndent = GetValue<bool>(UseTabsToIndent);
-		p.validateGeneralSettings();
+		p.ValidateGeneralSettings();
 
 		foreach (var item in GetArray(CommentBlocks))
 		{
@@ -104,7 +104,7 @@ internal sealed class UnifiedSettings : IDisposable
 			{
 				var commentBlock = new CommentBlock(
 					name,
-					CommentBlock.createFileAssocFromString(GetString(item, "fileTypes")),
+					CommentBlock.CreateFileAssocFromString(GetString(item, "fileTypes")),
 					GetBlockType(item, "blockStartType"),
 					FromDisplay(GetString(item, "blockStart")),
 					GetBool(item, "blockStartIsRegex"),
@@ -115,7 +115,7 @@ internal sealed class UnifiedSettings : IDisposable
 					GetString(item, "firstLine") == "mustNotContainTextBeforeStart"
 				);
 				p.mCommentBlocks.Add(commentBlock);
-				p.validateCommentBlock(p.mCommentBlocks.Count - 1);
+				p.ValidateCommentBlock(p.mCommentBlocks.Count - 1);
 			}
 			catch (ArgumentException e)
 			{
@@ -135,7 +135,7 @@ internal sealed class UnifiedSettings : IDisposable
 					GetString(item, "wrapOnEdge") == "right"
 				);
 				p.mBulletPoints.Add(bulletPoint);
-				p.validateBullet(p.mBulletPoints.Count - 1);
+				p.ValidateBullet(p.mBulletPoints.Count - 1);
 			}
 			catch (ArgumentException e)
 			{
@@ -156,7 +156,7 @@ internal sealed class UnifiedSettings : IDisposable
 					GetBool(item, "neverReflowIntoNextLine")
 				);
 				p.mBreakFlowStrings.Add(breakFlowString);
-				p.validateBreakFlowString(p.mBreakFlowStrings.Count - 1);
+				p.ValidateBreakFlowString(p.mBreakFlowStrings.Count - 1);
 			}
 			catch (ArgumentException e)
 			{

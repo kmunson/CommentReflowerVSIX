@@ -129,7 +129,7 @@ public sealed class CommentReflowerPackage : AsyncPackage
 			bool hasBlocks;
 			try
 			{
-				hasBlocks = document != null && Settings.GetParams().getBlocksForFileName(document.Name).Count > 0;
+				hasBlocks = document != null && Settings.GetParams().GetBlocksForFileName(document.Name).Count > 0;
 			}
 			catch (ArgumentException)
 			{

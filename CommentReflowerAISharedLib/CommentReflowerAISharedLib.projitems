@@ -21,9 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommentReflowerObj.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ParameterAlignerObj.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ParameterSet.cs">
       <SubType>Code</SubType>
     </Compile>

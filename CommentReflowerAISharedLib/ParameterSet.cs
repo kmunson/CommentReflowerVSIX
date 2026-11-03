@@ -356,7 +356,6 @@ public class ParameterSet
 		{
 			mBreakFlowStrings.Add(new BreakFlowString(lb));
 		}
-		mEnableAlignParams = other.mEnableAlignParams;
 	}
 
 	/// <summary>
@@ -703,6 +702,4 @@ public class ParameterSet
 	/// mWrapWidth to meet this
 	/// </summary>
 	public int mMinimumBlockWidth;
-
-	public bool mEnableAlignParams;
 }

@@ -17,9 +17,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace CommentReflowerLib;
 
@@ -358,99 +356,6 @@ public class ParameterSet
 		{
 			mBreakFlowStrings.Add(new BreakFlowString(lb));
 		}
-	}
-
-	/// <summary>
-	/// Constructor from xml file. Throws exception on invalid file
-	/// </summary>
-	public ParameterSet(Stream stream)
-	{
-		XmlReader r = XmlReader.Create(stream);
-
-		try
-		{
-			r.Read();
-			r.ReadStartElement("CommentReflowerParameters");
-			string version = r.ReadElementString("Version");
-			if (version.CompareTo("1") != 0)
-			{
-				throw new System.ArgumentException("Unsupported file version");
-			}
-			mUseTabsToIndent = XmlConvert.ToBoolean(r.ReadElementString("UseTabsToIndent"));
-			mWrapWidth = XmlConvert.ToInt32(r.ReadElementString("WrapWidth"));
-			mMinimumBlockWidth = XmlConvert.ToInt32(r.ReadElementString("MinimumBlockWidth"));
-			ValidateGeneralSettings();
-
-			while (r.Name != "CommentReflowerParameters")
-			{
-				if (r.LocalName == "CommentBlock")
-				{
-					mCommentBlocks.Add(new CommentBlock(r));
-					ValidateCommentBlock(mCommentBlocks.Count - 1);
-				}
-				else if (r.LocalName == "BulletPoint")
-				{
-					mBulletPoints.Add(new BulletPoint(r));
-					ValidateBullet(mBulletPoints.Count - 1);
-				}
-				else if (r.LocalName == "BreakFlowString")
-				{
-					mBreakFlowStrings.Add(new BreakFlowString(r));
-					ValidateBreakFlowString(mBreakFlowStrings.Count - 1);
-				}
-				else if (r.LocalName == "")
-				{
-					r.Read();
-				}
-				else
-				{
-					throw new System.ArgumentException("Unknown element in Xml");
-				}
-			}
-		}
-		finally
-		{
-			stream.Seek(0, SeekOrigin.Begin);
-		}
-	}
-
-	/// <summary>
-	/// Writes object to xml file
-	/// </summary>
-	public MemoryStream WriteToXmlMemoryStream()
-	{
-		var memoryStream = new MemoryStream();
-		XmlWriter w = XmlWriter.Create(memoryStream);
-
-		w.WriteStartDocument();
-		w.WriteStartElement("CommentReflowerParameters");
-		w.WriteElementString("Version", "1");
-		w.WriteElementString("UseTabsToIndent", XmlConvert.ToString(mUseTabsToIndent));
-		w.WriteElementString("WrapWidth", XmlConvert.ToString(mWrapWidth));
-		w.WriteElementString("MinimumBlockWidth", XmlConvert.ToString(mMinimumBlockWidth));
-
-		foreach (CommentBlock cb in mCommentBlocks)
-		{
-			cb.DumpToXml(w);
-		}
-		foreach (BulletPoint bp in mBulletPoints)
-		{
-			bp.DumpToXml(w);
-		}
-		foreach (BreakFlowString lb in mBreakFlowStrings)
-		{
-			lb.DumpToXml(w);
-		}
-		w.WriteEndElement();
-
-		w.WriteEndDocument();
-		// Flush the xml document to the underlying stream. The data will
-		// not be written out to the stream until the Flush() method is
-		// called.
-		w.Flush();
-
-		memoryStream.Seek(0, SeekOrigin.Begin);
-		return memoryStream;
 	}
 
 	/// <summary>

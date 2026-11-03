@@ -303,22 +303,6 @@ class MainClass
 		Console.WriteLine(testName + " tests PASSED.");
 	}
 
-	static void DoXmlFileTests()
-	{
-		ParameterSet pset = new();
-		MemoryStream memorySteam = pset.WriteToXmlMemoryStream();
-		pset = new ParameterSet(memorySteam);
-		MemoryStream memoryStream2 = pset.WriteToXmlMemoryStream();
-		int lineNum = StreamCompare(memorySteam, memoryStream2);
-		if (lineNum != -1)
-		{
-			throw new System.ApplicationException(
-				"2nd output of xml file does not match first at line " + lineNum
-			);
-		}
-		Console.WriteLine("Xml file tests PASSED.");
-	}
-
 	/// <summary>
 	/// The main entry point for the application.
 	/// </summary>
@@ -336,7 +320,6 @@ class MainClass
 			DoSimpleSingleFileTest("VB", "Regression", ".vb");
 			DoSimpleSingleFileTest("Jamfile", "Regression", ".JAM");
 			DoSimpleSingleFileTest("Text file", "Regression", ".txt");
-			DoXmlFileTests();
 		}
 		catch (Exception e)
 		{

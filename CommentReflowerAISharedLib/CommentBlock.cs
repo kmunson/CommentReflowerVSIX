@@ -17,7 +17,6 @@
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace CommentReflowerLib;
 
@@ -83,44 +82,6 @@ public class CommentBlock
 	}
 
 	/// <summary>
-	/// Constructor from xml file
-	/// </summary>
-	public CommentBlock(XmlReader r)
-	{
-		r.ReadStartElement("CommentBlock");
-		mName = r.ReadElementString("Name");
-		mFileAssociations = CreateFileAssocFromString(r.ReadElementString("FileAssociations"));
-		mBlockStartType = (StartEndBlockType)Enum.Parse(typeof(StartEndBlockType), r.ReadElementString("BlockStartType"));
-		mBlockStart = r.ReadElementString("BlockStart");
-		mIsBlockStartRegEx = XmlConvert.ToBoolean(r.ReadElementString("IsBlockStartRegEx"));
-		mBlockEndType = (StartEndBlockType)Enum.Parse(typeof(StartEndBlockType), r.ReadElementString("BlockEndType"));
-		mBlockEnd = r.ReadElementString("BlockEnd");
-		mIsBlockEndRegEx = XmlConvert.ToBoolean(r.ReadElementString("IsBlockEndRegEx"));
-		mLineStart = r.ReadElementString("LineStart");
-		mOnlyEmptyLineBeforeStartOfBlock = XmlConvert.ToBoolean(r.ReadElementString("OnlyEmptyLineBeforeStartOfBlock"));
-		r.ReadEndElement();
-	}
-
-	/// <summary>
-	/// Dumps the object to xml file
-	/// </summary>
-	public void DumpToXml(XmlWriter w)
-	{
-		w.WriteStartElement("CommentBlock");
-		w.WriteElementString("Name", mName);
-		w.WriteElementString("FileAssociations", GetAssociationsAsString());
-		w.WriteElementString("BlockStartType", mBlockStartType.ToString());
-		w.WriteElementString("BlockStart", mBlockStart);
-		w.WriteElementString("IsBlockStartRegEx", XmlConvert.ToString(mIsBlockStartRegEx));
-		w.WriteElementString("BlockEndType", mBlockEndType.ToString());
-		w.WriteElementString("BlockEnd", mBlockEnd);
-		w.WriteElementString("IsBlockEndRegEx", XmlConvert.ToString(mIsBlockEndRegEx));
-		w.WriteElementString("LineStart", mLineStart);
-		w.WriteElementString("OnlyEmptyLineBeforeStartOfBlock", XmlConvert.ToString(mOnlyEmptyLineBeforeStartOfBlock));
-		w.WriteEndElement();
-	}
-
-	/// <summary>
 	/// Creates a File Association List from a semicolon separated string
 	/// </summary>
 	public static string[] CreateFileAssocFromString(string st)
@@ -131,23 +92,6 @@ public class CommentBlock
 		}
 		string[] ret = st.Split(';');
 		return Array.ConvertAll(ret, s => s.Trim());
-	}
-
-	/// <summary>
-	/// Returns this objects file associations as a string
-	/// </summary>
-	public string GetAssociationsAsString()
-	{
-		string ret = "";
-		foreach (string st in mFileAssociations)
-		{
-			if (ret.Length > 0)
-			{
-				ret += "; ";
-			}
-			ret += st;
-		}
-		return ret;
 	}
 
 	/// <summary>

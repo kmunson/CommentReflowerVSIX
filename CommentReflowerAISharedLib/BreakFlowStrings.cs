@@ -16,7 +16,6 @@
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace CommentReflowerLib;
 
@@ -53,34 +52,6 @@ public class BreakFlowString
 		this.mIsRegEx = other.mIsRegEx;
 		this.mNeverReflowLine = other.mNeverReflowLine;
 		this.mNeverReflowIntoNextLine = other.mNeverReflowIntoNextLine;
-	}
-
-	/// <summary>
-	/// Constructor from xml file
-	/// </summary>
-	public BreakFlowString(XmlReader r)
-	{
-		r.ReadStartElement("BreakFlowString");
-		mName = r.ReadElementString("Name");
-		mString = r.ReadElementString("String");
-		mIsRegEx = XmlConvert.ToBoolean(r.ReadElementString("IsRegEx"));
-		mNeverReflowLine = XmlConvert.ToBoolean(r.ReadElementString("NeverReflowLine"));
-		mNeverReflowIntoNextLine = XmlConvert.ToBoolean(r.ReadElementString("NeverReflowIntoNextLine"));
-		r.ReadEndElement();
-	}
-
-	/// <summary>
-	/// Dumps the object to xml file
-	/// </summary>
-	public void DumpToXml(XmlWriter w)
-	{
-		w.WriteStartElement("BreakFlowString");
-		w.WriteElementString("Name", mName);
-		w.WriteElementString("String", mString);
-		w.WriteElementString("IsRegEx", XmlConvert.ToString(mIsRegEx));
-		w.WriteElementString("NeverReflowLine", XmlConvert.ToString(mNeverReflowLine));
-		w.WriteElementString("NeverReflowIntoNextLine", XmlConvert.ToString(mNeverReflowIntoNextLine));
-		w.WriteEndElement();
 	}
 
 	/// <summary>

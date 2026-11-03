@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>Exe</OutputType>
+    <!-- C# 10 for file-scoped namespaces, which need no runtime support. The default for net48 is 7.3. -->
+    <LangVersion>10</LangVersion>
     <AssemblyName>CommentReflowerAITests</AssemblyName>
     <RootNamespace>CommentReflowerAITests</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

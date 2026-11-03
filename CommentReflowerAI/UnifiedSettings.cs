@@ -175,9 +175,9 @@ internal sealed class UnifiedSettings : IDisposable
 		if (result.Outcome != SettingRetrievalOutcome.Success)
 		{
 			throw new ArgumentException(string.Format(
-				"Unable to read setting {0}: {1} {2}", 
-				moniker, 
-				result.Outcome, 
+				"Unable to read setting {0}: {1} {2}",
+				moniker,
+				result.Outcome,
 				result.Message
 			));
 		}
@@ -187,15 +187,15 @@ internal sealed class UnifiedSettings : IDisposable
 	private IReadOnlyList<IReadOnlyDictionary<string, object>> GetArray(string moniker)
 	{
 		var result = _reader.GetArray<IReadOnlyDictionary<string, object>>(
-			moniker, 
+			moniker,
 			SettingReadOptions.RequireValidation
 		);
 		if (result.Outcome != SettingRetrievalOutcome.Success)
 		{
 			throw new ArgumentException(string.Format(
-				"Unable to read setting {0}: {1} {2}", 
-				moniker, 
-				result.Outcome, 
+				"Unable to read setting {0}: {1} {2}",
+				moniker,
+				result.Outcome,
 				result.Message
 			));
 		}

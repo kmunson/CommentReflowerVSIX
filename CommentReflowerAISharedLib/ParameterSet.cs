@@ -88,8 +88,7 @@ public class ParameterSet
 			false
 		));
 
-		// ADD JAVASCRIPT AFTER C BLOCK COMMENTS
-		// DONE!
+		// ADD JAVASCRIPT AFTER C BLOCK COMMENTS DONE!
 		cPlusPlusCba.Add("*.js");
 		mCommentBlocks.Add(new CommentBlock(
 			"C++ style function block",
@@ -359,9 +358,9 @@ public class ParameterSet
 	}
 
 	/// <summary>
-	/// Returns true if the given string matches any bullet point string, and
-	/// if so sets the indentation of this line and the indentation of any
-	/// following text for the bullet.
+	/// Returns true if the given string matches any bullet point string, and if so sets
+	/// the indentation of this line and the indentation of any following text for the
+	/// bullet.
 	/// </summary>
 	public bool MatchesBulletPoint(string st, out int thisIndent, out int nextLineIndent)
 	{
@@ -413,8 +412,8 @@ public class ParameterSet
 	}
 
 	/// <summary>
-	/// Validates the comment block at the given index, throws an exception
-	/// if it is invalis
+	/// Validates the comment block at the given index, throws an exception if it is
+	/// invalis
 	/// </summary>
 	public void ValidateCommentBlock(int index)
 	{
@@ -485,8 +484,7 @@ public class ParameterSet
 	}
 
 	/// <summary>
-	/// Validates the bullet at the given index, throws an exception if it is
-	/// invalid.
+	/// Validates the bullet at the given index, throws an exception if it is invalid.
 	/// </summary>
 	public void ValidateBullet(int index)
 	{
@@ -521,8 +519,8 @@ public class ParameterSet
 	}
 
 	/// <summary>
-	/// Validates the force line break at the given index, throws an
-	/// exception if it is invalid
+	/// Validates the force line break at the given index, throws an exception if it is
+	/// invalid
 	/// </summary>
 	public void ValidateBreakFlowString(int index)
 	{
@@ -603,8 +601,8 @@ public class ParameterSet
 	public int mWrapWidth;
 
 	/// <summary>
-	/// The minimum width of any block of text. Blocks will extend past
-	/// mWrapWidth to meet this
+	/// The minimum width of any block of text. Blocks will extend past mWrapWidth to
+	/// meet this
 	/// </summary>
 	public int mMinimumBlockWidth;
 }

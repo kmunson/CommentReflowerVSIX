@@ -95,8 +95,8 @@ public class CommentBlock
 	}
 
 	/// <summary>
-	/// Helper function converts the given string to a reg ex, taking a
-	/// boolean indicating whether or not it is already a reg ex
+	/// Helper function converts the given string to a reg ex, taking a boolean
+	/// indicating whether or not it is already a reg ex
 	/// </summary>
 	private string GetRegEx(
 		string str,
@@ -143,9 +143,9 @@ public class CommentBlock
 				indentation = match.Groups[1].Length;
 				return true;
 			}
-			// If the block can be on the same line as a comment, then it
-			// may have trailing spaces that don't happen when it is on a
-			// line by itself. so trim those spaces and scan again.
+			// If the block can be on the same line as a comment, then it may have trailing
+			// spaces that don't happen when it is on a line by itself. so trim those spaces
+			// and scan again.
 			if (mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne)
 			{
 				startString = @"^(" + stCh + @"*?)" +
@@ -161,8 +161,7 @@ public class CommentBlock
 			}
 		}
 
-		// If the block start is not empty then the line start ch must
-		// always be space.
+		// If the block start is not empty then the line start ch must always be space.
 		if (mBlockStartType != StartEndBlockType.Empty)
 		{
 			stCh = " ";
@@ -205,8 +204,8 @@ public class CommentBlock
 	}
 
 	/// <summary>
-	/// Returns true if the current line matches the block end pattern.
-	/// Assert mBlockEnd.Length > 0.
+	/// Returns true if the current line matches the block end pattern. Assert
+	/// mBlockEnd.Length > 0.
 	/// </summary>
 	private bool LineMatchesBlockEnd(
 		string line,
@@ -223,7 +222,7 @@ public class CommentBlock
 		if (match.Success)
 		{
 			matchedBlockEnd = match.Groups[1].ToString();
-			return true; //line is a block end
+			return true; // line is a block end
 		}
 		matchedBlockEnd = "";
 		return false;
@@ -263,9 +262,9 @@ public class CommentBlock
 			matchedBlockStart = match.Groups[1].ToString();
 			return true;
 		}
-		// if the block start can be on the same line as comment text, then
-		// it may have trailing spaces that don't happen when it is on a
-		// line by itself. so trim those spaces and scan again
+		// if the block start can be on the same line as comment text, then it may have
+		// trailing spaces that don't happen when it is on a line by itself. so trim those
+		// spaces and scan again
 		if (mBlockStartType != StartEndBlockType.AlwaysOnOwnLine)
 		{
 			startString = @"^" + stCh + @"{" + indent.ToString() + @"}(" +
@@ -284,8 +283,8 @@ public class CommentBlock
 	}
 
 	/// <summary>
-	/// Returns true if the current line is the the continuation of a block
-	/// (ie not block start but possible block end)
+	/// Returns true if the current line is the the continuation of a block (ie not
+	/// block start but possible block end)
 	/// </summary>
 	public bool LineIsBlockContinuation(
 		string currentLine,
@@ -310,8 +309,7 @@ public class CommentBlock
 	}
 
 	/// <summary>
-	/// Returns true if the line is a possible start or continuation of the
-	/// block.
+	/// Returns true if the line is a possible start or continuation of the block.
 	/// @pre mBlockStartType == Empty
 	/// </summary>
 	private bool LineIsPossibleBlockContinuationStart(
@@ -359,11 +357,10 @@ public class CommentBlock
 		{
 			if (LineMatchesBlockStart(currentLine, indent, out matchedBlockStart, out numSpacesTrimmedOffStart))
 			{
-				// Have to worry about the case where the block start is
-				// exactly the same as the block end, in which case we may
-				// have found a block end not a block start. So if the
-				// previous line is a continuation assume we are an end, and
-				// return false, else return true
+				// Have to worry about the case where the block start is exactly the same as the
+				// block end, in which case we may have found a block end not a block start. So if
+				// the previous line is a continuation assume we are an end, and return false, else
+				// return true
 				return (mBlockStart.CompareTo(mBlockEnd) != 0) ||
 					(previousLine == null) ||
 					!LineIsBlockContinuation(previousLine, indent);
@@ -404,11 +401,9 @@ public class CommentBlock
 		{
 			if (LineMatchesBlockEnd(currentLine, out matchedBlockEnd))
 			{
-				// have to worry about the case where the block start is
-				// exactly the same as the block end, in which case we
-				// may have found a block start not a block end! So if
-				// the next line is a continuation assume we are an
-				// start and so return false
+				// have to worry about the case where the block start is exactly the same as the
+				// block end, in which case we may have found a block start not a block end! So if
+				// the next line is a continuation assume we are an start and so return false
 				return (mBlockStart.CompareTo(mBlockEnd) != 0) ||
 					(nextLine == null) ||
 					!LineIsBlockContinuation(nextLine, indent);
@@ -478,8 +473,8 @@ public class CommentBlock
 	public string mLineStart;
 
 	/// <summary>
-	/// Whether there can only be empty space before the start of block on
-	/// the first line of the block
+	/// Whether there can only be empty space before the start of block on the first
+	/// line of the block
 	/// </summary>
 	public bool mOnlyEmptyLineBeforeStartOfBlock;
 

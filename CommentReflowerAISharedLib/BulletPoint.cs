@@ -52,9 +52,9 @@ public class BulletPoint
 	}
 
 	/// <summary>
-	/// Returns true if this object occurs in the given string, anf if true
-	/// sets the indentation of this line and the indentation of any
-	/// following text for the bullet.
+	/// Returns true if this object occurs in the given string, anf if true sets the
+	/// indentation of this line and the indentation of any following text for the
+	/// bullet.
 	/// </summary>
 	public bool Matches(string st, out int thisIndent, out int nextLineIndent)
 	{
@@ -111,8 +111,8 @@ public class BulletPoint
 	public bool mIsRegEx;
 
 	/// <summary>
-	/// Whether the second and subsequent lines of the bullet should wrap at
-	/// the left or the right of the match string.
+	/// Whether the second and subsequent lines of the bullet should wrap at the left or
+	/// the right of the match string.
 	/// </summary>
 	public bool mWrapIsAtRight;
 }

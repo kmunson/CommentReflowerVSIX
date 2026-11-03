@@ -39,9 +39,9 @@ public class MatchedBlockData
 	/// </summary>
 	public string mMatchedBlockStart;
 	/// <summary>
-	/// The number of spaces that should be added to the start of block if it
-	/// is put on the same line as comment. Only valid if the comment block
-	/// type was OnOwnLineIfBlockIsMoreThanOne
+	/// The number of spaces that should be added to the start of block if it is put on
+	/// the same line as comment. Only valid if the comment block type was
+	/// OnOwnLineIfBlockIsMoreThanOne
 	/// </summary>
 	public int mSpacesTrimmedOffBlockStart;
 	/// <summary>
@@ -60,8 +60,8 @@ public class CommentReflowerObj
 	}
 
 	/// <summary>
-	/// Wraps all blocks that have any part between the two given text points
-	/// Returns if any blocks found.
+	/// Wraps all blocks that have any part between the two given text points Returns if
+	/// any blocks found.
 	/// </summary>
 	public static bool WrapAllBlocksInSelection(
 		ParameterSet pset,
@@ -98,8 +98,8 @@ public class CommentReflowerObj
 	}
 
 	/// <summary>
-	/// Wraps the block that contains the given text point. Returns if a
-	/// block was found.
+	/// Wraps the block that contains the given text point. Returns if a block was
+	/// found.
 	/// </summary>
 	public static bool WrapBlockContainingPoint(
 		ParameterSet pset,
@@ -208,8 +208,8 @@ public class CommentReflowerObj
 	}
 
 	/// <summary>
-	/// Returns the line at the given number with any tabs before any
-	/// non-space character converted to spaces.
+	/// Returns the line at the given number with any tabs before any non-space
+	/// character converted to spaces.
 	/// @param enddoc is just used to get the line.
 	/// @ret null if the given line is outside the bounds of the document.
 	/// </summary>
@@ -323,7 +323,7 @@ public class CommentReflowerObj
 			if ((curPoint.Line == bdata.mStartLine) &&
 				(block.mBlockStartType == StartEndBlockType.AlwaysOnOwnLine))
 			{
-				curPoint.LineDown(1);// simply go to the next line
+				curPoint.LineDown(1); // simply go to the next line
 				continue;
 			}
 			else if ((curPoint.Line == bdata.mStartLine) &&
@@ -335,9 +335,8 @@ public class CommentReflowerObj
 			else if ((curPoint.Line == bdata.mStartLine) &&
 				(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne))
 			{
-				// we will automatically pull up the next line if we can. We
-				// also haqndle the case where traling spaces from the block
-				// start have been removed
+				// we will automatically pull up the next line if we can. We also handle the case
+				// where trailing spaces from the block start have been removed
 				SkipColumns(curPoint, bdata.mIndentation);
 				SkipString(curPoint, bdata.mMatchedBlockStart);
 
@@ -365,7 +364,7 @@ public class CommentReflowerObj
 					SkipColumns(nextLineStartPoint, bdata.mIndentation);
 					SkipString(nextLineStartPoint, block.mLineStart);
 					curPoint.Delete(nextLineStartPoint);
-					continue;// reprocess the line as it now may be last
+					continue; // reprocess the line as it now may be last
 				}
 			}
 			else // just a regular line start
@@ -377,13 +376,12 @@ public class CommentReflowerObj
 					if ((block.mBlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 						(GetTextOnLine(curPoint, bdata.mMatchedBlockEnd.Length) == bdata.mMatchedBlockEnd))
 					{
-						break;// we are done!
+						break; // we are done!
 					}
 					else if (GetTextOnLine(curPoint, block.mLineStart.TrimEnd().Length) == block.mLineStart.TrimEnd())
 					{
 						curPoint.LineDown(1);
-						// empty line with just trimmed block line
-						// start
+						// empty line with just trimmed block line start
 						continue;
 					}
 					else
@@ -394,13 +392,12 @@ public class CommentReflowerObj
 				curPoint.CharRight(block.mLineStart.Length);
 			}
 
-			// ASSERT: past the comment block start or comment line start
-			// for the line
+			// ASSERT: past the comment block start or comment line start for the line
 
 			int lastStartPre = GetRestOfLine(curPoint).ToLower().LastIndexOf("<pre>");
 			int lastEndPre = GetRestOfLine(curPoint).ToLower().LastIndexOf("</pre>");
 
-			// work out if we are in a preformatted block
+			// work out if we are in a pre-formatted block
 			if ((lastStartPre != -1) && (lastStartPre > lastEndPre))
 			{
 				isInPreformmatedBlock = true;
@@ -420,7 +417,7 @@ public class CommentReflowerObj
 			}
 			bool breakLine = pset.MatchesBreakFlowString(GetRestOfLine(curPoint), true);
 
-			// work out if we are in a preformatted block
+			// work out if we are in a pre-formatted block
 			if ((lastEndPre != -1) && (lastEndPre > lastStartPre))
 			{
 				isInPreformmatedBlock = false;
@@ -429,8 +426,8 @@ public class CommentReflowerObj
 			// work out indent for current line
 			if (pset.MatchesBulletPoint(GetRestOfLine(curPoint), out int thisIndent, out int currentIndent))
 			{
-				// We need to convert current indent to number of columns
-				// as at the moment it is number of characters.
+				// We need to convert current indent to number of columns as at the moment it is
+				// number of characters.
 				EnvDTE.EditPoint tempPoint = curPoint.CreateEditPoint();
 				tempPoint.CharRight(currentIndent);
 				currentIndent = tempPoint.DisplayColumn - curPoint.DisplayColumn;
@@ -444,13 +441,12 @@ public class CommentReflowerObj
 			if ((block.mBlockStartType == StartEndBlockType.NeverOnOwnLine) &&
 				(curPoint.Line == bdata.mStartLine))
 			{
-				// Need to account that on the first line the block start
-				// may have a different length to the line start.
+				// Need to account that on the first line the block start may have a different
+				// length to the line start.
 				//
-				// Note the reason we do not do the multi/ single option here
-				// is that if we are pulling up text onto the first line we
-				// actually break the reflowing indentation rule. This all
-				// needs to be thought through a bit better.
+				// Note the reason we do not do the multi/ single option here is that if we are
+				// pulling up text onto the first line we actually break the reflowing indentation
+				// rule. This all needs to be thought through a bit better.
 				currentIndent += bdata.mMatchedBlockStart.Length - block.mLineStart.Length;
 			}
 
@@ -460,8 +456,8 @@ public class CommentReflowerObj
 				blockWrapWidth = bdata.mIndentation + block.mLineStart.Length + currentIndent + pset.mMinimumBlockWidth;
 			}
 
-			// Now see if we can wrap into the next line, or if we wrap by
-			// inserting a new line before it.
+			// Now see if we can wrap into the next line, or if we wrap by inserting a new line
+			// before it.
 			EnvDTE.EditPoint nextLinePoint = null;
 			bool wrapIntoNextLine = false;
 			if (!isLastLine && !breakLine)
@@ -473,8 +469,7 @@ public class CommentReflowerObj
 				if ((block.mLineStart.TrimEnd().Length != block.mLineStart.Length) &&
 					(GetRestOfLine(nextLinePoint).CompareTo(block.mLineStart.TrimEnd()) == 0))
 				{
-					// handle the next line that is completely empty with
-					// rimmed line end
+					// handle the next line that is completely empty with rimmed line end
 					nextLinePoint = null;
 				}
 				else
@@ -493,9 +488,8 @@ public class CommentReflowerObj
 				}
 			}
 
-			// if on the first line and we can'd wrap the text into the next
-			// line, then push any text on the first line down to a separate
-			// line
+			// if on the first line and we can't wrap the text into the next line, then push
+			// any text on the first line down to a separate line
 			if ((block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 				(curPoint.Line == bdata.mStartLine) &&
 				!wrapIntoNextLine &&
@@ -511,12 +505,11 @@ public class CommentReflowerObj
 				continue;
 			}
 
-			// ASSERT: if we have got here, there is at least one word on
-			// this line, and if wrapIntoNextLine then there is at least one
-			// word on the next line
+			// ASSERT: if we have got here, there is at least one word on this line, and if
+			// wrapIntoNextLine then there is at least one word on the next line
 
-			// now go to the start of the first word that passes the wrap
-			// point, or the end of the line if it is sooner
+			// now go to the start of the first word that passes the wrap point, or the end of
+			// the line if it is sooner
 			int wordCount = 0;
 			while (((curPoint.DisplayColumn - 1) <= blockWrapWidth) &&
 				!AtLineEndIgnoringWhiteSpace(curPoint))
@@ -527,15 +520,15 @@ public class CommentReflowerObj
 
 			if ((curPoint.DisplayColumn - 1) <= blockWrapWidth)
 			{
-				// the end of line occurs at or before the wrap point. Try
-				// to fill in the gap from the next line if we can
+				// the end of line occurs at or before the wrap point. Try to fill in the gap from
+				// the next line if we can
 				if (!wrapIntoNextLine)
 				{
 					curPoint.LineDown(1);
 				}
 				else
 				{
-					int charsToFill = blockWrapWidth - ((curPoint.DisplayColumn - 1) + 1);//+1 for extra space
+					int charsToFill = blockWrapWidth - ((curPoint.DisplayColumn - 1) + 1); //+1 for extra space
 
 					EnvDTE.EditPoint nextLineEndPoint = nextLinePoint.CreateEditPoint();
 					int numChars = 0;
@@ -554,11 +547,9 @@ public class CommentReflowerObj
 					}
 					if ((numChars <= 0) || (numChars > charsToFill))
 					{
-						// the first word on the next line is too long to
-						// pull up
+						// the first word on the next line is too long to pull up
 
-						// push comment block start onto separate line and
-						// retry if we can
+						// push comment block start onto separate line and retry if we can
 						if ((curPoint.Line == bdata.mStartLine) &&
 							(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 							!isStartOnSeparateLine)
@@ -587,21 +578,18 @@ public class CommentReflowerObj
 						string st = nextLinePoint.GetText(nextLineEndPoint);
 						if (AtLineEndIgnoringWhiteSpace(nextLineEndPoint))
 						{
-							// no text left on next line, so delete the
-							// whole thing
+							// no text left on next line, so delete the whole thing
 							nextLineEndPoint.EndOfLine();
 							curPoint.Delete(nextLineEndPoint);
 							curPoint.Insert(" " + st);
-							// don't move curPoint down as we want to
-							// reprocess this line in case there is more
+							// don't move curPoint down as we want to reprocess this line in case there is more
 							// room left
 						}
 						else
 						{
 							// there is still text left on the next line
 
-							// push comment block start onto separate line
-							// if neccesary
+							// push comment block start onto separate line if necessary
 							if ((curPoint.Line == bdata.mStartLine) &&
 								(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 								!isStartOnSeparateLine)
@@ -616,8 +604,7 @@ public class CommentReflowerObj
 							}
 							else
 							{
-								// remove trailing string as well as
-								// trailing spaces
+								// remove trailing string as well as trailing spaces
 								while ((nextLineEndPoint.GetText(1) == " ") ||
 									(nextLineEndPoint.GetText(1) == "\t"))
 								{
@@ -633,7 +620,7 @@ public class CommentReflowerObj
 			}
 			else // ((curPoint.DisplayColumn-1) > blockWrapWidth)
 			{
-				// push start onto separate line if neccesary
+				// push start onto separate line if necessary
 				if ((curPoint.Line == bdata.mStartLine) &&
 					(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 					!isStartOnSeparateLine)
@@ -644,29 +631,25 @@ public class CommentReflowerObj
 					SkipString(curPoint, bdata.mMatchedBlockStart.TrimEnd());
 					curPoint.Delete(bdata.mMatchedBlockStart.Length - bdata.mMatchedBlockStart.TrimEnd().Length);
 					curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
-					// forces reprocess even if isLatLine
-					// was just true
+					// forces reprocess even if isLatLine was just true
 					isLastLine = false;
 					continue;// reprocess the just moved line
 				}
 
-				// this line overflows the word wrap. Move back to the end
-				// of the last word that doesn't overflow if possible
+				// this line overflows the word wrap. Move back to the end of the last word that
+				// doesn't overflow if possible
 				if (wordCount > 1)
 				{
 					GoToEndOfPreviousWord(curPoint);
 				}
 				if (AtLineEndIgnoringWhiteSpace(curPoint))
 				{
-					// the single line is too long, so
-					// forget about it
-					// and go to the next line
+					// the single line is too long, so forget about it and go to the next line
 					curPoint.LineDown(1);
 				}
 				else
 				{
-					// copy the remainder of the line after a space but
-					// delete the space as well
+					// copy the remainder of the line after a space but delete the space as well
 					if (!wrapIntoNextLine)
 					{
 						EnvDTE.EditPoint dataStartPoint = curPoint.CreateEditPoint();
@@ -691,8 +674,7 @@ public class CommentReflowerObj
 						nextLinePoint.Insert(st + " ");
 						curPoint.LineDown(1);
 					}
-					// if there is enough there to create one or multiple
-					// lines, then create them
+					// if there is enough there to create one or multiple lines, then create them
 					while (true)
 					{
 						curPoint.StartOfLine();
@@ -708,8 +690,7 @@ public class CommentReflowerObj
 						}
 						if ((curPoint.DisplayColumn - 1) <= blockWrapWidth)
 						{
-							// don't move down a line as we want to
-							// reprocess this line
+							// don't move down a line as we want to reprocess this line
 							break;
 						}
 						if (myWordCount > 1)
@@ -728,8 +709,7 @@ public class CommentReflowerObj
 						{
 							curPoint.Insert(GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
 						}
-						// process the just created line in the next
-						// iteration
+						// process the just created line in the next iteration
 					}
 				}
 			}
@@ -749,8 +729,8 @@ public class CommentReflowerObj
 		}
 	}
 	/// <summary>
-	/// Helper function returns -1 if the line is empty else returns the
-	/// amount of whitespace pt is indented by
+	/// Helper function returns -1 if the line is empty else returns the amount of
+	/// whitespace pt is indented by
 	/// </summary>
 	private static int SkipWhitespace(
 		EnvDTE.EditPoint pt
@@ -876,9 +856,7 @@ public class CommentReflowerObj
 		EnvDTE.EditPoint temp = pt.CreateEditPoint();
 		temp.MoveToLineAndOffset(lineNum, 1);
 		SkipColumns(temp, indentation);
-		// note the trim here, which
-		// allows the match of blank
-		// lines
+		// note the trim here, which allows the match of blank lines
 		SkipString(temp, lineStart.TrimEnd());
 		return AtLineEndIgnoringWhiteSpace(temp) ||
 			pset.MatchesBreakFlowString(GetRestOfLine(temp), false) ||
@@ -902,8 +880,7 @@ public class CommentReflowerObj
 		return temp.AtEndOfLine;
 	}
 
-	// pre: must be a word before the end of the line moves to the end of
-	// the word
+	// pre: must be a word before the end of the line moves to the end of the word
 	private static void GoToEndOfNextWord(
 		EnvDTE.EditPoint pt
 	)

@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using CodeAnalysis = System.Diagnostics.CodeAnalysis;
 
 namespace CommentReflower;
 

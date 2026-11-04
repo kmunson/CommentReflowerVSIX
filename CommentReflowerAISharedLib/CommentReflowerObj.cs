@@ -474,23 +474,20 @@ public class CommentReflowerObj
 			{
 				currentIndent = SkipWhitespace(curPoint);
 			}
+			int startMarkerIndent = 0;
 			if ((block.BlockStartType == StartEndBlockType.NeverOnOwnLine) &&
 				(curPoint.Line == bdata.StartLine))
 			{
 				// Need to account that on the first line the block start may have a different
-				// length to the line start.
-				//
-				// Note the reason we do not do the multi/ single option here is that if we are
-				// pulling up text onto the first line we actually break the reflowing indentation
-				// rule. This all needs to be thought through a bit better.
-				currentIndent += bdata.MatchedBlockStart.Length - block.LineStart.Length;
+				// length to the line start, so that the text on it lines up with the text on
+				// the lines that follow. If those lines are not lined up with it, but start at
+				// the line start, the check for wrapping into the next line below takes this
+				// back out.
+				startMarkerIndent = bdata.MatchedBlockStart.Length - block.LineStart.Length;
+				currentIndent += startMarkerIndent;
 			}
 
-			int blockWrapWidth = pset.WrapWidth;
-			if ((bdata.Indentation + block.LineStart.Length + currentIndent + pset.MinimumBlockWidth) > blockWrapWidth)
-			{
-				blockWrapWidth = bdata.Indentation + block.LineStart.Length + currentIndent + pset.MinimumBlockWidth;
-			}
+			int blockWrapWidth = GetBlockWrapWidth(pset, bdata, block, currentIndent);
 
 			// Now see if we can wrap into the next line, or if we wrap by inserting a new line
 			// before it.
@@ -511,10 +508,24 @@ public class CommentReflowerObj
 				else
 				{
 					SkipString(nextLinePoint, block.LineStart);
+					int nextLineIndent = -1;
 					if (!pset.MatchesBulletPoint(GetRestOfLine(nextLinePoint)) &&
-						!pset.MatchesBreakFlowString(GetRestOfLine(nextLinePoint), false) &&
-						(SkipWhitespace(nextLinePoint) == currentIndent))
+						!pset.MatchesBreakFlowString(GetRestOfLine(nextLinePoint), false))
 					{
+						nextLineIndent = SkipWhitespace(nextLinePoint);
+					}
+					if (nextLineIndent == currentIndent)
+					{
+						wrapIntoNextLine = true;
+					}
+					else if ((startMarkerIndent != 0) && (nextLineIndent >= 0) && (nextLineIndent == (currentIndent - startMarkerIndent)))
+					{
+						// The text on the first line is not lined up with the text on the next
+						// line, which starts at the line start. Treat the block as having no
+						// indent after the line start, so the first line wraps into it, and any
+						// lines added wrap with it.
+						currentIndent -= startMarkerIndent;
+						blockWrapWidth = GetBlockWrapWidth(pset, bdata, block, currentIndent);
 						wrapIntoNextLine = true;
 					}
 					else
@@ -522,6 +533,16 @@ public class CommentReflowerObj
 						nextLinePoint = null;
 					}
 				}
+			}
+
+			// With no line after the first to show which way the block is laid out, the lines
+			// added by wrapping the first line start at the line start if it is blank, as the
+			// lines of an XML comment do, and are lined up with the text of the first line if
+			// it is not.
+			if ((startMarkerIndent != 0) && !wrapIntoNextLine && (block.LineStart.Trim().Length == 0))
+			{
+				currentIndent -= startMarkerIndent;
+				blockWrapWidth = GetBlockWrapWidth(pset, bdata, block, currentIndent);
 			}
 
 			// if on the first line and we can't wrap the text into the next line, then push
@@ -814,6 +835,23 @@ public class CommentReflowerObj
 		{
 			throw new System.ArgumentException("Error parsing columns");
 		}
+	}
+
+	/// <summary>
+	/// Returns the column to wrap the block at, which is past the wrap width if the
+	/// minimum block width needs it to be.
+	/// </summary>
+	private static int GetBlockWrapWidth(
+		ParameterSet pset,
+		MatchedBlockData bdata,
+		CommentBlock block,
+		int currentIndent
+	)
+	{
+		return Math.Max(
+			pset.WrapWidth,
+			bdata.Indentation + block.LineStart.Length + currentIndent + pset.MinimumBlockWidth
+		);
 	}
 
 	private static string GetIndentationString(

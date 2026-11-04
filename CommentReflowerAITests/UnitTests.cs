@@ -648,6 +648,108 @@ static class UnitTests
 		Console.WriteLine("Replacing leading indentation tests PASSED.");
 	}
 
+	static ParameterSet XmlParameterSet(int wrapWidth, int minimumBlockWidth, bool useTabs)
+	{
+		ParameterSet pset = new()
+		{
+			UseTabsToIndent = useTabs,
+			WrapWidth = wrapWidth,
+			MinimumBlockWidth = minimumBlockWidth
+		};
+		pset.CommentBlocks.Clear();
+		pset.CommentBlocks.Add(new CommentBlock(
+			"XML",
+			CommentBlock.CreateFileAssocFromString("*.xml"),
+			StartEndBlockType.NeverOnOwnLine,
+			"<!-- ",
+			false,
+			StartEndBlockType.NeverOnOwnLine,
+			" -->",
+			false,
+			"",
+			true
+		));
+		return pset;
+	}
+
+	static string[] Tokens(IEnumerable<string> lines)
+	{
+		return string.Join(" ", lines).Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+	}
+
+	/// <summary>
+	/// A block whose start is longer than its line start, so that the text on its first
+	/// line can either line up with the text on the lines after it, or have them start at
+	/// the line start, as they do in an XML file.
+	/// </summary>
+	static void TestStartLongerThanLineStart()
+	{
+		string[] input =
+		{
+			"    <!-- This is a comment with enough short words in it that it has to be wrapped",
+			"    when the wrap width is narrow and that it fills several lines",
+			"    even at the default width so it is easy to see. -->"
+		};
+		foreach (bool useTabs in new[] { false, true })
+		{
+			ParameterSet pset = XmlParameterSet(60, 20, useTabs);
+			string[] output = Reflow(pset, ".xml", input);
+			string what = " with tabs " + (useTabs ? "on" : "off");
+			string indentation = useTabs ? "\t" : "    ";
+
+			Check(output.Length > 1, "The XML comment was not wrapped" + what);
+			Check(output[0].StartsWith(indentation + "<!-- "), "The first line of the XML comment is wrong" + what);
+			Check(
+				output.Skip(1).All(l => l.StartsWith(indentation) && !char.IsWhiteSpace(l[indentation.Length])),
+				"A line after the first of the XML comment is not flush with the block" + what
+			);
+			Check(output.Last().EndsWith(" -->"), "The last line of the XML comment does not end the comment" + what);
+			Check(output.All(l => ExpandTabs(l).Length <= 60), "A line of the XML comment is wider than the wrap width" + what);
+			Check(Tokens(output).SequenceEqual(Tokens(input)), "Reflowing the XML comment changed the words" + what);
+			// the first line is filled with words from the lines after it
+			Check(ExpandTabs(output[0]).Length > 50, "The first line of the XML comment was not filled" + what);
+			Check(Reflow(pset, ".xml", output).SequenceEqual(output), "Reflowing the XML comment twice changed the result" + what);
+		}
+
+		// a short first line is joined with the line after it, flush with the line start
+		string[] flush = Reflow(XmlParameterSet(80, 30, false), ".xml", "<!-- Short first line", "and the line after it. -->");
+		Check(flush.SequenceEqual(new[] { "<!-- Short first line and the line after it. -->" }), "A short first line was not joined with the line after it");
+
+		// and so is one with the line after it lined up with the text on it
+		string[] aligned = Reflow(XmlParameterSet(80, 30, false), ".xml", "<!-- Aligned first line", "     and the line after it. -->");
+		Check(aligned.SequenceEqual(new[] { "<!-- Aligned first line and the line after it. -->" }), "A first line was not joined with the line lined up with it");
+
+		// a comment on a single line that is wrapped has nothing after it to show how to lay
+		// out the lines it adds, so they start at the line start when it is blank
+		foreach (bool useTabs in new[] { false, true })
+		{
+			string[] single = { "  <!-- This is the file that defines the IDs for all the commands exposed by VisualStudio. -->" };
+			string[] wrapped = Reflow(XmlParameterSet(80, 30, useTabs), ".xml", single);
+			string what = " with tabs " + (useTabs ? "on" : "off");
+			Check(wrapped.Length > 1, "A long single line XML comment was not wrapped" + what);
+			Check(
+				wrapped.Skip(1).All(l => l.StartsWith("  ") && !char.IsWhiteSpace(l[2])),
+				"A line added to a single line XML comment is not flush with the block" + what + ": " + string.Join(" | ", wrapped)
+			);
+			Check(Tokens(wrapped).SequenceEqual(Tokens(single)), "Reflowing a single line XML comment changed the words" + what);
+			Check(Reflow(XmlParameterSet(80, 30, useTabs), ".xml", wrapped).SequenceEqual(wrapped), "Reflowing a single line XML comment twice changed the result" + what);
+		}
+
+		// but not if the line start is not blank: the lines added are lined up with the text
+		string[] startBlock = Reflow(new ParameterSet(), ".cpp", "/*! This is a comment on one line that is long enough that it has to be wrapped onto a second line */");
+		Check(startBlock.Length > 1 && startBlock.Skip(1).Take(startBlock.Length - 2).All(l => l.StartsWith(" *  ")), "A line added to a single line /*! comment is not lined up with its text: " + string.Join(" | ", startBlock));
+
+		// the same with the default /*! block, whose start is 1 longer than its line start
+		foreach (string second in new[] { " *  aligned second line", " * flush second line" })
+		{
+			string[] block = Reflow(new ParameterSet(), ".cpp", "/*! first line", second, " */");
+			Check(block.Length == 1, "A /*! block was not joined: " + string.Join(" | ", block));
+			Check(block[0].StartsWith("/*! first line ") && block[0].EndsWith(" second line */"), "A /*! block was joined wrongly: " + block[0]);
+		}
+
+		Console.WriteLine("Start longer than the line start tests PASSED.");
+	}
+
 	static void TestLongWord()
 	{
 		string longWord = new('x', 100);
@@ -784,6 +886,7 @@ static class UnitTests
 		TestMinimumBlockWidth();
 		TestIndentation();
 		TestReplaceLeadingIndentation();
+		TestStartLongerThanLineStart();
 		TestLongWord();
 		TestNoBlock();
 		TestBlocksAtEdges();

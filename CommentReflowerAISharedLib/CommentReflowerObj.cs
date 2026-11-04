@@ -400,7 +400,7 @@ public class CommentReflowerObj
 					nextLineStartPoint.LineDown(1);
 					nextLineStartPoint.StartOfLine();
 					SkipColumns(nextLineStartPoint, bdata.Indentation);
-					SkipString(nextLineStartPoint, block.LineStart);
+					SkipLineStart(nextLineStartPoint, block);
 					curPoint.Delete(nextLineStartPoint);
 					continue; // reprocess the line as it now may be last
 				}
@@ -416,6 +416,11 @@ public class CommentReflowerObj
 					{
 						break; // we are done!
 					}
+					else if (block.LineStartIsOptional)
+					{
+						// the line leaves out the line start, or has only some of it
+						SkipLineStart(curPoint, block);
+					}
 					else if (GetTextOnLine(curPoint, block.LineStart.TrimEnd().Length) == block.LineStart.TrimEnd())
 					{
 						curPoint.LineDown(1);
@@ -427,7 +432,10 @@ public class CommentReflowerObj
 						throw new System.ArgumentException("Error parsing block line start");
 					}
 				}
-				curPoint.CharRight(block.LineStart.Length);
+				else
+				{
+					curPoint.CharRight(block.LineStart.Length);
+				}
 			}
 
 			// ASSERT: past the comment block start or comment line start for the line
@@ -514,7 +522,7 @@ public class CommentReflowerObj
 				}
 				else
 				{
-					SkipString(nextLinePoint, block.LineStart);
+					SkipLineStart(nextLinePoint, block);
 					int nextLineIndent = -1;
 					if (!pset.MatchesBulletPoint(GetRestOfLine(nextLinePoint)) &&
 						!pset.MatchesBreakFlowString(GetRestOfLine(nextLinePoint), false))
@@ -886,6 +894,35 @@ public class CommentReflowerObj
 		else
 		{
 			return new System.String(' ', numberColumns);
+		}
+	}
+
+	/// <summary>
+	/// Skips the line start of a line of the block. If the block can leave it out, skips
+	/// as much of it as the line has, which may be none, and adds the rest to the line
+	/// if it has any text, so that the line gets the line start that the lines added
+	/// by wrapping will have.
+	/// </summary>
+	private static void SkipLineStart(EnvDTE.EditPoint pt, CommentBlock block)
+	{
+#if !UNIT_TEST
+		ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+		if (!block.LineStartIsOptional)
+		{
+			SkipString(pt, block.LineStart);
+			return;
+		}
+		int length = 0;
+		while ((length < block.LineStart.Length) &&
+			(GetTextOnLine(pt, length + 1) == new System.String(' ', length + 1)))
+		{
+			length++;
+		}
+		pt.CharRight(length);
+		if ((length < block.LineStart.Length) && !AtLineEndIgnoringWhiteSpace(pt))
+		{
+			pt.Insert(new System.String(' ', block.LineStart.Length - length));
 		}
 	}
 

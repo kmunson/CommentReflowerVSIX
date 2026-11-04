@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace CommentReflowerLib;
@@ -201,6 +202,32 @@ public class CommentBlock
 		}
 		indentation = 0;
 		return false;
+	}
+
+	/// <summary>
+	/// Returns the indentations that the block containing the given line could have, to
+	/// be tried in order. If the line has the block pattern this is the indentation it
+	/// has. A block whose line start is blank, as in XML, has nothing on the lines after
+	/// the first to show where the block is indented, so it could be indented by any
+	/// amount up to that of the line, and the nearest block start is wanted.
+	/// </summary>
+	public IEnumerable<int> GetPossibleIndentations(string currentLine)
+	{
+		if (!LineHasBlockPattern(currentLine, out int indentation))
+		{
+			yield break;
+		}
+		if ((BlockStartType != StartEndBlockType.Empty) && (LineStart.Trim().Length == 0))
+		{
+			for (int i = currentLine.Length - currentLine.TrimStart(' ').Length; i >= 0; i--)
+			{
+				yield return i;
+			}
+		}
+		else
+		{
+			yield return indentation;
+		}
 	}
 
 	/// <summary>

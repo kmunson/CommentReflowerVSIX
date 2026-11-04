@@ -148,7 +148,7 @@ public class CommentReflowerObj
 
 		foreach (CommentBlock block in pset.GetBlocksForFileName(fileName))
 		{
-			if (block.LineHasBlockPattern(line, out int indentation))
+			foreach (int indentation in block.GetPossibleIndentations(line))
 			{
 				bdata.Indentation = indentation;
 				int currentLineNumber = ep.Line;
@@ -198,14 +198,16 @@ public class CommentReflowerObj
 							break;
 						}
 					}
-					if (foundEnd)
+					// The block has to include the point. A block whose lines can't be told from
+					// the code around it could end before the point.
+					if (foundEnd && (ep.Line <= bdata.EndLine))
 					{
 						retblock = block;
 						return true;
 					}
-					// else try next block
+					// else try next indentation or block
 				}
-				// else try next block
+				// else try next indentation or block
 			}
 		}
 		return false;

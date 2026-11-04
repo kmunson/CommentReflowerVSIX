@@ -80,7 +80,7 @@ class MainClass
 		{
 			ParameterSet pset = new()
 			{
-				mUseTabsToIndent = true
+				UseTabsToIndent = true
 			};
 
 			for (int lineNumber = this.retStartLine; lineNumber <= this.retEndLine; lineNumber++)
@@ -106,28 +106,28 @@ class MainClass
 				{
 					return;
 				}
-				if (retBdata.mStartLine != this.retStartLine)
+				if (retBdata.StartLine != this.retStartLine)
 				{
 					throw new System.ApplicationException(
 						"Blockpoint Regression test line " + lineNumber.ToString() +
 						" does not match expected start line value"
 					);
 				}
-				if (retBdata.mEndLine != this.retEndLine)
+				if (retBdata.EndLine != this.retEndLine)
 				{
 					throw new System.ApplicationException(
 						"Blockpoint Regression test line " + lineNumber.ToString() +
 						" does not match expected end line value"
 					);
 				}
-				if (retBlock.mName != this.retCommentBlockName)
+				if (retBlock.Name != this.retCommentBlockName)
 				{
 					throw new System.ApplicationException(
 						"Blockpoint Regression test line " + lineNumber.ToString() +
 						" does not match expected block name"
 					);
 				}
-				if (retBdata.mIndentation != this.retIndentation)
+				if (retBdata.Indentation != this.retIndentation)
 				{
 					throw new System.ApplicationException(
 						"Blockpoint Regression test line " + lineNumber.ToString() +
@@ -187,7 +187,7 @@ class MainClass
 		//////////////////////////////////////////
 		ParameterSet pset = new()
 		{
-			mUseTabsToIndent = true
+			UseTabsToIndent = true
 		};
 		EnvDTE.EditPoint[] tp = new EnvDTE.EditPoint[mBlockPointValues.Length];
 		for (int i = 0; i < mBlockPointValues.Length; i++)
@@ -261,7 +261,7 @@ class MainClass
 		string fileName = @"..\..\Input\" + fileNamePrefix + fileNameSuffix;
 		ParameterSet pset = new()
 		{
-			mUseTabsToIndent = true
+			UseTabsToIndent = true
 		};
 
 		TestFileWrapper regressionFile = new(fileName);

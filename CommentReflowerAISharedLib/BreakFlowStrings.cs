@@ -28,18 +28,18 @@ public class BreakFlowString
 	/// Constructor taking values
 	/// </summary>
 	public BreakFlowString(
-		string mName,
-		string mString,
-		bool mIsRegEx,
-		bool mNeverReflowLine,
-		bool mNeverReflowIntoNextLine
+		string Name,
+		string MatchString,
+		bool IsRegEx,
+		bool NeverReflowLine,
+		bool NeverReflowIntoNextLine
 	)
 	{
-		this.mName = mName;
-		this.mString = mString;
-		this.mIsRegEx = mIsRegEx;
-		this.mNeverReflowLine = mNeverReflowLine;
-		this.mNeverReflowIntoNextLine = mNeverReflowIntoNextLine;
+		this.Name = Name;
+		this.MatchString = MatchString;
+		this.IsRegEx = IsRegEx;
+		this.NeverReflowLine = NeverReflowLine;
+		this.NeverReflowIntoNextLine = NeverReflowIntoNextLine;
 	}
 
 	/// <summary>
@@ -47,11 +47,11 @@ public class BreakFlowString
 	/// </summary>
 	public BreakFlowString(BreakFlowString other)
 	{
-		this.mName = other.mName;
-		this.mString = other.mString;
-		this.mIsRegEx = other.mIsRegEx;
-		this.mNeverReflowLine = other.mNeverReflowLine;
-		this.mNeverReflowIntoNextLine = other.mNeverReflowIntoNextLine;
+		this.Name = other.Name;
+		this.MatchString = other.MatchString;
+		this.IsRegEx = other.IsRegEx;
+		this.NeverReflowLine = other.NeverReflowLine;
+		this.NeverReflowIntoNextLine = other.NeverReflowIntoNextLine;
 	}
 
 	/// <summary>
@@ -59,17 +59,17 @@ public class BreakFlowString
 	/// </summary>
 	public bool Matches(string st, bool ontoNextLineAsWell)
 	{
-		if (mNeverReflowLine ||
-			(ontoNextLineAsWell && mNeverReflowIntoNextLine))
+		if (NeverReflowLine ||
+			(ontoNextLineAsWell && NeverReflowIntoNextLine))
 		{
 			string regstr;
-			if (mIsRegEx)
+			if (IsRegEx)
 			{
-				regstr = mString;
+				regstr = MatchString;
 			}
 			else
 			{
-				regstr = Regex.Escape(mString);
+				regstr = Regex.Escape(MatchString);
 			}
 			Regex regex = new(regstr);
 			return regex.Match(st).Success;
@@ -83,25 +83,25 @@ public class BreakFlowString
 	/// <summary>
 	/// The name of the block. For display
 	/// </summary>
-	public string mName;
+	public string Name { get; set; }
 
 	/// <summary>
 	/// The string to match
 	/// </summary>
-	public string mString;
+	public string MatchString { get; set; }
 
 	/// <summary>
 	/// Whether the match string is a reg ex
 	/// </summary>
-	public bool mIsRegEx;
+	public bool IsRegEx { get; set; }
 
 	/// <summary>
 	/// Whether a line with this string should ever be reflowed at all
 	/// </summary>
-	public bool mNeverReflowLine;
+	public bool NeverReflowLine { get; set; }
 
 	/// <summary>
 	/// Whether this line is allowed to flow into the next
 	/// </summary>
-	public bool mNeverReflowIntoNextLine;
+	public bool NeverReflowIntoNextLine { get; set; }
 }

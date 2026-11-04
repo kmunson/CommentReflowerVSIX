@@ -1,4 +1,3 @@
-// Comment Reflower FileWrapper class
 // Copyright (C) 2004  Ian Nowland
 //
 // This program is free software; you can redistribute it and/or modify it under
@@ -19,8 +18,7 @@ using System.Collections;
 using System.IO;
 
 /// <summary>
-/// This class implements enough of EnvDTE.TextDocument for regression
-/// testing.
+/// This class implements enough of EnvDTE.TextDocument for regression testing.
 /// </summary>
 public class TestFileWrapper : EnvDTE.TextDocument
 {
@@ -29,8 +27,7 @@ public class TestFileWrapper : EnvDTE.TextDocument
 		mCurrentPoints = new ArrayList();
 		using StreamReader sr = new(fileName);
 		String line;
-		// Read and display lines from the file until the end of the
-		// file is reached.
+		// Read and display lines from the file until the end of the file is reached.
 		mLines = new ArrayList();
 		while ((line = sr.ReadLine()) != null)
 		{

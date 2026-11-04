@@ -1,4 +1,3 @@
-// Comment Reflower Regression Test Main
 // Copyright (C) 2004  Ian Nowland
 //
 // This program is free software; you can redistribute it and/or modify it under

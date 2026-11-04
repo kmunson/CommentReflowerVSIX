@@ -1,4 +1,3 @@
-// Comment Reflower TextPoint class
 // Copyright (C) 2004  Ian Nowland
 //
 // This program is free software; you can redistribute it and/or modify it under
@@ -17,8 +16,8 @@
 using System;
 
 /// <summary>
-/// This class implements enough of the EnvDTE.TextPoint and
-/// EnvDTE.EditPoint interfaces to allow regression testing
+/// This class implements enough of the EnvDTE.TextPoint and EnvDTE.EditPoint
+/// interfaces to allow regression testing
 /// </summary>
 public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 {
@@ -204,7 +203,7 @@ public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 				{
 					mLineNum--;
 					mCharPosition = this.LineLength;
-					i--;// the carriage return moves to the end of the previous line
+					i--; // the carriage return moves to the end of the previous line
 				}
 			}
 		}
@@ -236,7 +235,7 @@ public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 				{
 					mLineNum++;
 					mCharPosition = 0;
-					i--;// the carriage return moves to the start of the next line
+					i--; // the carriage return moves to the start of the next line
 				}
 			}
 		}

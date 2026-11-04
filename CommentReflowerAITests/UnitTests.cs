@@ -1350,5 +1350,8 @@ static partial class UnitTests
 		TestCommentBlockLines();
 		TestBlockShapes();
 		TestBlockMarkers();
+		TestPreformatted();
+		TestEmptyComments();
+		TestBlankLinesInComment();
 	}
 }

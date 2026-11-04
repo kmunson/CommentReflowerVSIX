@@ -327,10 +327,11 @@ public class CommentBlock
 		int indent
 	)
 	{
-		// a line start that is optional is only white space, so any line indented enough
+		// a line start that is optional is only white space, so any line indented enough,
+		// or a blank line between paragraphs
 		if (LineStartIsOptional)
 		{
-			return Regex.IsMatch(currentLine, @"^ {" + indent.ToString() + "}");
+			return (currentLine.Trim().Length == 0) || Regex.IsMatch(currentLine, @"^ {" + indent.ToString() + "}");
 		}
 		// just normal line start
 		string continString = @"^ {" + indent.ToString() + @"}" + Regex.Escape(LineStart);

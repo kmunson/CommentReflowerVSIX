@@ -25,29 +25,29 @@ public class MatchedBlockData
 	/// <summary>
 	/// The line of the file containg the start of the block
 	/// </summary>
-	public int mStartLine;
+	public int StartLine { get; set; }
 	/// <summary>
 	/// The line of the file containing the end of the block
 	/// </summary>
-	public int mEndLine;
+	public int EndLine { get; set; }
 	/// <summary>
 	/// The indentation of the block within the file
 	/// </summary>
-	public int mIndentation;
+	public int Indentation { get; set; }
 	/// <summary>
 	/// The actual string matches as the start of block.
 	/// </summary>
-	public string mMatchedBlockStart;
+	public string MatchedBlockStart { get; set; }
 	/// <summary>
 	/// The number of spaces that should be added to the start of block if it is put on
 	/// the same line as comment. Only valid if the comment block type was
 	/// OnOwnLineIfBlockIsMoreThanOne
 	/// </summary>
-	public int mSpacesTrimmedOffBlockStart;
+	public int SpacesTrimmedOffBlockStart { get; set; }
 	/// <summary>
 	/// The actual string matches as the start of block.
 	/// </summary>
-	public string mMatchedBlockEnd;
+	public string MatchedBlockEnd { get; set; }
 }
 
 /// <summary>
@@ -86,7 +86,7 @@ public class CommentReflowerObj
 				out MatchedBlockData bdata))
 			{
 				blockFound = true;
-				selStart.LineDown((bdata.mEndLine - bdata.mStartLine) + 1);
+				selStart.LineDown((bdata.EndLine - bdata.StartLine) + 1);
 				WrapBlock(pset, block, bdata, selectionStart);
 			}
 			else
@@ -139,7 +139,7 @@ public class CommentReflowerObj
 		ThreadHelper.ThrowIfNotOnUIThread();
 #endif
 		retblock = null;
-		bdata = new MatchedBlockData { mEndLine = 0, mStartLine = 0, mIndentation = 0 };
+		bdata = new MatchedBlockData { EndLine = 0, StartLine = 0, Indentation = 0 };
 
 		EnvDTE.EditPoint ep = pt.CreateEditPoint();
 		EnvDTE.EditPoint enddoc = pt.CreateEditPoint();
@@ -148,8 +148,9 @@ public class CommentReflowerObj
 
 		foreach (CommentBlock block in pset.GetBlocksForFileName(fileName))
 		{
-			if (block.LineHasBlockPattern(line, out bdata.mIndentation))
+			if (block.LineHasBlockPattern(line, out int indentation))
 			{
+				bdata.Indentation = indentation;
 				int currentLineNumber = ep.Line;
 				// scan up for block start
 				bool foundStart = false;
@@ -161,16 +162,18 @@ public class CommentReflowerObj
 					if (block.LineIsStartOfBlock(
 						currentLine,
 						previousLine,
-						bdata.mIndentation,
-						out bdata.mMatchedBlockStart,
-						out bdata.mSpacesTrimmedOffBlockStart))
+						bdata.Indentation,
+						out string matchedBlockStart,
+						out int spacesTrimmedOffBlockStart))
 					{
-						bdata.mStartLine = currentLineNumber;
+						bdata.MatchedBlockStart = matchedBlockStart;
+						bdata.SpacesTrimmedOffBlockStart = spacesTrimmedOffBlockStart;
+						bdata.StartLine = currentLineNumber;
 						foundStart = true;
 						break;
 					}
-					else if (!block.LineIsBlockContinuation(currentLine, bdata.mIndentation) &&
-						!block.LineIsEndOfBlock(currentLine, nextLine, bdata.mIndentation, out bdata.mMatchedBlockEnd))
+					else if (!block.LineIsBlockContinuation(currentLine, bdata.Indentation) &&
+						!block.LineIsEndOfBlock(currentLine, nextLine, bdata.Indentation, out _))
 					{
 						break;
 					}
@@ -182,14 +185,15 @@ public class CommentReflowerObj
 					{
 						string currentLine = GetUntabbedLine(enddoc, currentLineNumber);
 						string nextLine = GetUntabbedLine(enddoc, currentLineNumber + 1);
-						if (block.LineIsEndOfBlock(currentLine, nextLine, bdata.mIndentation, out bdata.mMatchedBlockEnd))
+						if (block.LineIsEndOfBlock(currentLine, nextLine, bdata.Indentation, out string matchedBlockEnd))
 						{
-							bdata.mEndLine = currentLineNumber;
+							bdata.MatchedBlockEnd = matchedBlockEnd;
+							bdata.EndLine = currentLineNumber;
 							foundEnd = true;
 							break;
 						}
-						else if ((currentLineNumber != bdata.mStartLine) &&
-							(!block.LineIsBlockContinuation(currentLine, bdata.mIndentation)))
+						else if ((currentLineNumber != bdata.StartLine) &&
+							(!block.LineIsBlockContinuation(currentLine, bdata.Indentation)))
 						{
 							break;
 						}
@@ -257,7 +261,7 @@ public class CommentReflowerObj
 		ThreadHelper.ThrowIfNotOnUIThread();
 #endif
 		int blockTabSize = pt.Parent.TabSize;
-		if (!pset.mUseTabsToIndent)
+		if (!pset.UseTabsToIndent)
 		{
 			blockTabSize = 0;
 		}
@@ -267,7 +271,7 @@ public class CommentReflowerObj
 		bool isStartOnSeparateLine = false;
 
 		EnvDTE.EditPoint curPoint = pt.CreateEditPoint();
-		curPoint.MoveToLineAndOffset(bdata.mStartLine, 1);
+		curPoint.MoveToLineAndOffset(bdata.StartLine, 1);
 
 		// seems we have to pick the reight line ending ourselves
 		string eol = "\r\n";
@@ -277,15 +281,15 @@ public class CommentReflowerObj
 		}
 
 		EnvDTE.EditPoint endPoint = pt.CreateEditPoint();
-		endPoint.MoveToLineAndOffset(bdata.mEndLine, 1);
+		endPoint.MoveToLineAndOffset(bdata.EndLine, 1);
 
-		if ((block.mBlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) ||
-			(block.mBlockEndType == StartEndBlockType.NeverOnOwnLine))
+		if ((block.BlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) ||
+			(block.BlockEndType == StartEndBlockType.NeverOnOwnLine))
 		{
 			// delete the end block string
 			endPoint.StartOfLine();
-			SkipColumns(endPoint, bdata.mIndentation);
-			if (GetTextOnLine(endPoint, bdata.mMatchedBlockEnd.Length) == bdata.mMatchedBlockEnd)
+			SkipColumns(endPoint, bdata.Indentation);
+			if (GetTextOnLine(endPoint, bdata.MatchedBlockEnd.Length) == bdata.MatchedBlockEnd)
 			{
 				// delete the whole line
 				endPoint.EndOfLine();
@@ -299,12 +303,12 @@ public class CommentReflowerObj
 				// delete just the string
 				EnvDTE.EditPoint eolPoint = endPoint.CreateEditPoint();
 				eolPoint.EndOfLine();
-				int endOffset = endPoint.GetText(eolPoint).LastIndexOf(bdata.mMatchedBlockEnd);
+				int endOffset = endPoint.GetText(eolPoint).LastIndexOf(bdata.MatchedBlockEnd);
 				endPoint.CharRight(endOffset);
 				endPoint.Delete(eolPoint);
 			}
 		}
-		else if (block.mBlockEndType == StartEndBlockType.AlwaysOnOwnLine)
+		else if (block.BlockEndType == StartEndBlockType.AlwaysOnOwnLine)
 		{
 			// just move up al line as there is nothing interesting on it
 			endPoint.LineUp(1);
@@ -320,49 +324,49 @@ public class CommentReflowerObj
 			}
 
 			curPoint.StartOfLine();
-			if ((curPoint.Line == bdata.mStartLine) &&
-				(block.mBlockStartType == StartEndBlockType.AlwaysOnOwnLine))
+			if ((curPoint.Line == bdata.StartLine) &&
+				(block.BlockStartType == StartEndBlockType.AlwaysOnOwnLine))
 			{
 				curPoint.LineDown(1); // simply go to the next line
 				continue;
 			}
-			else if ((curPoint.Line == bdata.mStartLine) &&
-				(block.mBlockStartType == StartEndBlockType.NeverOnOwnLine))
+			else if ((curPoint.Line == bdata.StartLine) &&
+				(block.BlockStartType == StartEndBlockType.NeverOnOwnLine))
 			{
-				SkipColumns(curPoint, bdata.mIndentation);
-				SkipString(curPoint, bdata.mMatchedBlockStart);
+				SkipColumns(curPoint, bdata.Indentation);
+				SkipString(curPoint, bdata.MatchedBlockStart);
 			}
-			else if ((curPoint.Line == bdata.mStartLine) &&
-				(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne))
+			else if ((curPoint.Line == bdata.StartLine) &&
+				(block.BlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne))
 			{
 				// we will automatically pull up the next line if we can. We also handle the case
 				// where trailing spaces from the block start have been removed
-				SkipColumns(curPoint, bdata.mIndentation);
-				SkipString(curPoint, bdata.mMatchedBlockStart);
+				SkipColumns(curPoint, bdata.Indentation);
+				SkipString(curPoint, bdata.MatchedBlockStart);
 
 				if ((!AtLineEndIgnoringWhiteSpace(curPoint)) || isLastLine)
 				{
 					isStartOnSeparateLine = false;
 				}
-				else if (LineJustContainsContinuation(curPoint.Line + 1, bdata.mIndentation, block.mLineStart, pset, pt))
+				else if (LineJustContainsContinuation(curPoint.Line + 1, bdata.Indentation, block.LineStart, pset, pt))
 				{
 					isStartOnSeparateLine = true;
 				}
 				else
 				{
 					isStartOnSeparateLine = false;
-					if (bdata.mSpacesTrimmedOffBlockStart > 0)
+					if (bdata.SpacesTrimmedOffBlockStart > 0)
 					{
-						curPoint.Insert(new String(' ', bdata.mSpacesTrimmedOffBlockStart));
+						curPoint.Insert(new String(' ', bdata.SpacesTrimmedOffBlockStart));
 						// change these as we reprocess line!
-						bdata.mMatchedBlockStart += new String(' ', bdata.mSpacesTrimmedOffBlockStart);
-						bdata.mSpacesTrimmedOffBlockStart = 0;
+						bdata.MatchedBlockStart += new String(' ', bdata.SpacesTrimmedOffBlockStart);
+						bdata.SpacesTrimmedOffBlockStart = 0;
 					}
 					EnvDTE.EditPoint nextLineStartPoint = curPoint.CreateEditPoint();
 					nextLineStartPoint.LineDown(1);
 					nextLineStartPoint.StartOfLine();
-					SkipColumns(nextLineStartPoint, bdata.mIndentation);
-					SkipString(nextLineStartPoint, block.mLineStart);
+					SkipColumns(nextLineStartPoint, bdata.Indentation);
+					SkipString(nextLineStartPoint, block.LineStart);
 					curPoint.Delete(nextLineStartPoint);
 					continue; // reprocess the line as it now may be last
 				}
@@ -370,15 +374,15 @@ public class CommentReflowerObj
 			else // just a regular line start
 			{
 				// pass over line start
-				SkipColumns(curPoint, bdata.mIndentation);
-				if (GetTextOnLine(curPoint, block.mLineStart.Length) != block.mLineStart)
+				SkipColumns(curPoint, bdata.Indentation);
+				if (GetTextOnLine(curPoint, block.LineStart.Length) != block.LineStart)
 				{
-					if ((block.mBlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
-						(GetTextOnLine(curPoint, bdata.mMatchedBlockEnd.Length) == bdata.mMatchedBlockEnd))
+					if ((block.BlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
+						(GetTextOnLine(curPoint, bdata.MatchedBlockEnd.Length) == bdata.MatchedBlockEnd))
 					{
 						break; // we are done!
 					}
-					else if (GetTextOnLine(curPoint, block.mLineStart.TrimEnd().Length) == block.mLineStart.TrimEnd())
+					else if (GetTextOnLine(curPoint, block.LineStart.TrimEnd().Length) == block.LineStart.TrimEnd())
 					{
 						curPoint.LineDown(1);
 						// empty line with just trimmed block line start
@@ -389,7 +393,7 @@ public class CommentReflowerObj
 						throw new System.ArgumentException("Error parsing block line start");
 					}
 				}
-				curPoint.CharRight(block.mLineStart.Length);
+				curPoint.CharRight(block.LineStart.Length);
 			}
 
 			// ASSERT: past the comment block start or comment line start for the line
@@ -438,8 +442,8 @@ public class CommentReflowerObj
 			{
 				currentIndent = SkipWhitespace(curPoint);
 			}
-			if ((block.mBlockStartType == StartEndBlockType.NeverOnOwnLine) &&
-				(curPoint.Line == bdata.mStartLine))
+			if ((block.BlockStartType == StartEndBlockType.NeverOnOwnLine) &&
+				(curPoint.Line == bdata.StartLine))
 			{
 				// Need to account that on the first line the block start may have a different
 				// length to the line start.
@@ -447,13 +451,13 @@ public class CommentReflowerObj
 				// Note the reason we do not do the multi/ single option here is that if we are
 				// pulling up text onto the first line we actually break the reflowing indentation
 				// rule. This all needs to be thought through a bit better.
-				currentIndent += bdata.mMatchedBlockStart.Length - block.mLineStart.Length;
+				currentIndent += bdata.MatchedBlockStart.Length - block.LineStart.Length;
 			}
 
-			int blockWrapWidth = pset.mWrapWidth;
-			if ((bdata.mIndentation + block.mLineStart.Length + currentIndent + pset.mMinimumBlockWidth) > blockWrapWidth)
+			int blockWrapWidth = pset.WrapWidth;
+			if ((bdata.Indentation + block.LineStart.Length + currentIndent + pset.MinimumBlockWidth) > blockWrapWidth)
 			{
-				blockWrapWidth = bdata.mIndentation + block.mLineStart.Length + currentIndent + pset.mMinimumBlockWidth;
+				blockWrapWidth = bdata.Indentation + block.LineStart.Length + currentIndent + pset.MinimumBlockWidth;
 			}
 
 			// Now see if we can wrap into the next line, or if we wrap by inserting a new line
@@ -465,16 +469,16 @@ public class CommentReflowerObj
 				nextLinePoint = curPoint.CreateEditPoint();
 				nextLinePoint.LineDown(1);
 				nextLinePoint.StartOfLine();
-				SkipColumns(nextLinePoint, bdata.mIndentation);
-				if ((block.mLineStart.TrimEnd().Length != block.mLineStart.Length) &&
-					(GetRestOfLine(nextLinePoint).CompareTo(block.mLineStart.TrimEnd()) == 0))
+				SkipColumns(nextLinePoint, bdata.Indentation);
+				if ((block.LineStart.TrimEnd().Length != block.LineStart.Length) &&
+					(GetRestOfLine(nextLinePoint).CompareTo(block.LineStart.TrimEnd()) == 0))
 				{
 					// handle the next line that is completely empty with rimmed line end
 					nextLinePoint = null;
 				}
 				else
 				{
-					SkipString(nextLinePoint, block.mLineStart);
+					SkipString(nextLinePoint, block.LineStart);
 					if (!pset.MatchesBulletPoint(GetRestOfLine(nextLinePoint)) &&
 						!pset.MatchesBreakFlowString(GetRestOfLine(nextLinePoint), false) &&
 						(SkipWhitespace(nextLinePoint) == currentIndent))
@@ -490,18 +494,18 @@ public class CommentReflowerObj
 
 			// if on the first line and we can't wrap the text into the next line, then push
 			// any text on the first line down to a separate line
-			if ((block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
-				(curPoint.Line == bdata.mStartLine) &&
+			if ((block.BlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
+				(curPoint.Line == bdata.StartLine) &&
 				!wrapIntoNextLine &&
 				!isLastLine &&
 				!isStartOnSeparateLine)
 			{
 				isStartOnSeparateLine = true;
 				curPoint.StartOfLine();
-				SkipColumns(curPoint, bdata.mIndentation);
-				SkipString(curPoint, bdata.mMatchedBlockStart.TrimEnd());
-				curPoint.Delete(bdata.mMatchedBlockStart.Length - bdata.mMatchedBlockStart.TrimEnd().Length);
-				curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
+				SkipColumns(curPoint, bdata.Indentation);
+				SkipString(curPoint, bdata.MatchedBlockStart.TrimEnd());
+				curPoint.Delete(bdata.MatchedBlockStart.Length - bdata.MatchedBlockStart.TrimEnd().Length);
+				curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 				continue;
 			}
 
@@ -550,16 +554,16 @@ public class CommentReflowerObj
 						// the first word on the next line is too long to pull up
 
 						// push comment block start onto separate line and retry if we can
-						if ((curPoint.Line == bdata.mStartLine) &&
-							(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
+						if ((curPoint.Line == bdata.StartLine) &&
+							(block.BlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 							!isStartOnSeparateLine)
 						{
 							isStartOnSeparateLine = true;
 							curPoint.StartOfLine();
-							SkipColumns(curPoint, bdata.mIndentation);
-							SkipString(curPoint, bdata.mMatchedBlockStart.TrimEnd());
-							curPoint.Delete(bdata.mMatchedBlockStart.Length - bdata.mMatchedBlockStart.TrimEnd().Length);
-							curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
+							SkipColumns(curPoint, bdata.Indentation);
+							SkipString(curPoint, bdata.MatchedBlockStart.TrimEnd());
+							curPoint.Delete(bdata.MatchedBlockStart.Length - bdata.MatchedBlockStart.TrimEnd().Length);
+							curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 						}
 						else
 						{
@@ -590,16 +594,16 @@ public class CommentReflowerObj
 							// there is still text left on the next line
 
 							// push comment block start onto separate line if necessary
-							if ((curPoint.Line == bdata.mStartLine) &&
-								(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
+							if ((curPoint.Line == bdata.StartLine) &&
+								(block.BlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 								!isStartOnSeparateLine)
 							{
 								isStartOnSeparateLine = true;
 								curPoint.StartOfLine();
-								SkipColumns(curPoint, bdata.mIndentation);
-								SkipString(curPoint, bdata.mMatchedBlockStart.TrimEnd());
-								curPoint.Delete(bdata.mMatchedBlockStart.Length - bdata.mMatchedBlockStart.TrimEnd().Length);
-								curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
+								SkipColumns(curPoint, bdata.Indentation);
+								SkipString(curPoint, bdata.MatchedBlockStart.TrimEnd());
+								curPoint.Delete(bdata.MatchedBlockStart.Length - bdata.MatchedBlockStart.TrimEnd().Length);
+								curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 								// reprocess this moved down line!
 							}
 							else
@@ -621,16 +625,16 @@ public class CommentReflowerObj
 			else // ((curPoint.DisplayColumn-1) > blockWrapWidth)
 			{
 				// push start onto separate line if necessary
-				if ((curPoint.Line == bdata.mStartLine) &&
-					(block.mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
+				if ((curPoint.Line == bdata.StartLine) &&
+					(block.BlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
 					!isStartOnSeparateLine)
 				{
 					isStartOnSeparateLine = true;
 					curPoint.StartOfLine();
-					SkipColumns(curPoint, bdata.mIndentation);
-					SkipString(curPoint, bdata.mMatchedBlockStart.TrimEnd());
-					curPoint.Delete(bdata.mMatchedBlockStart.Length - bdata.mMatchedBlockStart.TrimEnd().Length);
-					curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
+					SkipColumns(curPoint, bdata.Indentation);
+					SkipString(curPoint, bdata.MatchedBlockStart.TrimEnd());
+					curPoint.Delete(bdata.MatchedBlockStart.Length - bdata.MatchedBlockStart.TrimEnd().Length);
+					curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 					// forces reprocess even if isLatLine was just true
 					isLastLine = false;
 					continue;// reprocess the just moved line
@@ -656,7 +660,7 @@ public class CommentReflowerObj
 						SkipWhitespace(dataStartPoint);
 						curPoint.Delete(dataStartPoint);
 						// insert a whole new line
-						curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
+						curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 						if (currentIndent > 0)
 						{
 							curPoint.Insert(GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
@@ -678,8 +682,8 @@ public class CommentReflowerObj
 					while (true)
 					{
 						curPoint.StartOfLine();
-						SkipColumns(curPoint, bdata.mIndentation);
-						SkipString(curPoint, block.mLineStart);
+						SkipColumns(curPoint, bdata.Indentation);
+						SkipString(curPoint, block.LineStart);
 						SkipColumns(curPoint, currentIndent);
 						int myWordCount = 0;
 						while ((curPoint.DisplayColumn - 1) <= blockWrapWidth &&
@@ -704,7 +708,7 @@ public class CommentReflowerObj
 						EnvDTE.EditPoint dataStartPoint = curPoint.CreateEditPoint();
 						SkipWhitespace(dataStartPoint);
 						curPoint.Delete(dataStartPoint);
-						curPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + block.mLineStart);
+						curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 						if (currentIndent > 0)
 						{
 							curPoint.Insert(GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
@@ -715,17 +719,17 @@ public class CommentReflowerObj
 			}
 		}
 
-		if ((block.mBlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
-			(endPoint.Line != bdata.mStartLine))
+		if ((block.BlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) &&
+			(endPoint.Line != bdata.StartLine))
 		{
 			endPoint.EndOfLine();
-			endPoint.Insert(eol + GetIndentationString(1, bdata.mIndentation, blockTabSize) + bdata.mMatchedBlockEnd);
+			endPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + bdata.MatchedBlockEnd);
 		}
-		else if ((block.mBlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) ||
-			(block.mBlockEndType == StartEndBlockType.NeverOnOwnLine))
+		else if ((block.BlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne) ||
+			(block.BlockEndType == StartEndBlockType.NeverOnOwnLine))
 		{
 			endPoint.EndOfLine();
-			endPoint.Insert(bdata.mMatchedBlockEnd);
+			endPoint.Insert(bdata.MatchedBlockEnd);
 		}
 	}
 	/// <summary>

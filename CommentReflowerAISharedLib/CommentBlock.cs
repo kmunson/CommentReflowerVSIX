@@ -40,28 +40,28 @@ public class CommentBlock
 	/// Constructor taking values
 	/// </summary>
 	public CommentBlock(
-		string mName,
-		string[] mFileAssociations,
-		StartEndBlockType mBlockStartType,
-		string mBlockStart,
-		bool mIsBlockStartRegEx,
-		StartEndBlockType mBlockEndType,
-		string mBlockEnd,
-		bool mIsBlockEndRegEx,
-		string mLineStart,
-		bool mOnlyEmptyLineBeforeStartOfBlock
+		string Name,
+		string[] FileAssociations,
+		StartEndBlockType BlockStartType,
+		string BlockStart,
+		bool IsBlockStartRegEx,
+		StartEndBlockType BlockEndType,
+		string BlockEnd,
+		bool IsBlockEndRegEx,
+		string LineStart,
+		bool OnlyEmptyLineBeforeStartOfBlock
 	)
 	{
-		this.mName = mName;
-		this.mFileAssociations = mFileAssociations;
-		this.mBlockStartType = mBlockStartType;
-		this.mBlockStart = mBlockStart;
-		this.mIsBlockStartRegEx = mIsBlockStartRegEx;
-		this.mBlockEndType = mBlockEndType;
-		this.mBlockEnd = mBlockEnd;
-		this.mIsBlockEndRegEx = mIsBlockEndRegEx;
-		this.mLineStart = mLineStart;
-		this.mOnlyEmptyLineBeforeStartOfBlock = mOnlyEmptyLineBeforeStartOfBlock;
+		this.Name = Name;
+		this.FileAssociations = FileAssociations;
+		this.BlockStartType = BlockStartType;
+		this.BlockStart = BlockStart;
+		this.IsBlockStartRegEx = IsBlockStartRegEx;
+		this.BlockEndType = BlockEndType;
+		this.BlockEnd = BlockEnd;
+		this.IsBlockEndRegEx = IsBlockEndRegEx;
+		this.LineStart = LineStart;
+		this.OnlyEmptyLineBeforeStartOfBlock = OnlyEmptyLineBeforeStartOfBlock;
 	}
 
 	/// <summary>
@@ -69,16 +69,16 @@ public class CommentBlock
 	/// </summary>
 	public CommentBlock(CommentBlock other)
 	{
-		this.mName = other.mName;
-		this.mFileAssociations = (string[])other.mFileAssociations.Clone();
-		this.mBlockStartType = other.mBlockStartType;
-		this.mBlockStart = other.mBlockStart;
-		this.mIsBlockStartRegEx = other.mIsBlockStartRegEx;
-		this.mBlockEndType = other.mBlockEndType;
-		this.mBlockEnd = other.mBlockEnd;
-		this.mIsBlockEndRegEx = other.mIsBlockEndRegEx;
-		this.mLineStart = other.mLineStart;
-		this.mOnlyEmptyLineBeforeStartOfBlock = other.mOnlyEmptyLineBeforeStartOfBlock;
+		this.Name = other.Name;
+		this.FileAssociations = (string[])other.FileAssociations.Clone();
+		this.BlockStartType = other.BlockStartType;
+		this.BlockStart = other.BlockStart;
+		this.IsBlockStartRegEx = other.IsBlockStartRegEx;
+		this.BlockEndType = other.BlockEndType;
+		this.BlockEnd = other.BlockEnd;
+		this.IsBlockEndRegEx = other.IsBlockEndRegEx;
+		this.LineStart = other.LineStart;
+		this.OnlyEmptyLineBeforeStartOfBlock = other.OnlyEmptyLineBeforeStartOfBlock;
 	}
 
 	/// <summary>
@@ -123,16 +123,16 @@ public class CommentBlock
 	)
 	{
 		string stCh = "."; // character before first block
-		if (mOnlyEmptyLineBeforeStartOfBlock)
+		if (OnlyEmptyLineBeforeStartOfBlock)
 		{
 			stCh = " ";
 		}
 
 		//start block
-		if (mBlockStartType != StartEndBlockType.Empty)
+		if (BlockStartType != StartEndBlockType.Empty)
 		{
-			string startString = @"^(" + stCh + @"*?)" + GetRegEx(mBlockStart, mIsBlockStartRegEx);
-			if (mBlockStartType == StartEndBlockType.AlwaysOnOwnLine)
+			string startString = @"^(" + stCh + @"*?)" + GetRegEx(BlockStart, IsBlockStartRegEx);
+			if (BlockStartType == StartEndBlockType.AlwaysOnOwnLine)
 			{
 				startString += @"[ ]*$"; //only spaces then end of line
 			}
@@ -146,10 +146,10 @@ public class CommentBlock
 			// If the block can be on the same line as a comment, then it may have trailing
 			// spaces that don't happen when it is on a line by itself. so trim those spaces
 			// and scan again.
-			if (mBlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne)
+			if (BlockStartType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne)
 			{
 				startString = @"^(" + stCh + @"*?)" +
-					GetRegEx(mBlockStart.TrimEnd(), mIsBlockStartRegEx) +
+					GetRegEx(BlockStart.TrimEnd(), IsBlockStartRegEx) +
 					@"$";
 				regex = new Regex(startString);
 				match = regex.Match(currentLine);
@@ -162,13 +162,13 @@ public class CommentBlock
 		}
 
 		// If the block start is not empty then the line start ch must always be space.
-		if (mBlockStartType != StartEndBlockType.Empty)
+		if (BlockStartType != StartEndBlockType.Empty)
 		{
 			stCh = " ";
 		}
 
 		// start line
-		string continString = @"^(" + stCh + @"*?)" + Regex.Escape(mLineStart);
+		string continString = @"^(" + stCh + @"*?)" + Regex.Escape(LineStart);
 		Regex regex2 = new(continString);
 		Match match2 = regex2.Match(currentLine);
 		if (match2.Success)
@@ -178,7 +178,7 @@ public class CommentBlock
 		}
 
 		// also match the trimmed start line followed by line break
-		continString = @"^(" + stCh + @"*?)" + Regex.Escape(mLineStart.TrimEnd()) + @"$";
+		continString = @"^(" + stCh + @"*?)" + Regex.Escape(LineStart.TrimEnd()) + @"$";
 		regex2 = new Regex(continString);
 		match2 = regex2.Match(currentLine);
 		if (match2.Success)
@@ -187,10 +187,10 @@ public class CommentBlock
 			return true;
 		}
 
-		if ((mBlockEndType == StartEndBlockType.AlwaysOnOwnLine) ||
-			(mBlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne))
+		if ((BlockEndType == StartEndBlockType.AlwaysOnOwnLine) ||
+			(BlockEndType == StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne))
 		{
-			string endString = @"^( *?)" + GetRegEx(mBlockEnd, mIsBlockEndRegEx) + @" *$";
+			string endString = @"^( *?)" + GetRegEx(BlockEnd, IsBlockEndRegEx) + @" *$";
 			Regex regex = new(endString);
 			Match match = regex.Match(currentLine);
 			if (match.Success)
@@ -205,15 +205,15 @@ public class CommentBlock
 
 	/// <summary>
 	/// Returns true if the current line matches the block end pattern. Assert
-	/// mBlockEnd.Length > 0.
+	/// BlockEnd.Length > 0.
 	/// </summary>
 	private bool LineMatchesBlockEnd(
 		string line,
 		out string matchedBlockEnd
 	)
 	{
-		string endString = @"(" + GetRegEx(mBlockEnd, mIsBlockEndRegEx) + @") *$";
-		if (mBlockEndType == StartEndBlockType.AlwaysOnOwnLine)
+		string endString = @"(" + GetRegEx(BlockEnd, IsBlockEndRegEx) + @") *$";
+		if (BlockEndType == StartEndBlockType.AlwaysOnOwnLine)
 		{
 			endString = @"^ *?" + endString;
 		}
@@ -230,7 +230,7 @@ public class CommentBlock
 
 	/// <summary>
 	/// Returns true if the current line matches the block start pattern.
-	/// @pre mBlockEnd.Length > 0
+	/// @pre BlockEnd.Length > 0
 	/// </summary>
 	private bool LineMatchesBlockStart(
 		string line,
@@ -242,16 +242,16 @@ public class CommentBlock
 		numSpacesTrimmedOffStart = 0;
 		matchedBlockStart = "";
 		string stCh = "."; // character before first block
-		if (mOnlyEmptyLineBeforeStartOfBlock)
+		if (OnlyEmptyLineBeforeStartOfBlock)
 		{
 			stCh = " ";
 		}
 
 		//start of line than anything then block start
 		string startString = @"^" + stCh + @"{" + indent.ToString() + @"}(" +
-			GetRegEx(mBlockStart, mIsBlockStartRegEx) +
+			GetRegEx(BlockStart, IsBlockStartRegEx) +
 			@")";
-		if (mBlockStartType == StartEndBlockType.AlwaysOnOwnLine)
+		if (BlockStartType == StartEndBlockType.AlwaysOnOwnLine)
 		{
 			startString += @"[ ]*$"; //only spaces then end of line
 		}
@@ -265,17 +265,17 @@ public class CommentBlock
 		// if the block start can be on the same line as comment text, then it may have
 		// trailing spaces that don't happen when it is on a line by itself. so trim those
 		// spaces and scan again
-		if (mBlockStartType != StartEndBlockType.AlwaysOnOwnLine)
+		if (BlockStartType != StartEndBlockType.AlwaysOnOwnLine)
 		{
 			startString = @"^" + stCh + @"{" + indent.ToString() + @"}(" +
-				GetRegEx(mBlockStart.TrimEnd(), mIsBlockStartRegEx) +
+				GetRegEx(BlockStart.TrimEnd(), IsBlockStartRegEx) +
 				@")$";
 			startRegex = new Regex(startString);
 			match = startRegex.Match(line);
 			if (match.Success)
 			{
 				matchedBlockStart = match.Groups[1].ToString();
-				numSpacesTrimmedOffStart = mBlockStart.Length - mBlockStart.TrimEnd().Length;
+				numSpacesTrimmedOffStart = BlockStart.Length - BlockStart.TrimEnd().Length;
 				return true;
 			}
 		}
@@ -292,14 +292,14 @@ public class CommentBlock
 	)
 	{
 		// just normal line start
-		string continString = @"^ {" + indent.ToString() + @"}" + Regex.Escape(mLineStart);
+		string continString = @"^ {" + indent.ToString() + @"}" + Regex.Escape(LineStart);
 		Regex continRegEx = new(continString);
 		if (continRegEx.IsMatch(currentLine))
 		{
 			return true; // white space before and matches continuation
 		}
 		// right trimmed line start followed by end of line
-		continString = @"^ {" + indent.ToString() + @"}" + Regex.Escape(mLineStart.TrimEnd()) + @"$";
+		continString = @"^ {" + indent.ToString() + @"}" + Regex.Escape(LineStart.TrimEnd()) + @"$";
 		continRegEx = new Regex(continString);
 		if (continRegEx.IsMatch(currentLine))
 		{
@@ -310,27 +310,27 @@ public class CommentBlock
 
 	/// <summary>
 	/// Returns true if the line is a possible start or continuation of the block.
-	/// @pre mBlockStartType == Empty
+	/// @pre BlockStartType == Empty
 	/// </summary>
 	private bool LineIsPossibleBlockContinuationStart(
 		string currentLine,
 		int indent
 	)
 	{
-		if (mOnlyEmptyLineBeforeStartOfBlock)
+		if (OnlyEmptyLineBeforeStartOfBlock)
 		{
 			return LineIsBlockContinuation(currentLine, indent);
 		}
 
 		// just normal line start
-		string continString = @"^.{" + indent.ToString() + @"}" + Regex.Escape(mLineStart);
+		string continString = @"^.{" + indent.ToString() + @"}" + Regex.Escape(LineStart);
 		Regex continRegEx = new(continString);
 		if (continRegEx.IsMatch(currentLine))
 		{
 			return true; // white space before and matches continuation
 		}
 		// right trimmed line start followed by end of line
-		continString = @"^.{" + indent.ToString() + @"}" + Regex.Escape(mLineStart.TrimEnd()) + @"$";
+		continString = @"^.{" + indent.ToString() + @"}" + Regex.Escape(LineStart.TrimEnd()) + @"$";
 		continRegEx = new Regex(continString);
 		if (continRegEx.IsMatch(currentLine))
 		{
@@ -353,7 +353,7 @@ public class CommentBlock
 		matchedBlockStart = "";
 		numSpacesTrimmedOffStart = 0;
 
-		if (mBlockStartType != StartEndBlockType.Empty)
+		if (BlockStartType != StartEndBlockType.Empty)
 		{
 			if (LineMatchesBlockStart(currentLine, indent, out matchedBlockStart, out numSpacesTrimmedOffStart))
 			{
@@ -361,7 +361,7 @@ public class CommentBlock
 				// block end, in which case we may have found a block end not a block start. So if
 				// the previous line is a continuation assume we are an end, and return false, else
 				// return true
-				return (mBlockStart.CompareTo(mBlockEnd) != 0) ||
+				return (BlockStart.CompareTo(BlockEnd) != 0) ||
 					(previousLine == null) ||
 					!LineIsBlockContinuation(previousLine, indent);
 			}
@@ -378,8 +378,8 @@ public class CommentBlock
 			((previousLine == null) ||
 				!LineIsBlockContinuation(currentLine, indent) ||
 				!LineIsPossibleBlockContinuationStart(previousLine, indent) ||
-				((mBlockEndType != StartEndBlockType.Empty) &&
-					(LineMatchesBlockEnd(previousLine, out mDummyS)))))
+				((BlockEndType != StartEndBlockType.Empty) &&
+					(LineMatchesBlockEnd(previousLine, out _)))))
 		{
 			return true;
 		}
@@ -397,14 +397,14 @@ public class CommentBlock
 	)
 	{
 		matchedBlockEnd = "";
-		if (mBlockEndType != StartEndBlockType.Empty)
+		if (BlockEndType != StartEndBlockType.Empty)
 		{
 			if (LineMatchesBlockEnd(currentLine, out matchedBlockEnd))
 			{
 				// have to worry about the case where the block start is exactly the same as the
 				// block end, in which case we may have found a block start not a block end! So if
 				// the next line is a continuation assume we are an start and so return false
-				return (mBlockStart.CompareTo(mBlockEnd) != 0) ||
+				return (BlockStart.CompareTo(BlockEnd) != 0) ||
 					(nextLine == null) ||
 					!LineIsBlockContinuation(nextLine, indent);
 			}
@@ -419,8 +419,8 @@ public class CommentBlock
 		else if (LineIsPossibleBlockContinuationStart(currentLine, indent) &&
 			((nextLine == null) ||
 				!LineIsBlockContinuation(nextLine, indent) ||
-				((mBlockStartType != StartEndBlockType.Empty) &&
-					LineMatchesBlockStart(nextLine, indent, out mDummyS, out mDummyI))))
+				((BlockStartType != StartEndBlockType.Empty) &&
+					LineMatchesBlockStart(nextLine, indent, out _, out _))))
 		{
 			return true;
 		}
@@ -430,61 +430,51 @@ public class CommentBlock
 	/// <summary>
 	/// The name of the block. For display
 	/// </summary>
-	public string mName;
+	public string Name { get; set; }
 
 	/// <summary>
 	/// A list of file assoiations of the type '*.ext' (ie not regexes)
 	/// </summary>
-	public string[] mFileAssociations;
+	public string[] FileAssociations { get; set; }
 
 	/// <summary>
 	/// The type of the start block
 	/// </summary>
-	public StartEndBlockType mBlockStartType;
+	public StartEndBlockType BlockStartType { get; set; }
 
 	/// <summary>
 	/// The start block string
 	/// </summary>
-	public string mBlockStart;
+	public string BlockStart { get; set; }
 
 	/// <summary>
 	/// Whether the start block string is a reg ex
 	/// </summary>
-	public bool mIsBlockStartRegEx;
+	public bool IsBlockStartRegEx { get; set; }
 
 	/// <summary>
 	/// The type of the end block
 	/// </summary>
-	public StartEndBlockType mBlockEndType;
+	public StartEndBlockType BlockEndType { get; set; }
 
 	/// <summary>
 	/// The end block string
 	/// </summary>
-	public string mBlockEnd;
+	public string BlockEnd { get; set; }
 
 	/// <summary>
 	/// Whether the end block string is a reg ex
 	/// </summary>
-	public bool mIsBlockEndRegEx;
+	public bool IsBlockEndRegEx { get; set; }
 
 	/// <summary>
 	/// The string for a line continuation. Never a regex
 	/// </summary>
-	public string mLineStart;
+	public string LineStart { get; set; }
 
 	/// <summary>
 	/// Whether there can only be empty space before the start of block on the first
 	/// line of the block
 	/// </summary>
-	public bool mOnlyEmptyLineBeforeStartOfBlock;
-
-	/// <summary>
-	/// Dummy variable used in processing
-	/// </summary>
-	private string mDummyS;
-
-	/// <summary>
-	/// Dummy variable used in processing
-	/// </summary>
-	private int mDummyI;
+	public bool OnlyEmptyLineBeforeStartOfBlock { get; set; }
 }

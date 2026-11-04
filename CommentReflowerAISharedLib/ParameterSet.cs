@@ -39,7 +39,7 @@ public class ParameterSet
 			"*.cc",
 			"*.h"
 		};
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"C style function block",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.AlwaysOnOwnLine,
@@ -51,7 +51,7 @@ public class ParameterSet
 			" * ",
 			true
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Doxygen C style (/**)",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.OnOwnLineIfBlockIsMoreThanOne,
@@ -63,7 +63,7 @@ public class ParameterSet
 			" * ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Doxygen C style 2 (/*!), which may have text on first line",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.NeverOnOwnLine,
@@ -75,7 +75,7 @@ public class ParameterSet
 			" * ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"C style",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.NeverOnOwnLine,
@@ -90,7 +90,7 @@ public class ParameterSet
 
 		// ADD JAVASCRIPT AFTER C BLOCK COMMENTS DONE!
 		cPlusPlusCba.Add("*.js");
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"C++ style function block",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.AlwaysOnOwnLine,
@@ -102,7 +102,7 @@ public class ParameterSet
 			"// ",
 			true
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Doxygen C++ style (///)",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.Empty,
@@ -114,7 +114,7 @@ public class ParameterSet
 			"/// ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Doxygen C++ style (///) with trailing tab",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.Empty,
@@ -126,7 +126,7 @@ public class ParameterSet
 			"///\t",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"C++ style",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.Empty,
@@ -138,7 +138,7 @@ public class ParameterSet
 			"// ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Doxygen C++ style 2 (//!)",
 			cPlusPlusCba.ToArray(),
 			StartEndBlockType.Empty,
@@ -151,7 +151,7 @@ public class ParameterSet
 			false
 		));
 
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Visual Basic Single Quote (') Function Block",
 			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.AlwaysOnOwnLine,
@@ -163,7 +163,7 @@ public class ParameterSet
 			"' ",
 			true
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Visual Basic Triple Quote (''')",
 			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.Empty,
@@ -175,7 +175,7 @@ public class ParameterSet
 			"''' ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Visual Basic Double Quote ('')",
 			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.Empty,
@@ -187,7 +187,7 @@ public class ParameterSet
 			"'' ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Visual Basic Single Quote (')",
 			CommentBlock.CreateFileAssocFromString("*.vb;*.vbs"),
 			StartEndBlockType.Empty,
@@ -200,7 +200,7 @@ public class ParameterSet
 			false
 		));
 
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"# Block",
 			CommentBlock.CreateFileAssocFromString("Jamfile;Jamrules;*.jam"),
 			StartEndBlockType.AlwaysOnOwnLine,
@@ -212,7 +212,7 @@ public class ParameterSet
 			"# ",
 			true
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"# Comment",
 			CommentBlock.CreateFileAssocFromString("Jamfile;Jamrules;*.jam"),
 			StartEndBlockType.Empty,
@@ -224,7 +224,7 @@ public class ParameterSet
 			"# ",
 			false
 		));
-		mCommentBlocks.Add(new CommentBlock(
+		CommentBlocks.Add(new CommentBlock(
 			"Empty Block for Text Files",
 			CommentBlock.CreateFileAssocFromString("*.txt"),
 			StartEndBlockType.Empty,
@@ -237,92 +237,92 @@ public class ParameterSet
 			false
 		));
 
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Numbered comment followed by a tag and a hyphen like '1) tag - '",
 			@"[0-9]+\) \w+ - ",
 			true,
 			true
 		));
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Numbered comment like '1) '",
 			@"[0-9]+\) ",
 			true,
 			true
 		));
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Hyphen at the start of a line '- '",
 			@"- ",
 			true,
 			true
 		));
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Doxygen style tag followed by hyphen, like '@tag - '",
 			@"@\w+ - ",
 			true,
 			true
 		));
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Doxygen style tag followed by space, like '@tag '",
 			@"@\w+ ",
 			true,
 			true
 		));
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Doxygen style tag followed by space, like '\\tag '",
 			@"\\\w+ ",
 			true,
 			true
 		));
-		mBulletPoints.Add(new BulletPoint(
+		BulletPoints.Add(new BulletPoint(
 			"Single character followed by hyphen, like '0 - '",
 			@". - ",
 			true,
 			true
 		));
 
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"HTML Line break tag",
 			@"<BR>",
 			false,
 			false,
 			true
 		));
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"XML comment on a line by itself",
 			@"^\s*<.+?>\s*$",
 			true,
 			true,
 			true
 		));
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"Consecutive spaces anywhere on the line between non-space elements",
 			@"[^\s]+?\s\s[^\s]+?",
 			true,
 			true,
 			true
 		));
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"(Underline) consecutive -'s on a line by themselves",
 			@"^\s*--+\s*$",
 			true,
 			true,
 			true
 		));
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"(Double Underline) consecutive ='s on a line by themselves",
 			@"^\s*==+\s*$",
 			true,
 			true,
 			true
 		));
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"$Source rcs tag",
 			@"$Source",
 			false,
 			true,
 			true
 		));
-		mBreakFlowStrings.Add(new BreakFlowString(
+		BreakFlowStrings.Add(new BreakFlowString(
 			"$Id rcs tag",
 			@"$Id",
 			false,
@@ -330,9 +330,9 @@ public class ParameterSet
 			true
 		));
 
-		mUseTabsToIndent = false;
-		mWrapWidth = 80;
-		mMinimumBlockWidth = 30;
+		UseTabsToIndent = false;
+		WrapWidth = 80;
+		MinimumBlockWidth = 30;
 	}
 
 	/// <summary>
@@ -340,20 +340,20 @@ public class ParameterSet
 	/// </summary>
 	public ParameterSet(ParameterSet other)
 	{
-		mUseTabsToIndent = other.mUseTabsToIndent;
-		mWrapWidth = other.mWrapWidth;
-		mMinimumBlockWidth = other.mMinimumBlockWidth;
-		foreach (CommentBlock cb in other.mCommentBlocks)
+		UseTabsToIndent = other.UseTabsToIndent;
+		WrapWidth = other.WrapWidth;
+		MinimumBlockWidth = other.MinimumBlockWidth;
+		foreach (CommentBlock cb in other.CommentBlocks)
 		{
-			mCommentBlocks.Add(new CommentBlock(cb));
+			CommentBlocks.Add(new CommentBlock(cb));
 		}
-		foreach (BulletPoint bp in other.mBulletPoints)
+		foreach (BulletPoint bp in other.BulletPoints)
 		{
-			mBulletPoints.Add(new BulletPoint(bp));
+			BulletPoints.Add(new BulletPoint(bp));
 		}
-		foreach (BreakFlowString lb in other.mBreakFlowStrings)
+		foreach (BreakFlowString lb in other.BreakFlowStrings)
 		{
-			mBreakFlowStrings.Add(new BreakFlowString(lb));
+			BreakFlowStrings.Add(new BreakFlowString(lb));
 		}
 	}
 
@@ -366,7 +366,7 @@ public class ParameterSet
 	{
 		thisIndent = 0;
 		nextLineIndent = 0;
-		foreach (BulletPoint bp in mBulletPoints)
+		foreach (BulletPoint bp in BulletPoints)
 		{
 			if (bp.Matches(st, out thisIndent, out nextLineIndent))
 			{
@@ -389,7 +389,7 @@ public class ParameterSet
 	/// </summary>
 	public bool MatchesBreakFlowString(string st, bool ontoNextLineAsWell)
 	{
-		foreach (BreakFlowString flb in mBreakFlowStrings)
+		foreach (BreakFlowString flb in BreakFlowStrings)
 		{
 			if (flb.Matches(st, ontoNextLineAsWell))
 			{
@@ -401,11 +401,11 @@ public class ParameterSet
 
 	public void ValidateGeneralSettings()
 	{
-		if (mWrapWidth < 10)
+		if (WrapWidth < 10)
 		{
 			throw new System.ArgumentException("Comment wrap width must be greater than 10");
 		}
-		if (mMinimumBlockWidth < 10)
+		if (MinimumBlockWidth < 10)
 		{
 			throw new System.ArgumentException("Minimum Block width must be greater than 10");
 		}
@@ -417,39 +417,39 @@ public class ParameterSet
 	/// </summary>
 	public void ValidateCommentBlock(int index)
 	{
-		CommentBlock cb = (CommentBlock)mCommentBlocks[index];
+		CommentBlock cb = (CommentBlock)CommentBlocks[index];
 
-		if (cb.mName.Trim().Length == 0)
+		if (cb.Name.Trim().Length == 0)
 		{
 			throw new System.ArgumentException("Comment block name must not be empty");
 		}
 
 		int i = 0;
-		foreach (CommentBlock bpother in mCommentBlocks)
+		foreach (CommentBlock bpother in CommentBlocks)
 		{
-			if ((i != index) && (bpother.mName.CompareTo(cb.mName) == 0))
+			if ((i != index) && (bpother.Name.CompareTo(cb.Name) == 0))
 			{
 				throw new System.ArgumentException("Comment Block must be unique");
 			}
 			i++;
 		}
 
-		if (cb.mBlockStartType == StartEndBlockType.Empty)
+		if (cb.BlockStartType == StartEndBlockType.Empty)
 		{
-			cb.mBlockStart = "";
+			cb.BlockStart = "";
 		}
 		else
 		{
-			if (cb.mBlockStart.Trim().Length == 0)
+			if (cb.BlockStart.Trim().Length == 0)
 			{
 				throw new System.ArgumentException("Block start type is not empty but actual string only contains whitespace");
 			}
 
-			if (cb.mIsBlockStartRegEx)
+			if (cb.IsBlockStartRegEx)
 			{
 				try
 				{
-					Regex regex = new(cb.mBlockStart);
+					Regex regex = new(cb.BlockStart);
 				}
 				catch (Exception)
 				{
@@ -458,22 +458,22 @@ public class ParameterSet
 			}
 		}
 
-		if (cb.mBlockEndType == StartEndBlockType.Empty)
+		if (cb.BlockEndType == StartEndBlockType.Empty)
 		{
-			cb.mBlockEnd = "";
+			cb.BlockEnd = "";
 		}
 		else
 		{
-			if (cb.mBlockEnd.Trim().Length == 0)
+			if (cb.BlockEnd.Trim().Length == 0)
 			{
 				throw new System.ArgumentException("Block End type is not empty but actual string only contains whitespace");
 			}
 
-			if (cb.mIsBlockEndRegEx)
+			if (cb.IsBlockEndRegEx)
 			{
 				try
 				{
-					Regex regex = new(cb.mBlockEnd);
+					Regex regex = new(cb.BlockEnd);
 				}
 				catch (Exception)
 				{
@@ -488,28 +488,28 @@ public class ParameterSet
 	/// </summary>
 	public void ValidateBullet(int index)
 	{
-		BulletPoint bp = (BulletPoint)mBulletPoints[index];
+		BulletPoint bp = (BulletPoint)BulletPoints[index];
 
-		if (bp.mName.Trim().Length == 0)
+		if (bp.Name.Trim().Length == 0)
 		{
 			throw new System.ArgumentException("Bullet name must not be empty");
 		}
 
 		int i = 0;
-		foreach (BulletPoint bpother in mBulletPoints)
+		foreach (BulletPoint bpother in BulletPoints)
 		{
-			if ((i != index) && (bpother.mName.CompareTo(bp.mName) == 0))
+			if ((i != index) && (bpother.Name.CompareTo(bp.Name) == 0))
 			{
 				throw new System.ArgumentException("Bullet name must be unique");
 			}
 			i++;
 		}
 
-		if (bp.mIsRegEx)
+		if (bp.IsRegEx)
 		{
 			try
 			{
-				Regex regex = new(bp.mString);
+				Regex regex = new(bp.MatchString);
 			}
 			catch (Exception)
 			{
@@ -524,28 +524,28 @@ public class ParameterSet
 	/// </summary>
 	public void ValidateBreakFlowString(int index)
 	{
-		BreakFlowString bp = (BreakFlowString)mBreakFlowStrings[index];
+		BreakFlowString bp = (BreakFlowString)BreakFlowStrings[index];
 
-		if (bp.mName.Trim().Length == 0)
+		if (bp.Name.Trim().Length == 0)
 		{
 			throw new System.ArgumentException("Force line break name must not be empty");
 		}
 
 		int i = 0;
-		foreach (BreakFlowString bpother in mBreakFlowStrings)
+		foreach (BreakFlowString bpother in BreakFlowStrings)
 		{
-			if ((i != index) && (bpother.mName.CompareTo(bp.mName) == 0))
+			if ((i != index) && (bpother.Name.CompareTo(bp.Name) == 0))
 			{
 				throw new System.ArgumentException("Force line break name must be unique");
 			}
 			i++;
 		}
 
-		if (bp.mIsRegEx)
+		if (bp.IsRegEx)
 		{
 			try
 			{
-				Regex regex = new(bp.mString);
+				Regex regex = new(bp.MatchString);
 			}
 			catch (Exception)
 			{
@@ -557,9 +557,9 @@ public class ParameterSet
 	public List<CommentBlock> GetBlocksForFileName(string fileName)
 	{
 		var ret = new List<CommentBlock>();
-		foreach (CommentBlock cb in mCommentBlocks)
+		foreach (CommentBlock cb in CommentBlocks)
 		{
-			foreach (string asoc in cb.mFileAssociations)
+			foreach (string asoc in cb.FileAssociations)
 			{
 				string regexString = asoc.ToLower();
 				regexString = regexString.Replace(".", "\\.");
@@ -578,31 +578,31 @@ public class ParameterSet
 	/// <summary>
 	/// The comment blocks
 	/// </summary>
-	public List<CommentBlock> mCommentBlocks = new();
+	public List<CommentBlock> CommentBlocks { get; } = new();
 
 	/// <summary>
 	/// The Bullets
 	/// </summary>
-	public List<BulletPoint> mBulletPoints = new();
+	public List<BulletPoint> BulletPoints { get; } = new();
 
 	/// <summary>
 	/// The force line breaks
 	/// </summary>
-	public List<BreakFlowString> mBreakFlowStrings = new();
+	public List<BreakFlowString> BreakFlowStrings { get; } = new();
 
 	/// <summary>
 	/// Whether to use tabs to indent blocks
 	/// </summary>
-	public bool mUseTabsToIndent;
+	public bool UseTabsToIndent { get; set; }
 
 	/// <summary>
 	/// The column width to wrap the block at
 	/// </summary>
-	public int mWrapWidth;
+	public int WrapWidth { get; set; }
 
 	/// <summary>
-	/// The minimum width of any block of text. Blocks will extend past mWrapWidth to
+	/// The minimum width of any block of text. Blocks will extend past WrapWidth to
 	/// meet this
 	/// </summary>
-	public int mMinimumBlockWidth;
+	public int MinimumBlockWidth { get; set; }
 }

@@ -28,16 +28,16 @@ public class BulletPoint
 	/// Constructor taking values
 	/// </summary>
 	public BulletPoint(
-		string mName,
-		string mString,
-		bool mIsRegEx,
-		bool mWrapIsAtRight
+		string Name,
+		string MatchString,
+		bool IsRegEx,
+		bool WrapIsAtRight
 	)
 	{
-		this.mName = mName;
-		this.mString = mString;
-		this.mIsRegEx = mIsRegEx;
-		this.mWrapIsAtRight = mWrapIsAtRight;
+		this.Name = Name;
+		this.MatchString = MatchString;
+		this.IsRegEx = IsRegEx;
+		this.WrapIsAtRight = WrapIsAtRight;
 	}
 
 	/// <summary>
@@ -45,10 +45,10 @@ public class BulletPoint
 	/// </summary>
 	public BulletPoint(BulletPoint other)
 	{
-		this.mName = other.mName;
-		this.mString = other.mString;
-		this.mIsRegEx = other.mIsRegEx;
-		this.mWrapIsAtRight = other.mWrapIsAtRight;
+		this.Name = other.Name;
+		this.MatchString = other.MatchString;
+		this.IsRegEx = other.IsRegEx;
+		this.WrapIsAtRight = other.WrapIsAtRight;
 	}
 
 	/// <summary>
@@ -60,24 +60,24 @@ public class BulletPoint
 	{
 		string regstr = @"^(\s*?)";
 
-		if (mIsRegEx && (mString[0] == '('))
+		if (IsRegEx && (MatchString[0] == '('))
 		{
-			regstr += mString;
+			regstr += MatchString;
 		}
-		else if (mIsRegEx)
+		else if (IsRegEx)
 		{
-			regstr += "(" + mString + ")";
+			regstr += "(" + MatchString + ")";
 		}
 		else
 		{
-			regstr += "(" + Regex.Escape(mString) + ")";
+			regstr += "(" + Regex.Escape(MatchString) + ")";
 		}
 		Regex regex = new(regstr);
 		Match match = regex.Match(st);
 		if (match.Success)
 		{
 			thisIndent = match.Groups[1].Length + match.Groups[2].Length;
-			if (!mWrapIsAtRight)
+			if (!WrapIsAtRight)
 			{
 				nextLineIndent = match.Groups[1].Length;
 			}
@@ -98,21 +98,21 @@ public class BulletPoint
 	/// <summary>
 	/// The name of the block. For display
 	/// </summary>
-	public string mName;
+	public string Name { get; set; }
 
 	/// <summary>
 	/// The string to match
 	/// </summary>
-	public string mString;
+	public string MatchString { get; set; }
 
 	/// <summary>
 	/// Whether the match string is a reg ex
 	/// </summary>
-	public bool mIsRegEx;
+	public bool IsRegEx { get; set; }
 
 	/// <summary>
 	/// Whether the second and subsequent lines of the bullet should wrap at the left or
 	/// the right of the match string.
 	/// </summary>
-	public bool mWrapIsAtRight;
+	public bool WrapIsAtRight { get; set; }
 }

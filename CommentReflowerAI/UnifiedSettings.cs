@@ -88,13 +88,13 @@ internal sealed class UnifiedSettings : IDisposable
 	private ParameterSet Load()
 	{
 		var p = new ParameterSet();
-		p.mCommentBlocks.Clear();
-		p.mBulletPoints.Clear();
-		p.mBreakFlowStrings.Clear();
+		p.CommentBlocks.Clear();
+		p.BulletPoints.Clear();
+		p.BreakFlowStrings.Clear();
 
-		p.mWrapWidth = GetValue<int>(WrapWidth);
-		p.mMinimumBlockWidth = GetValue<int>(MinimumBlockWidth);
-		p.mUseTabsToIndent = GetValue<bool>(UseTabsToIndent);
+		p.WrapWidth = GetValue<int>(WrapWidth);
+		p.MinimumBlockWidth = GetValue<int>(MinimumBlockWidth);
+		p.UseTabsToIndent = GetValue<bool>(UseTabsToIndent);
 		p.ValidateGeneralSettings();
 
 		foreach (var item in GetArray(CommentBlocks))
@@ -114,8 +114,8 @@ internal sealed class UnifiedSettings : IDisposable
 					FromDisplay(GetString(item, "lineStart")),
 					GetString(item, "firstLine") == "mustNotContainTextBeforeStart"
 				);
-				p.mCommentBlocks.Add(commentBlock);
-				p.ValidateCommentBlock(p.mCommentBlocks.Count - 1);
+				p.CommentBlocks.Add(commentBlock);
+				p.ValidateCommentBlock(p.CommentBlocks.Count - 1);
 			}
 			catch (ArgumentException e)
 			{
@@ -134,8 +134,8 @@ internal sealed class UnifiedSettings : IDisposable
 					GetBool(item, "isRegex"),
 					GetString(item, "wrapOnEdge") == "right"
 				);
-				p.mBulletPoints.Add(bulletPoint);
-				p.ValidateBullet(p.mBulletPoints.Count - 1);
+				p.BulletPoints.Add(bulletPoint);
+				p.ValidateBullet(p.BulletPoints.Count - 1);
 			}
 			catch (ArgumentException e)
 			{
@@ -155,8 +155,8 @@ internal sealed class UnifiedSettings : IDisposable
 					GetBool(item, "neverReflowLine"),
 					GetBool(item, "neverReflowIntoNextLine")
 				);
-				p.mBreakFlowStrings.Add(breakFlowString);
-				p.ValidateBreakFlowString(p.mBreakFlowStrings.Count - 1);
+				p.BreakFlowStrings.Add(breakFlowString);
+				p.ValidateBreakFlowString(p.BreakFlowStrings.Count - 1);
 			}
 			catch (ArgumentException e)
 			{

@@ -250,6 +250,37 @@ public class CommentReflowerObj
 		}
 	}
 
+	/// <summary>
+	/// Rewrites the indentation of every line of the block, up to the block's own
+	/// indentation, replacing the spaces and tabs that are there. It is written as
+	/// tabs followed by any spaces left over, or as spaces only if the tab size is 0.
+	/// </summary>
+	private static void IndentBlock(
+		EnvDTE.TextPoint pt,
+		MatchedBlockData bdata,
+		int tabSize
+	)
+	{
+#if !UNIT_TEST
+		ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+		string indentation = GetIndentationString(1, bdata.Indentation, tabSize);
+		EnvDTE.EditPoint lineStart = pt.CreateEditPoint();
+		for (int line = bdata.StartLine; line <= bdata.EndLine; line++)
+		{
+			lineStart.MoveToLineAndOffset(line, 1);
+			EnvDTE.EditPoint indentationEnd = lineStart.CreateEditPoint();
+			SkipColumns(indentationEnd, bdata.Indentation);
+			string existing = lineStart.GetText(indentationEnd);
+			// The first line of a block that follows code has that code where the indentation
+			// would be, so only whitespace is replaced.
+			if ((existing != indentation) && (existing.Trim().Length == 0))
+			{
+				lineStart.Delete(indentationEnd);
+				lineStart.Insert(indentation);
+			}
+		}
+	}
 	private static void WrapBlock(
 		ParameterSet pset,
 		CommentBlock block,
@@ -265,6 +296,7 @@ public class CommentReflowerObj
 		{
 			blockTabSize = 0;
 		}
+		IndentBlock(pt, bdata, blockTabSize);
 
 		bool isInPreformmatedBlock = false;
 		bool isLastLine = false;

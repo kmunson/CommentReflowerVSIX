@@ -1347,5 +1347,8 @@ static partial class UnitTests
 		TestRegistrationDefaults();
 		TestRegistrationEnums();
 		TestParameterSetLoader();
+		TestCommentBlockLines();
+		TestBlockShapes();
+		TestBlockMarkers();
 	}
 }

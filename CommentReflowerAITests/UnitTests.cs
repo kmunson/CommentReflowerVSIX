@@ -565,12 +565,12 @@ static class UnitTests
 	{
 		string[] input = { "\t\t// " + LongComment };
 
-		// The first line keeps the indentation it had. The lines added by wrapping get
-		// the block's indentation in tabs or in spaces, depending on the setting.
+		// Every line, the first included, gets the block's indentation in tabs or in
+		// spaces, depending on the setting.
 		string[] spaces = Reflow(new ParameterSet { UseTabsToIndent = false }, ".cpp", input);
 		Check(spaces.Length > 1, "The comment was not wrapped");
-		Check(spaces.Skip(1).All(l => l.StartsWith("        // ")), "An added line does not start with 8 spaces");
-		Check(spaces.Skip(1).All(l => !l.Contains('\t')), "An added line has a tab when tabs are not used to indent");
+		Check(spaces.All(l => l.StartsWith("        // ")), "A line does not start with 8 spaces");
+		Check(spaces.All(l => !l.Contains('\t')), "A line has a tab when tabs are not used to indent");
 
 		string[] tabs = Reflow(new ParameterSet { UseTabsToIndent = true }, ".cpp", input);
 		Check(tabs.All(l => l.StartsWith("\t\t// ")), "A line does not start with 2 tabs");
@@ -582,6 +582,70 @@ static class UnitTests
 		);
 
 		Console.WriteLine("Indentation tests PASSED.");
+	}
+
+	static void TestReplaceLeadingIndentation()
+	{
+		ParameterSet tabs = new() { UseTabsToIndent = true };
+
+		// the spaces before a comment, which is wrapped, become tabs on every line
+		foreach (string indentation in new[] { "        ", "\t    ", "    \t", "\t\t" })
+		{
+			string[] output = Reflow(tabs, ".cpp", indentation + "// " + LongComment);
+			Check(output.Length > 1, "The comment was not wrapped");
+			Check(output.All(l => l.StartsWith("\t\t// ")), "An indentation of '" + indentation.Replace("\t", "\\t") + "' did not become 2 tabs on every line");
+		}
+
+		// a width that is not a multiple of the tab size leaves spaces after the tabs
+		string[] sixColumns = Reflow(tabs, ".cpp", "      // " + LongComment);
+		Check(sixColumns.All(l => l.StartsWith("\t  // ")), "An indentation of 6 spaces did not become a tab and 2 spaces");
+
+		// spaces in a block that is already short and so needs no wrapping
+		string[] shortComment = { "        // short" };
+		Check(Reflow(tabs, ".cpp", shortComment).SequenceEqual(new[] { "\t\t// short" }), "A short comment indented with spaces was not indented with tabs");
+
+		// lines of a block that are not wrapped
+		string[] lines = Reflow(tabs, ".cpp", "        // one", "        // two", "        // three");
+		Check(lines.All(l => l.StartsWith("\t\t// ")), "Not every line of a block was indented with tabs");
+
+		// the lines of a block with its own start and end lines
+		string[] doxygen = Reflow(tabs, ".cpp", "    /**", "     * " + LongComment, "     */");
+		Check(doxygen.First() == "\t/**", "The block start line was not indented with a tab");
+		Check(doxygen.Last() == "\t */", "The block end line was not indented with a tab");
+		Check(doxygen.Skip(1).Take(doxygen.Length - 2).All(l => l.StartsWith("\t * ")), "A block line was not indented with a tab");
+
+		// the text after the comment start is not changed
+		string[] indented = Reflow(tabs, ".cpp", "    //     four spaces of text");
+		Check(indented.SequenceEqual(new[] { "\t//     four spaces of text" }), "The spaces after the comment start were changed");
+
+		// code before a comment is not changed, and the lines that follow are indented with tabs
+		string[] afterCode = Reflow(tabs, ".cpp", "int i; // " + LongComment);
+		Check(afterCode.First().StartsWith("int i; // "), "The code before a comment was changed");
+		Check(afterCode.Length > 1, "A comment after code was not wrapped");
+		Check(afterCode.Skip(1).All(l => l.StartsWith("\t   // ")), "A line after the first of a comment after code is not indented with a tab and 3 spaces");
+
+		// with tabs not in use, the tabs before a comment become spaces
+		ParameterSet spaces = new() { UseTabsToIndent = false };
+		foreach (string indentation in new[] { "        ", "\t    ", "    \t", "\t\t" })
+		{
+			string[] output = Reflow(spaces, ".cpp", indentation + "// " + LongComment);
+			Check(output.Length > 1, "The comment was not wrapped");
+			Check(output.All(l => l.StartsWith("        // ")), "An indentation of '" + indentation.Replace("\t", "\\t") + "' did not become 8 spaces on every line");
+		}
+		Check(Reflow(spaces, ".cpp", "\t  // short").SequenceEqual(new[] { "      // short" }), "A tab and 2 spaces did not become 6 spaces");
+		Check(Reflow(spaces, ".cpp", "\t\t// short").SequenceEqual(new[] { "        // short" }), "A short comment indented with tabs was not indented with spaces");
+		Check(Reflow(spaces, ".cpp", "        // short").SequenceEqual(new[] { "        // short" }), "A short comment indented with spaces was changed");
+
+		string[] spaceDoxygen = Reflow(spaces, ".cpp", "\t/**", "\t * " + LongComment, "\t */");
+		Check(spaceDoxygen.First() == "    /**", "The block start line was not indented with spaces");
+		Check(spaceDoxygen.Last() == "     */", "The block end line was not indented with spaces");
+		Check(spaceDoxygen.Skip(1).Take(spaceDoxygen.Length - 2).All(l => l.StartsWith("     * ")), "A block line was not indented with spaces");
+
+		string[] spaceAfterCode = Reflow(spaces, ".cpp", "int i; // " + LongComment);
+		Check(spaceAfterCode.First().StartsWith("int i; // "), "The code before a comment was changed");
+		Check(spaceAfterCode.Skip(1).All(l => l.StartsWith("       // ") && !l.Contains('\t')), "A line after the first of a comment after code is not indented with 7 spaces");
+
+		Console.WriteLine("Replacing leading indentation tests PASSED.");
 	}
 
 	static void TestLongWord()
@@ -719,6 +783,7 @@ static class UnitTests
 		TestWrapWidth();
 		TestMinimumBlockWidth();
 		TestIndentation();
+		TestReplaceLeadingIndentation();
 		TestLongWord();
 		TestNoBlock();
 		TestBlocksAtEdges();

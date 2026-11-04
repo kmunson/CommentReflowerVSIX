@@ -43,6 +43,8 @@ Becomes:
 ## Use tabs to indent
 
 Whether tabs are used to indent. If this is checked, tabs are used to indent
-new lines of blocks, and new lines within blocks when they are created. If it is
-not checked, only spaces are used. Tabs have the width set for the current file
-type in *Tools > Options > Text Editor > Tabs*. It is not checked by default.
+new lines of blocks, and new lines within blocks when they are created. Spaces that
+indent the existing lines of a block, before the comment, are replaced with tabs.
+If it is not checked, only spaces are used, and tabs that indent the existing lines of
+a block, before the comment, are replaced with spaces. Tabs have the width set for the
+current file type in *Tools > Options > Text Editor > Tabs*. It is not checked by default.

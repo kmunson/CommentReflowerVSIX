@@ -24,5 +24,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ParameterSet.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ParameterSetLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

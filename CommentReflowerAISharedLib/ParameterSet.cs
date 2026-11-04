@@ -554,18 +554,21 @@ public class ParameterSet
 		}
 	}
 
+	/// <summary>
+	/// Returns the comment blocks with a file association that matches the name of the
+	/// given file. An association has to match the whole file name, without its
+	/// directory, ignoring case. A * in an association matches any run of characters.
+	/// </summary>
 	public List<CommentBlock> GetBlocksForFileName(string fileName)
 	{
+		string name = fileName.Substring(fileName.LastIndexOfAny(new[] { '\\', '/' }) + 1);
 		var ret = new List<CommentBlock>();
 		foreach (CommentBlock cb in CommentBlocks)
 		{
 			foreach (string asoc in cb.FileAssociations)
 			{
-				string regexString = asoc.ToLower();
-				regexString = regexString.Replace(".", "\\.");
-				regexString = regexString.Replace("*", ".*?");
-				Regex re = new(regexString);
-				if (re.IsMatch(fileName.ToLower()))
+				string regexString = "^" + Regex.Escape(asoc).Replace("\\*", ".*") + "$";
+				if (Regex.IsMatch(name, regexString, RegexOptions.IgnoreCase))
 				{
 					ret.Add(cb);
 					break; //just break inner loop

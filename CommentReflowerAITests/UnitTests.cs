@@ -169,6 +169,37 @@ static class UnitTests
 		);
 		Check(BlockNamesFor(pset, "x.unknown").Count == 0, "GetBlocksForFileName(x.unknown) found a block");
 
+		// An association has to match the whole file name: *.vb is not *.vbproj, *.c is
+		// not *.css, *.h is not *.html, and a directory is not part of the name.
+		foreach (string fileName in new[] { "x.vbproj", "x.css", "x.html", "x.txt.bak", "Jamfile.bak", "MyJamfile", @"c:\Jamfile\x.unknown", @"c:\dir.cpp\readme", "cpp" })
+		{
+			Check(BlockNamesFor(pset, fileName).Count == 0, "GetBlocksForFileName(" + fileName + ") found a block");
+		}
+		Check(BlockNamesFor(pset, "x.CPP").Contains("C++ style"), "GetBlocksForFileName(x.CPP) has no C++ style block");
+		Check(BlockNamesFor(pset, "c:/dir/x.cpp").Contains("C++ style"), "GetBlocksForFileName(c:/dir/x.cpp) has no C++ style block");
+
+		// regex characters in an association are literal, and * can be anywhere in it
+		ParameterSet custom = new();
+		custom.CommentBlocks.Clear();
+		custom.CommentBlocks.Add(new CommentBlock(
+			"Custom",
+			CommentBlock.CreateFileAssocFromString("a+b.c;test*.log"),
+			StartEndBlockType.Empty,
+			"",
+			false,
+			StartEndBlockType.Empty,
+			"",
+			false,
+			"// ",
+			false
+		));
+		Check(BlockNamesFor(custom, "a+b.c").Count == 1, "GetBlocksForFileName(a+b.c) found no block");
+		Check(BlockNamesFor(custom, "aab.c").Count == 0, "GetBlocksForFileName(aab.c) found a block");
+		Check(BlockNamesFor(custom, "axb.c").Count == 0, "GetBlocksForFileName(axb.c) found a block");
+		Check(BlockNamesFor(custom, "test2.log").Count == 1, "GetBlocksForFileName(test2.log) found no block");
+		Check(BlockNamesFor(custom, "test.log").Count == 1, "GetBlocksForFileName(test.log) found no block");
+		Check(BlockNamesFor(custom, "mytest.log").Count == 0, "GetBlocksForFileName(mytest.log) found a block");
+
 		Console.WriteLine("File association tests PASSED.");
 	}
 

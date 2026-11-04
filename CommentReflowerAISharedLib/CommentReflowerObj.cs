@@ -148,7 +148,16 @@ public class CommentReflowerObj
 
 		foreach (CommentBlock block in pset.GetBlocksForFileName(fileName))
 		{
-			foreach (int indentation in block.GetPossibleIndentations(line))
+			// A blank line in a block with an optional line start doesn't show how far the
+			// block is indented, so the nearest line above that isn't blank is used.
+			string indentationLine = line;
+			for (int lineNumber = ep.Line - 1;
+				block.LineStartIsOptional && (indentationLine.Trim().Length == 0) && (lineNumber >= 1);
+				lineNumber--)
+			{
+				indentationLine = GetUntabbedLine(enddoc, lineNumber);
+			}
+			foreach (int indentation in block.GetPossibleIndentations(indentationLine))
 			{
 				bdata.Indentation = indentation;
 				int currentLineNumber = ep.Line;
@@ -275,6 +284,11 @@ public class CommentReflowerObj
 		for (int line = bdata.StartLine; line <= bdata.EndLine; line++)
 		{
 			lineStart.MoveToLineAndOffset(line, 1);
+			if (LineIsShorterThan(lineStart, bdata.Indentation))
+			{
+				// a blank line between paragraphs
+				continue;
+			}
 			EnvDTE.EditPoint indentationEnd = lineStart.CreateEditPoint();
 			SkipColumns(indentationEnd, bdata.Indentation);
 			string existing = lineStart.GetText(indentationEnd);
@@ -287,6 +301,38 @@ public class CommentReflowerObj
 			}
 		}
 	}
+	/// <summary>
+	/// Returns true if the block is on one line with nothing between its start and end,
+	/// such as "/* */". It has nothing to reflow, and its start and end can share the
+	/// space between them, so it can't be taken apart as other blocks are.
+	/// </summary>
+	private static bool IsEmptySingleLineBlock(
+		CommentBlock block,
+		MatchedBlockData bdata,
+		EnvDTE.TextPoint pt
+	)
+	{
+#if !UNIT_TEST
+		ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+		if ((bdata.StartLine != bdata.EndLine) ||
+			(block.BlockStartType == StartEndBlockType.Empty) ||
+			(block.BlockEndType == StartEndBlockType.Empty))
+		{
+			return false;
+		}
+		EnvDTE.EditPoint linePoint = pt.CreateEditPoint();
+		linePoint.MoveToLineAndOffset(bdata.StartLine, 1);
+		string text = GetRestOfLine(linePoint);
+		string start = bdata.MatchedBlockStart.TrimEnd();
+		string end = bdata.MatchedBlockEnd.TrimStart();
+		int startIndex = text.IndexOf(start);
+		int endIndex = text.LastIndexOf(end);
+		return (startIndex >= 0) &&
+			(endIndex >= startIndex + start.Length) &&
+			(text.Substring(startIndex + start.Length, endIndex - startIndex - start.Length).Trim().Length == 0);
+	}
+
 	private static void WrapBlock(
 		ParameterSet pset,
 		CommentBlock block,
@@ -297,6 +343,11 @@ public class CommentReflowerObj
 #if !UNIT_TEST
 		ThreadHelper.ThrowIfNotOnUIThread();
 #endif
+		if (IsEmptySingleLineBlock(block, bdata, pt))
+		{
+			return;
+		}
+
 		int blockTabSize = pt.Parent.TabSize;
 		if (!pset.UseTabsToIndent)
 		{
@@ -411,6 +462,12 @@ public class CommentReflowerObj
 			}
 			else // just a regular line start
 			{
+				if (LineIsShorterThan(curPoint, bdata.Indentation))
+				{
+					// a blank line between paragraphs, which is left as it is
+					curPoint.LineDown(1);
+					continue;
+				}
 				// pass over line start
 				SkipColumns(curPoint, bdata.Indentation);
 				if (GetTextOnLine(curPoint, block.LineStart.Length) != block.LineStart)
@@ -513,7 +570,8 @@ public class CommentReflowerObj
 			// before it.
 			EnvDTE.EditPoint nextLinePoint = null;
 			bool wrapIntoNextLine = false;
-			if (!isLastLine && !breakLine)
+			// a next line that is a blank line between paragraphs can't be wrapped into
+			if (!isLastLine && !breakLine && !LineIsShorterThan(curPoint, bdata.Indentation, 1))
 			{
 				nextLinePoint = curPoint.CreateEditPoint();
 				nextLinePoint.LineDown(1);
@@ -833,6 +891,25 @@ public class CommentReflowerObj
 		}
 	}
 
+	/// <summary>
+	/// Returns true if the line of the point, or the line the given number of lines below
+	/// it, has fewer columns than the given number. A line in a block can only be this
+	/// short if it is blank.
+	/// </summary>
+	private static bool LineIsShorterThan(EnvDTE.EditPoint pt, int columns, int linesDown = 0)
+	{
+#if !UNIT_TEST
+		ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+		EnvDTE.EditPoint lineEnd = pt.CreateEditPoint();
+		if (linesDown > 0)
+		{
+			lineEnd.LineDown(linesDown);
+		}
+		lineEnd.EndOfLine();
+		return (lineEnd.DisplayColumn - 1) < columns;
+	}
+
 	private static void SkipColumns(
 		EnvDTE.EditPoint pt,
 		int blockIndentation
@@ -978,6 +1055,11 @@ public class CommentReflowerObj
 #endif
 		EnvDTE.EditPoint temp = pt.CreateEditPoint();
 		temp.MoveToLineAndOffset(lineNum, 1);
+		if (LineIsShorterThan(temp, indentation))
+		{
+			// a blank line between paragraphs
+			return true;
+		}
 		SkipColumns(temp, indentation);
 		// note the trim here, which allows the match of blank lines
 		SkipString(temp, lineStart.TrimEnd());

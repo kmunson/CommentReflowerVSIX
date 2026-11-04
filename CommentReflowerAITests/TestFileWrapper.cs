@@ -25,6 +25,7 @@ public class TestFileWrapper : EnvDTE.TextDocument
 	public TestFileWrapper(string fileName)
 	{
 		mCurrentPoints = new ArrayList();
+		LineEnding = File.ReadAllText(fileName).Contains("\r\n") ? "\r\n" : "\n";
 		using StreamReader sr = new(fileName);
 		String line;
 		// Read and display lines from the file until the end of the file is reached.
@@ -37,6 +38,7 @@ public class TestFileWrapper : EnvDTE.TextDocument
 	public void WriteToFile(string fileName)
 	{
 		using StreamWriter sw = new(fileName);
+		sw.NewLine = LineEnding;
 		for (int i = 0; i < mLines.Count; i++)
 		{
 			sw.WriteLine(mLines[i]);
@@ -134,13 +136,15 @@ public class TestFileWrapper : EnvDTE.TextDocument
 			return 0;
 		}
 	}
-	public int TabSize
-	{
-		get
-		{
-			return 4;
-		}
-	}
+	/// <summary>
+	/// The tab size of the editor, which the reflow engine reads.
+	/// </summary>
+	public int TabSize { get; set; } = 4;
+
+	/// <summary>
+	/// The line ending used in the file, which is also the one written by WriteToFile.
+	/// </summary>
+	public string LineEnding { get; }
 
 	public void OnDelete(
 		TestTextPoint startPoint,
@@ -238,6 +242,12 @@ public class TestFileWrapper : EnvDTE.TextDocument
 		int startChar = startPoint.mCharPosition;
 		int charsPushedOnNextLine;// chars after last carriage return
 		int linesPushedDown = 0;// number carriage returns
+
+		// The engine picks the line ending itself, so check that it picked the file's.
+		if (((st[0] == '\n') || (st[0] == '\r')) && !st.StartsWith(LineEnding))
+		{
+			throw new InvalidOperationException("A line ending was inserted that the file doesn't use");
+		}
 
 		if (st[0] == '\n')
 		{

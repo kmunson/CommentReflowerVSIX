@@ -500,8 +500,9 @@ public class CommentReflowerObj
 				// length to the line start, so that the text on it lines up with the text on
 				// the lines that follow. If those lines are not lined up with it, but start at
 				// the line start, the check for wrapping into the next line below takes this
-				// back out.
-				startMarkerIndent = bdata.MatchedBlockStart.Length - block.LineStart.Length;
+				// back out. A start shorter than the line start can't be lined up with, as the
+				// lines after it can't be indented less than their line start.
+				startMarkerIndent = Math.Max(0, bdata.MatchedBlockStart.Length - block.LineStart.Length);
 				currentIndent += startMarkerIndent;
 				indentText = null;
 			}

@@ -310,6 +310,7 @@ class MainClass
 		int exitCode = 0;
 		try
 		{
+			UnitTests.Run();
 			DoBlockTests();
 			DoSimpleSingleFileTest("Blank Lines", "RegressionBlankLines", ".cpp");
 			DoSimpleSingleFileTest("Bullets", "RegressionBullets", ".cpp");

@@ -461,7 +461,9 @@ public class CommentReflowerObj
 				isInPreformmatedBlock = false;
 			}
 
-			// work out indent for current line
+			// work out indent for current line. If it is whitespace, keep it to use for the
+			// lines added after this one, so that they match.
+			string indentText = null;
 			if (pset.MatchesBulletPoint(GetRestOfLine(curPoint), out int thisIndent, out int currentIndent))
 			{
 				// We need to convert current indent to number of columns as at the moment it is
@@ -474,7 +476,9 @@ public class CommentReflowerObj
 			}
 			else
 			{
+				EnvDTE.EditPoint indentStart = curPoint.CreateEditPoint();
 				currentIndent = SkipWhitespace(curPoint);
+				indentText = indentStart.GetText(curPoint);
 			}
 			int startMarkerIndent = 0;
 			if ((block.BlockStartType == StartEndBlockType.NeverOnOwnLine) &&
@@ -487,6 +491,7 @@ public class CommentReflowerObj
 				// back out.
 				startMarkerIndent = bdata.MatchedBlockStart.Length - block.LineStart.Length;
 				currentIndent += startMarkerIndent;
+				indentText = null;
 			}
 
 			int blockWrapWidth = GetBlockWrapWidth(pset, bdata, block, currentIndent);
@@ -718,7 +723,7 @@ public class CommentReflowerObj
 						curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 						if (currentIndent > 0)
 						{
-							curPoint.Insert(GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
+							curPoint.Insert(indentText ?? GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
 						}
 					}
 					else
@@ -766,7 +771,7 @@ public class CommentReflowerObj
 						curPoint.Insert(eol + GetIndentationString(1, bdata.Indentation, blockTabSize) + block.LineStart);
 						if (currentIndent > 0)
 						{
-							curPoint.Insert(GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
+							curPoint.Insert(indentText ?? GetIndentationString(curPoint.DisplayColumn, currentIndent, blockTabSize));
 						}
 						// process the just created line in the next iteration
 					}

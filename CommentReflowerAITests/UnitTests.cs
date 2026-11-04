@@ -834,6 +834,57 @@ static class UnitTests
 		Console.WriteLine("Finding a block from any line tests PASSED.");
 	}
 
+	/// <summary>
+	/// A line added by wrapping has the same whitespace after the line start as the line
+	/// it was split from, so that the lines of a paragraph can't differ in whether they
+	/// use tabs or spaces to line up.
+	/// </summary>
+	static void TestAddedLinesMatchExistingWhitespace()
+	{
+		// a comment whose lines after the first are lined up with the text of the first
+		string[] lined =
+		{
+			"    <!-- UNIT_TEST compiles out the ThreadHelper.ThrowIfNotOnUIThread() calls in",
+			"         CommentReflowerAISharedLib, which still uses the EnvDTE interfaces that the mock",
+			"         editor objects implement, so the threading analyzer would flag every use of them. -->"
+		};
+		foreach (bool useTabs in new[] { false, true })
+		{
+			ParameterSet pset = XmlParameterSet(80, 80, useTabs);
+			string[] output = Reflow(pset, ".xml", lined);
+			string what = " with tabs " + (useTabs ? "on" : "off");
+			string expected = useTabs ? "\t     " : "         ";
+
+			Check(output.Length > 3, "The lined up comment was not wrapped" + what);
+			Check(
+				output.Skip(1).All(l => l.StartsWith(expected) && !char.IsWhiteSpace(l[expected.Length])),
+				"A line after the first of the lined up comment does not start with the same whitespace" + what + ": " + string.Join(" | ", output.Select(l => l.Replace("\t", "\\t")))
+			);
+			Check(Tokens(output).SequenceEqual(Tokens(lined)), "Reflowing the lined up comment changed the words" + what);
+			Check(Reflow(pset, ".xml", output).SequenceEqual(output), "Reflowing the lined up comment twice changed the result" + what);
+		}
+
+		// the whitespace is copied, not worked out again, so spaces stay spaces and tabs stay tabs
+		foreach (string indentation in new[] { "      ", "\t  ", "  \t" })
+		{
+			string[] text =
+			{
+				"This paragraph is not indented.",
+				indentation + "This one is, by the same amount on every line, and it has enough words in it that it has to be wrapped onto another line.",
+				indentation + "Its second line is short."
+			};
+			string[] output = Reflow(new ParameterSet { UseTabsToIndent = true }, ".txt", text);
+			string[] indented = output.Skip(1).ToArray();
+			Check(indented.Length > 1, "The indented paragraph was not wrapped");
+			Check(
+				indented.All(l => l.StartsWith(indentation) && !char.IsWhiteSpace(l[indentation.Length])),
+				"A line of the paragraph indented with '" + indentation.Replace("\t", "\\t") + "' is not indented the same: " + string.Join(" | ", output.Select(l => l.Replace("\t", "\\t")))
+			);
+		}
+
+		Console.WriteLine("Added lines match existing whitespace tests PASSED.");
+	}
+
 	static void TestLongWord()
 	{
 		string longWord = new('x', 100);
@@ -972,6 +1023,7 @@ static class UnitTests
 		TestReplaceLeadingIndentation();
 		TestStartLongerThanLineStart();
 		TestFindBlockFromAnyLine();
+		TestAddedLinesMatchExistingWhitespace();
 		TestLongWord();
 		TestNoBlock();
 		TestBlocksAtEdges();

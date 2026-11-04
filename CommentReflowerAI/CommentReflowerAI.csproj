@@ -1,9 +1,11 @@
-<Project>
-	<!-- The SDK is imported explicitly so that the VSSDK targets can be imported after it. -->
+﻿<Project>
+	<!-- The SDK is imported explicitly so that the VSSDK targets can be imported after
+	     it. -->
 	<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
-		<!-- C# 10 for file-scoped namespaces, which need no runtime support. The default for net48 is 7.3. -->
+		<!-- C# 10 for file-scoped namespaces, which need no runtime support. The default for
+		     net48 is 7.3. -->
 		<LangVersion>10</LangVersion>
 		<RootNamespace>CommentReflower</RootNamespace>
 		<AssemblyName>CommentReflowerAI</AssemblyName>
@@ -54,6 +56,5 @@
 	</ItemGroup>
 	<Import Project="..\CommentReflowerAISharedLib\CommentReflowerAISharedLib.projitems" Label="Shared" />
 	<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-	<Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets"
-		Condition="'$(VSToolsPath)' != ''" />
+	<Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

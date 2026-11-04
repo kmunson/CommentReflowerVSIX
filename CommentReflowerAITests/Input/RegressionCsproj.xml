@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<!-- C# 10 for file-scoped namespaces, which need no runtime support. The default for
+		     net48 is 7.3. -->
+		<LangVersion>10</LangVersion>
+		<AssemblyName>CommentReflowerAITests</AssemblyName>
+		<RootNamespace>CommentReflowerAITests</RootNamespace>
+		<!-- The test reads ..\..\Input, so it has to run from bin\Debug or bin\Release. -->
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<DefineConstants>$(DefineConstants);UNIT_TEST</DefineConstants>
+		<!-- UNIT_TEST compiles out the ThreadHelper.ThrowIfNotOnUIThread() calls in
+		     CommentReflowerAISharedLib, which still uses the EnvDTE interfaces that the mock
+		     editor objects implement, so the threading analyzer would flag every use of
+		     them. -->
+		<NoWarn>$(NoWarn);VSTHRD010</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="System.Windows.Forms" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.SDK">
+			<Version>17.14.40265</Version>
+		</PackageReference>
+	</ItemGroup>
+	<Import Project="..\CommentReflowerAISharedLib\CommentReflowerAISharedLib.projitems" Label="Shared" />
+</Project>

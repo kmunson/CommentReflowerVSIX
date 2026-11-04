@@ -350,6 +350,20 @@ public class CommentBlock
 	}
 
 	/// <summary>
+	/// Returns true if the line is indented as the lines of the block after the first are:
+	/// it is a continuation, or the block end starts at the indentation.
+	/// </summary>
+	public bool LineIsAtIndentation(
+		string currentLine,
+		int indent
+	)
+	{
+		return LineIsBlockContinuation(currentLine, indent) ||
+			((BlockEndType != StartEndBlockType.Empty) &&
+				Regex.IsMatch(currentLine, @"^ {" + indent.ToString() + @"}" + GetRegEx(BlockEnd, IsBlockEndRegEx)));
+	}
+
+	/// <summary>
 	/// Returns true if the line is a possible start or continuation of the block.
 	/// @pre BlockStartType == Empty
 	/// </summary>

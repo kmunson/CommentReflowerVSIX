@@ -185,7 +185,11 @@ public class CommentReflowerObj
 					{
 						string currentLine = GetUntabbedLine(enddoc, currentLineNumber);
 						string nextLine = GetUntabbedLine(enddoc, currentLineNumber + 1);
-						if (block.LineIsEndOfBlock(currentLine, nextLine, bdata.Indentation, out string matchedBlockEnd))
+						// A line after the first has to be indented as the block is, even if it
+						// has the block end on it, or it can't be reflowed. That isn't so if it was
+						// written with a different tab size from the editor's.
+						if (block.LineIsEndOfBlock(currentLine, nextLine, bdata.Indentation, out string matchedBlockEnd) &&
+							((currentLineNumber == bdata.StartLine) || block.LineIsAtIndentation(currentLine, bdata.Indentation)))
 						{
 							bdata.MatchedBlockEnd = matchedBlockEnd;
 							bdata.EndLine = currentLineNumber;

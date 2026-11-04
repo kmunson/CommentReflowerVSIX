@@ -469,12 +469,12 @@ static class UnitTests
 		"This is a comment with enough short words in it that it has to be wrapped when the wrap " +
 		"width is narrow and that it fills several lines even at the default width so it is easy to see.";
 
-	static string ExpandTabs(string line)
+	static string ExpandTabs(string line, int tabSize = TabSize)
 	{
 		string ret = "";
 		foreach (char c in line)
 		{
-			ret += (c == '\t') ? new string(' ', TabSize - (ret.Length % TabSize)) : c.ToString();
+			ret += (c == '\t') ? new string(' ', tabSize - (ret.Length % tabSize)) : c.ToString();
 		}
 		return ret;
 	}
@@ -495,19 +495,29 @@ static class UnitTests
 		return Reflow(pset, extension, null, lines, out _);
 	}
 
+	/// <summary>
+	/// Reflows every block in the given lines, or those in the selection if it is given
+	/// as the first and last line numbers, with the editor's tab size and the file's line
+	/// ending as given. Checks that the output has only that line ending.
+	/// </summary>
 	static string[] Reflow(
 		ParameterSet pset,
 		string extension,
 		string[] selection,
 		string[] lines,
-		out bool blockFound
+		out bool blockFound,
+		int tabSize = TabSize,
+		string lineEnding = "\r\n"
 	)
 	{
 		string dir = Path.Combine(Path.GetTempPath(), "CommentReflowerAITests");
 		Directory.CreateDirectory(dir);
 		string fileName = Path.Combine(dir, "UnitTest" + extension);
-		File.WriteAllLines(fileName, lines);
-		TestFileWrapper file = new(fileName);
+		File.WriteAllText(fileName, string.Join(lineEnding, lines) + lineEnding);
+		TestFileWrapper file = new(fileName)
+		{
+			TabSize = tabSize
+		};
 		EnvDTE.EditPoint start = file.CreateEditPoint(null);
 		EnvDTE.EditPoint end = file.CreateEditPoint(null);
 		if (selection == null)
@@ -523,6 +533,11 @@ static class UnitTests
 		blockFound = CommentReflowerObj.WrapAllBlocksInSelection(pset, fileName, start, end);
 		string outName = fileName + ".out";
 		file.WriteToFile(outName);
+		string output = File.ReadAllText(outName);
+		Check(
+			output.Replace(lineEnding, "").IndexOfAny(new[] { '\r', '\n' }) == -1,
+			"The output has a line ending other than " + lineEnding.Replace("\r", "\\r").Replace("\n", "\\n")
+		);
 		return File.ReadAllLines(outName);
 	}
 
@@ -955,10 +970,12 @@ static class UnitTests
 			Check(!found || ((bdata.StartLine == 2) && (bdata.EndLine == 5)), "The block at line " + line + " is lines " + bdata.StartLine + " to " + bdata.EndLine);
 		}
 
-		// a line start that is not blank is still needed on every line
-		CheckThrows(
-			() => Reflow(new ParameterSet(), ".cpp", "/* first line of a comment", "no line start on this line */"),
-			"Reflowing a C comment whose second line has no line start"
+		// a line start that is not blank is still needed on every line, so a comment whose
+		// last line leaves it out is not a block, and is left alone
+		string[] noLineStart = { "/* first line of a comment", "no line start on this line */" };
+		Check(
+			Reflow(new ParameterSet(), ".cpp", null, noLineStart, out bool noLineStartFound).SequenceEqual(noLineStart) && !noLineStartFound,
+			"A C comment whose second line has no line start was reflowed"
 		);
 		Console.WriteLine("Optional line start tests PASSED.");
 	}
@@ -1085,6 +1102,221 @@ static class UnitTests
 		Console.WriteLine("Custom block tests PASSED.");
 	}
 
+	////////////////////////////////////////
+	// line endings, tab sizes and whole files
+	////////////////////////////////////////
+
+	const string InputDirectory = @"..\..\Input\";
+
+	static void TestLineEndings()
+	{
+		string[][] inputs =
+		{
+			new[] { "\t\t// " + LongComment },
+			new[] { "    /**", "     * " + LongComment, "     */" },
+			new[] { "/*! first line", " * flush second line", " */" },
+			File.ReadAllLines(InputDirectory + "Regression.cpp")
+		};
+		foreach (string[] input in inputs)
+		{
+			ParameterSet pset = new() { UseTabsToIndent = true };
+			string[] crlf = Reflow(pset, ".cpp", null, input, out _, lineEnding: "\r\n");
+			string[] lf = Reflow(pset, ".cpp", null, input, out _, lineEnding: "\n");
+			Check(lf.SequenceEqual(crlf), "Reflowing with LF line endings gave different lines from CRLF, for input starting " + input[0]);
+		}
+		string[] xml = File.ReadAllLines(InputDirectory + "RegressionVsct.xml");
+		Check(
+			Reflow(XmlParameterSet(80, 30, true), ".xml", null, xml, out _, lineEnding: "\n")
+				.SequenceEqual(Reflow(XmlParameterSet(80, 30, true), ".xml", null, xml, out _, lineEnding: "\r\n")),
+			"Reflowing an XML file with LF line endings gave different lines from CRLF"
+		);
+
+		Console.WriteLine("Line ending tests PASSED.");
+	}
+
+	/// <summary>
+	/// Returns the display column, from 1, of the first character of the line that is not
+	/// a space or a tab.
+	/// </summary>
+	static int TextColumn(string line, int tabSize)
+	{
+		string expanded = ExpandTabs(line, tabSize);
+		return expanded.Length - expanded.TrimStart(' ').Length + 1;
+	}
+
+	static void TestTabSizes()
+	{
+		string[] lined =
+		{
+			"    <!-- UNIT_TEST compiles out the ThreadHelper.ThrowIfNotOnUIThread() calls in",
+			"         CommentReflowerAISharedLib, which still uses the EnvDTE interfaces that the mock",
+			"         editor objects implement, so the threading analyzer would flag every use of them. -->"
+		};
+		foreach (int tabSize in new[] { 2, 4, 8 })
+		{
+			string what = " with a tab size of " + tabSize;
+
+			// a comment lined up with the text after its start
+			string[] output = Reflow(XmlParameterSet(80, 80, true), ".xml", null, lined, out _, tabSize);
+			Check(output.Length > 3, "The lined up comment was not wrapped" + what);
+			Check(TextColumn(output[0], tabSize) == 5, "The lined up comment's first line moved" + what);
+			Check(output.Skip(1).All(l => TextColumn(l, tabSize) == 10), "A line of the lined up comment is not lined up" + what);
+			Check(Reflow(XmlParameterSet(80, 80, true), ".xml", null, output, out _, tabSize).SequenceEqual(output), "Reflowing the lined up comment twice changed it" + what);
+
+			// the indentation of a block becomes as many tabs as fit, then spaces
+			string[] doxygen = Reflow(new ParameterSet { UseTabsToIndent = true }, ".cpp", null, new[] { "        /**", "         * " + LongComment, "         */" }, out _, tabSize);
+			string indentation = new string('\t', 8 / tabSize);
+			Check(doxygen.All(l => l.StartsWith(indentation) && (l[indentation.Length] != '\t') && (TextColumn(l, tabSize) == ((l == doxygen[0]) ? 9 : 10))), "The block indented 8 columns is not indented with tabs" + what + ": " + string.Join(" | ", doxygen.Select(l => l.Replace("\t", "\\t"))));
+
+			// a block indented with tabs wraps at the wrap width measured with the tab size
+			string[] tabbed = Reflow(new ParameterSet { UseTabsToIndent = true }, ".cpp", null, new[] { "\t\t// " + LongComment }, out _, tabSize);
+			Check(tabbed.Length > 1, "The comment indented with tabs was not wrapped" + what);
+			Check(tabbed.All(l => l.StartsWith("\t\t// ") && (ExpandTabs(l, tabSize).Length <= 80)), "A line of the comment indented with tabs is wrong" + what);
+			Check(Words(tabbed, "//").SequenceEqual(Words(new[] { "\t\t// " + LongComment }, "//")), "Reflowing the comment indented with tabs changed the words" + what);
+		}
+
+		// A comment after code whose last line is lined up with tabs of 4 columns is not
+		// lined up with tabs of 8, so it is a block only with a tab size of 4.
+		string[] afterCode =
+		{
+			"int i; /* This is a mult line C syle comment after code. This is a mult line C syle comment after code.",
+			"\t    * This is a mult line C syle comment after code. This is a mult line C syle comment after code. */"
+		};
+		foreach (int tabSize in new[] { 4, 8 })
+		{
+			string[] output = Reflow(new ParameterSet(), ".cpp", null, afterCode, out bool found, tabSize);
+			Check(found == (tabSize == 4), "The comment after code lined up with tabs of 4 was " + (found ? "" : "not ") + "a block with a tab size of " + tabSize);
+			Check((tabSize == 4) || output.SequenceEqual(afterCode), "The comment after code lined up with tabs of 4 was changed with a tab size of 8");
+		}
+
+		Console.WriteLine("Tab size tests PASSED.");
+	}
+
+	/// <summary>
+	/// Returns the words of the lines without the line starts of the blocks, which
+	/// wrapping adds a copy of to each line it adds.
+	/// </summary>
+	static string[] CommentWords(IEnumerable<string> lines, ParameterSet pset)
+	{
+		HashSet<string> lineStarts = new(pset.CommentBlocks.Select(b => b.LineStart.Trim()).Where(s => s.Length > 0));
+		return Tokens(lines).Where(t => !lineStarts.Contains(t)).ToArray();
+	}
+
+	/// <summary>
+	/// Finds the comment from every line of real XML files. A comment has to be found on
+	/// exactly the lines from a line with &lt;!-- to the next line with --&gt;.
+	/// </summary>
+	static void TestFindBlockInFiles()
+	{
+		foreach (string file in new[] { "RegressionVsct.xml", "RegressionCsproj.xml" })
+		{
+			string[] lines = File.ReadAllLines(InputDirectory + file);
+			foreach (string lineStart in new[] { "", "     " })
+			{
+				ParameterSet pset = XmlParameterSet(80, 30, true, lineStart);
+				TestFileWrapper document = OpenDocument(".xml", lines, out string fileName);
+				bool inComment = false;
+				int commentStart = 0;
+				int found = 0;
+				for (int line = 1; line <= lines.Length; line++)
+				{
+					string text = lines[line - 1];
+					if (text.Contains("<!--"))
+					{
+						inComment = true;
+						commentStart = line;
+					}
+					bool expected = inComment;
+					if (text.Contains("-->"))
+					{
+						inComment = false;
+					}
+
+					EnvDTE.EditPoint pt = document.CreateEditPoint(null);
+					pt.MoveToLineAndOffset(line, 1);
+					bool isFound = CommentReflowerObj.GetBlockContainingPoint(pset, fileName, pt, out _, out MatchedBlockData bdata);
+					string what = file + " line " + line + " with a line start of " + lineStart.Length + " spaces";
+					Check(isFound == expected, "A comment was " + (isFound ? "" : "not ") + "found at " + what);
+					Check(!isFound || (bdata.StartLine == commentStart), "The comment at " + what + " starts at line " + bdata.StartLine + " not " + commentStart);
+					found += isFound ? 1 : 0;
+				}
+				Check(found > 0, "No comment was found in " + file);
+			}
+		}
+
+		Console.WriteLine("Finding blocks in files tests PASSED.");
+	}
+
+	/// <summary>
+	/// Reflows every input file with each combination of settings, tab size and line
+	/// start for XML, and checks that nothing fails, that no words are lost or moved, and
+	/// that reflowing the result again changes nothing.
+	/// </summary>
+	static void TestSettingsSweep()
+	{
+		string[] files =
+		{
+			"Regression.cpp", "RegressionBlankLines.cpp", "RegressionBreakFlowStrings.cpp", "RegressionBullets.cpp",
+			"ExampleFile.cpp", "Regression.vb", "Regression.JAM", "Regression.txt", "RegressionVsct.xml", "RegressionCsproj.xml"
+		};
+		int[][] widths = { new[] { 80, 30 }, new[] { 40, 10 }, new[] { 100, 60 } };
+		int runs = 0;
+		List<string> failures = new();
+		foreach (string file in files)
+		{
+			string[] input = File.ReadAllLines(InputDirectory + file);
+			string extension = Path.GetExtension(file);
+			bool isXml = extension == ".xml";
+			foreach (string lineStart in isXml ? new[] { "", "     " } : new[] { "" })
+			{
+				foreach (bool useTabs in new[] { false, true })
+				{
+					foreach (int[] width in widths)
+					{
+						foreach (int tabSize in new[] { 4, 8 })
+						{
+							ParameterSet pset = isXml ?
+								XmlParameterSet(width[0], width[1], useTabs, lineStart) :
+								new ParameterSet { UseTabsToIndent = useTabs, WrapWidth = width[0], MinimumBlockWidth = width[1] };
+							string what = file + " with wrap width " + width[0] + ", minimum block width " + width[1] +
+								", tabs " + (useTabs ? "on" : "off") + ", tab size " + tabSize +
+								(isXml ? ", line start of " + lineStart.Length + " spaces" : "");
+							runs++;
+							string[] once;
+							string[] twice;
+							try
+							{
+								once = Reflow(pset, extension, null, input, out _, tabSize);
+								twice = Reflow(pset, extension, null, once, out _, tabSize);
+							}
+							catch (ArgumentException e)
+							{
+								failures.Add("Reflowing " + what + " threw: " + e.Message);
+								continue;
+							}
+							if (!CommentWords(once, pset).SequenceEqual(CommentWords(input, pset)))
+							{
+								failures.Add("Reflowing " + what + " changed the words");
+							}
+							else if (!twice.SequenceEqual(once))
+							{
+								failures.Add("Reflowing " + what + " a second time changed it");
+							}
+						}
+					}
+				}
+			}
+		}
+
+		foreach (string failure in failures)
+		{
+			Console.WriteLine(failure);
+		}
+		Check(failures.Count == 0, failures.Count + " of " + runs + " combinations in the settings sweep failed");
+
+		Console.WriteLine("Settings sweep tests PASSED (" + runs + " combinations).");
+	}
+
 	/// <summary>
 	/// Runs the tests, which throw an exception if one fails.
 	/// </summary>
@@ -1108,5 +1340,9 @@ static class UnitTests
 		TestBlocksAtEdges();
 		TestSelection();
 		TestCustomBlock();
+		TestLineEndings();
+		TestTabSizes();
+		TestFindBlockInFiles();
+		TestSettingsSweep();
 	}
 }

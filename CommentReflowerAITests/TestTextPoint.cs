@@ -343,8 +343,8 @@ public class TestTextPoint : EnvDTE.TextPoint, EnvDTE.EditPoint
 		{
 			if ((val == -1) && (mCharPosition == 0))
 			{
-				// ugly hack!
-				return "\r\n";
+				// ugly hack! The character before the start of a line is the line ending.
+				return mParent.LineEnding;
 			}
 
 			return mParent.GetLine(mLineNum).Substring(mCharPosition, val);

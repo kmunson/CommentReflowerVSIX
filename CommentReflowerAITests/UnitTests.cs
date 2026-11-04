@@ -750,6 +750,90 @@ static class UnitTests
 		Console.WriteLine("Start longer than the line start tests PASSED.");
 	}
 
+	/// <summary>
+	/// Writes the lines to a file with the given extension, and returns it as the test
+	/// document with the file name.
+	/// </summary>
+	static TestFileWrapper OpenDocument(string extension, string[] lines, out string fileName)
+	{
+		string dir = Path.Combine(Path.GetTempPath(), "CommentReflowerAITests");
+		Directory.CreateDirectory(dir);
+		fileName = Path.Combine(dir, "UnitTestPoint" + extension);
+		File.WriteAllLines(fileName, lines);
+		return new TestFileWrapper(fileName);
+	}
+
+	/// <summary>
+	/// A block with a blank line start, as in XML, has nothing on its lines after the first
+	/// to show that they are in a comment, so finding the block from the point needs the
+	/// start to be found by the indentation of the point's line.
+	/// </summary>
+	static void TestFindBlockFromAnyLine()
+	{
+		string[] lines =
+		{
+			"      <Parent />",
+			"      <!-- First comment line with some words",
+			"      second line flush with the start",
+			"          third line indented more",
+			"      last line -->",
+			"      <Button id=\"x\" />",
+			"    <Other />",
+			"    <!-- Another comment, on one line -->",
+			"        <Deep />",
+			"    <!-- And one",
+			"    more -->"
+		};
+		// the first and last line of the comment, or of the comments, for each line, or 0 for none
+		int[][] expected =
+		{
+			new[] { 0, 0 }, new[] { 2, 5 }, new[] { 2, 5 }, new[] { 2, 5 }, new[] { 2, 5 },
+			new[] { 0, 0 }, new[] { 0, 0 }, new[] { 8, 8 }, new[] { 0, 0 }, new[] { 10, 11 }, new[] { 10, 11 }
+		};
+		TestFileWrapper document = OpenDocument(".xml", lines, out string fileName);
+		ParameterSet pset = XmlParameterSet(80, 30, false);
+		for (int line = 1; line <= lines.Length; line++)
+		{
+			EnvDTE.EditPoint pt = document.CreateEditPoint(null);
+			pt.MoveToLineAndOffset(line, 1);
+			bool found = CommentReflowerObj.GetBlockContainingPoint(pset, fileName, pt, out CommentBlock block, out MatchedBlockData bdata);
+			int[] range = expected[line - 1];
+			string what = "line " + line + " (" + lines[line - 1].Trim() + ")";
+			if (range[0] == 0)
+			{
+				Check(!found, "A block was found at " + what);
+			}
+			else
+			{
+				Check(found, "No block was found at " + what);
+				Check((bdata.StartLine == range[0]) && (bdata.EndLine == range[1]), "The block at " + what + " is lines " + bdata.StartLine + " to " + bdata.EndLine);
+				Check(block.Name == "XML", "The block at " + what + " is not the XML block");
+				Check(bdata.Indentation == lines[range[0] - 1].Length - lines[range[0] - 1].TrimStart().Length, "The block at " + what + " has the wrong indentation");
+			}
+		}
+
+		// reflowing from the last line of a comment reflows the whole of it
+		string[] comment =
+		{
+			"    <!-- one two three four five six seven eight nine ten eleven twelve",
+			"    thirteen fourteen fifteen sixteen -->"
+		};
+		document = OpenDocument(".xml", comment, out fileName);
+		EnvDTE.EditPoint last = document.CreateEditPoint(null);
+		last.MoveToLineAndOffset(2, 1);
+		Check(CommentReflowerObj.WrapBlockContainingPoint(XmlParameterSet(40, 10, false), fileName, last), "Reflowing from the last line found no comment");
+		string outName = fileName + ".out";
+		document.WriteToFile(outName);
+		string[] output = File.ReadAllLines(outName);
+		Check(output.Length > 2, "Reflowing from the last line did not wrap the comment");
+		// the end of the comment is added after wrapping, so the last line can go past the wrap width
+		Check(output.Take(output.Length - 1).All(l => l.Length <= 40), "A line is wider than the wrap width after reflowing from the last line");
+		Check(output[0].StartsWith("    <!-- one "), "The first line is wrong after reflowing from the last line");
+		Check(Tokens(output).SequenceEqual(Tokens(comment)), "Reflowing from the last line changed the words");
+
+		Console.WriteLine("Finding a block from any line tests PASSED.");
+	}
+
 	static void TestLongWord()
 	{
 		string longWord = new('x', 100);
@@ -887,6 +971,7 @@ static class UnitTests
 		TestIndentation();
 		TestReplaceLeadingIndentation();
 		TestStartLongerThanLineStart();
+		TestFindBlockFromAnyLine();
 		TestLongWord();
 		TestNoBlock();
 		TestBlocksAtEdges();

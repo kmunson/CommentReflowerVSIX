@@ -7,7 +7,9 @@
 		<LangVersion>10</LangVersion>
 		<RootNamespace>CommentReflower</RootNamespace>
 		<AssemblyName>CommentReflowerAI</AssemblyName>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AssemblyTitle>Comment Reflower AI</AssemblyTitle>
+		<Product>Comment Reflower AI</Product>
+		<Company>Kristofel Munson</Company>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>

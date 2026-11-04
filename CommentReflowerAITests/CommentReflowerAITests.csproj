@@ -6,9 +6,6 @@
     <LangVersion>10</LangVersion>
     <AssemblyName>CommentReflowerAITests</AssemblyName>
     <RootNamespace>CommentReflowerAITests</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <!-- AssemblyInfo.cs uses a wildcard version, which a deterministic build rejects. -->
-    <Deterministic>false</Deterministic>
     <!-- The test reads ..\..\Input, so it has to run from bin\Debug or bin\Release. -->
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefineConstants>$(DefineConstants);UNIT_TEST</DefineConstants>

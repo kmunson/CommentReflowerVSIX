@@ -97,6 +97,9 @@ compares the output with `Compare/`.
   waiting.
 - Each exits with code 0 if all the tests pass and 1 if one fails. The console
   output says which test failed, for example with "does not match".
+- `CommentReflowerAITests` also reads `..\..\..\CommentReflowerAI\registration.json`
+  and checks that its defaults are `ParameterSet`'s, so a change to the default
+  settings has to be made in both.
 
 ## Code conventions
 

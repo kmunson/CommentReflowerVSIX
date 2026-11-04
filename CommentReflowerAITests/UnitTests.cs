@@ -27,7 +27,7 @@ using System.Text.RegularExpressions;
 /// defaults. Unlike the golden file tests in MainClass, these check properties of the
 /// result, or the result of a single call, and need no Compare files.
 /// </summary>
-static class UnitTests
+static partial class UnitTests
 {
 	const int TabSize = 4;
 
@@ -1344,5 +1344,8 @@ static class UnitTests
 		TestTabSizes();
 		TestFindBlockInFiles();
 		TestSettingsSweep();
+		TestRegistrationDefaults();
+		TestRegistrationEnums();
+		TestParameterSetLoader();
 	}
 }

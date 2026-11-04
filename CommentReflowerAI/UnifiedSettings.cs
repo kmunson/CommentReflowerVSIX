@@ -17,7 +17,6 @@ using CommentReflowerLib;
 using Microsoft.VisualStudio.Utilities.UnifiedSettings;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace CommentReflower;
@@ -86,86 +85,15 @@ internal sealed class UnifiedSettings : IDisposable
 
 	private ParameterSet Load()
 	{
-		var p = new ParameterSet();
-		p.CommentBlocks.Clear();
-		p.BulletPoints.Clear();
-		p.BreakFlowStrings.Clear();
-
-		p.WrapWidth = GetValue<int>(WrapWidth);
-		p.MinimumBlockWidth = GetValue<int>(MinimumBlockWidth);
-		p.UseTabsToIndent = GetValue<bool>(UseTabsToIndent);
-		p.ValidateGeneralSettings();
-
-		foreach (var item in GetArray(CommentBlocks))
-		{
-			string name = GetString(item, "name");
-			try
-			{
-				var commentBlock = new CommentBlock(
-					name,
-					CommentBlock.CreateFileAssocFromString(GetString(item, "fileTypes")),
-					GetBlockType(item, "blockStartType"),
-					FromDisplay(GetString(item, "blockStart")),
-					GetBool(item, "blockStartIsRegex"),
-					GetBlockType(item, "blockEndType"),
-					FromDisplay(GetString(item, "blockEnd")),
-					GetBool(item, "blockEndIsRegex"),
-					FromDisplay(GetString(item, "lineStart")),
-					GetString(item, "firstLine") == "mustNotContainTextBeforeStart"
-				);
-				p.CommentBlocks.Add(commentBlock);
-				p.ValidateCommentBlock(p.CommentBlocks.Count - 1);
-			}
-			catch (ArgumentException e)
-			{
-				throw new ArgumentException(string.Format("Block \"{0}\": {1}", name, e.Message), e);
-			}
-		}
-
-		foreach (var item in GetArray(BulletPoints))
-		{
-			string name = GetString(item, "name");
-			try
-			{
-				var bulletPoint = new BulletPoint(
-					name,
-					FromDisplay(GetString(item, "matchString")),
-					GetBool(item, "isRegex"),
-					GetString(item, "wrapOnEdge") == "right"
-				);
-				p.BulletPoints.Add(bulletPoint);
-				p.ValidateBullet(p.BulletPoints.Count - 1);
-			}
-			catch (ArgumentException e)
-			{
-				throw new ArgumentException(string.Format("Bullet \"{0}\": {1}", name, e.Message), e);
-			}
-		}
-
-		foreach (var item in GetArray(BreakFlowStrings))
-		{
-			string name = GetString(item, "name");
-			try
-			{
-				var breakFlowString = new BreakFlowString(
-					name,
-					FromDisplay(GetString(item, "matchString")),
-					GetBool(item, "isRegex"),
-					GetBool(item, "neverReflowLine"),
-					GetBool(item, "neverReflowIntoNextLine")
-				);
-				p.BreakFlowStrings.Add(breakFlowString);
-				p.ValidateBreakFlowString(p.BreakFlowStrings.Count - 1);
-			}
-			catch (ArgumentException e)
-			{
-				throw new ArgumentException(string.Format("Break flow string \"{0}\": {1}", name, e.Message), e);
-			}
-		}
-
-		return p;
+		return ParameterSetLoader.Load(
+			GetValue<int>(WrapWidth),
+			GetValue<int>(MinimumBlockWidth),
+			GetValue<bool>(UseTabsToIndent),
+			GetArray(CommentBlocks),
+			GetArray(BulletPoints),
+			GetArray(BreakFlowStrings)
+		);
 	}
-
 	// RequireValidation falls back to the default value if the stored value is
 	// invalid.
 	private T GetValue<T>(string moniker)
@@ -199,38 +127,5 @@ internal sealed class UnifiedSettings : IDisposable
 			));
 		}
 		return result.Value;
-	}
-
-	private static object GetProperty(IReadOnlyDictionary<string, object> item, string name)
-	{
-		if (!item.TryGetValue(name, out object value) || value == null)
-		{
-			throw new ArgumentException(string.Format("Missing value for \"{0}\"", name));
-		}
-		return value;
-	}
-
-	private static string GetString(IReadOnlyDictionary<string, object> item, string name)
-	{
-		return Convert.ToString(GetProperty(item, name), CultureInfo.InvariantCulture);
-	}
-
-	private static bool GetBool(IReadOnlyDictionary<string, object> item, string name)
-	{
-		return Convert.ToBoolean(GetProperty(item, name), CultureInfo.InvariantCulture);
-	}
-
-	private static StartEndBlockType GetBlockType(IReadOnlyDictionary<string, object> item, string name)
-	{
-		return (StartEndBlockType)Enum.Parse(typeof(StartEndBlockType), GetString(item, name), true);
-	}
-
-	/// <summary>
-	/// The settings UI can't take a tab character, so tabs are typed as \t, as they
-	/// were in the old settings dialog.
-	/// </summary>
-	private static string FromDisplay(string str)
-	{
-		return str.Replace("\\t", "\t");
 	}
 }

@@ -205,26 +205,35 @@ public class CommentBlock
 	}
 
 	/// <summary>
+	/// Whether the lines of the block after the first can leave out the line start. This
+	/// is so if the line start is blank, because nothing in it shows that a line is in
+	/// the block, and the block has a start that does.
+	/// </summary>
+	public bool LineStartIsOptional
+	{
+		get
+		{
+			return (BlockStartType != StartEndBlockType.Empty) && (LineStart.Trim(' ').Length == 0);
+		}
+	}
+
+	/// <summary>
 	/// Returns the indentations that the block containing the given line could have, to
 	/// be tried in order. If the line has the block pattern this is the indentation it
-	/// has. A block whose line start is blank, as in XML, has nothing on the lines after
-	/// the first to show where the block is indented, so it could be indented by any
-	/// amount up to that of the line, and the nearest block start is wanted.
+	/// has. A block whose line start is optional, as in XML, has nothing on the lines
+	/// after the first to show where the block is indented, so it could be indented by
+	/// any amount up to that of the line, and the nearest block start is wanted.
 	/// </summary>
 	public IEnumerable<int> GetPossibleIndentations(string currentLine)
 	{
-		if (!LineHasBlockPattern(currentLine, out int indentation))
-		{
-			yield break;
-		}
-		if ((BlockStartType != StartEndBlockType.Empty) && (LineStart.Trim().Length == 0))
+		if (LineStartIsOptional)
 		{
 			for (int i = currentLine.Length - currentLine.TrimStart(' ').Length; i >= 0; i--)
 			{
 				yield return i;
 			}
 		}
-		else
+		else if (LineHasBlockPattern(currentLine, out int indentation))
 		{
 			yield return indentation;
 		}
@@ -318,6 +327,11 @@ public class CommentBlock
 		int indent
 	)
 	{
+		// a line start that is optional is only white space, so any line indented enough
+		if (LineStartIsOptional)
+		{
+			return Regex.IsMatch(currentLine, @"^ {" + indent.ToString() + "}");
+		}
 		// just normal line start
 		string continString = @"^ {" + indent.ToString() + @"}" + Regex.Escape(LineStart);
 		Regex continRegEx = new(continString);

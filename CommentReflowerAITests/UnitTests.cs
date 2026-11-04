@@ -89,7 +89,7 @@ static class UnitTests
 			List<object> lb = ((IEnumerable)b).Cast<object>().ToList();
 			return (la.Count == lb.Count) && la.Zip(lb, DeepEqual).All(x => x);
 		}
-		foreach (PropertyInfo p in t.GetProperties())
+		foreach (PropertyInfo p in t.GetProperties().Where(p => p.CanWrite))
 		{
 			if (!DeepEqual(p.GetValue(a, null), p.GetValue(b, null)))
 			{
@@ -105,7 +105,7 @@ static class UnitTests
 	/// </summary>
 	static void CheckNoPropertyIsDefault(object o)
 	{
-		foreach (PropertyInfo p in o.GetType().GetProperties())
+		foreach (PropertyInfo p in o.GetType().GetProperties().Where(p => p.CanWrite))
 		{
 			object v = p.GetValue(o, null);
 			bool isDefault = v == null ||
@@ -648,7 +648,7 @@ static class UnitTests
 		Console.WriteLine("Replacing leading indentation tests PASSED.");
 	}
 
-	static ParameterSet XmlParameterSet(int wrapWidth, int minimumBlockWidth, bool useTabs)
+	static ParameterSet XmlParameterSet(int wrapWidth, int minimumBlockWidth, bool useTabs, string lineStart = "")
 	{
 		ParameterSet pset = new()
 		{
@@ -666,7 +666,7 @@ static class UnitTests
 			StartEndBlockType.NeverOnOwnLine,
 			" -->",
 			false,
-			"",
+			lineStart,
 			true
 		));
 		return pset;
@@ -885,6 +885,84 @@ static class UnitTests
 		Console.WriteLine("Added lines match existing whitespace tests PASSED.");
 	}
 
+	/// <summary>
+	/// A block can have a line start of spaces, to line up the text of the lines with the
+	/// text after the block start. The lines of a comment that leave it out, as they do in
+	/// an XML file written with the lines flush with the block start, are still in the
+	/// comment and are given the line start when it is reflowed.
+	/// </summary>
+	static void TestOptionalLineStart()
+	{
+		// the comment from the test project, with the settings it was reflowed with
+		string[] flush =
+		{
+			"\t\t<!-- C# 10 for file-scoped namespaces, which need no runtime support. The",
+			"\t\tdefault for net48 is 7.3. -->"
+		};
+		string[] lined =
+		{
+			"\t\t<!-- C# 10 for file-scoped namespaces, which need no runtime support. The",
+			"\t\t     default for net48 is 7.3. -->"
+		};
+		string[] expected =
+		{
+			"\t\t<!-- C# 10 for file-scoped namespaces, which need no runtime support. The default for",
+			"\t\t     net48 is 7.3. -->"
+		};
+		ParameterSet pset = XmlParameterSet(80, 80, true, "     ");
+		Check(Reflow(pset, ".xml", flush).SequenceEqual(expected), "A comment with its second line flush was not reflowed to lined up: " + string.Join(" | ", Reflow(pset, ".xml", flush)));
+		Check(Reflow(pset, ".xml", lined).SequenceEqual(expected), "A comment with its second line lined up was not reflowed to lined up");
+		Check(Reflow(pset, ".xml", expected).SequenceEqual(expected), "Reflowing a lined up comment twice changed the result");
+
+		// the same with spaces to indent, a comment that is wrapped, and a flush line in the middle
+		string[] input =
+		{
+			"      <!-- This is a comment with enough short words in it that it has to be wrapped",
+			"      when the wrap width is narrow, and the lines in the middle",
+			"           are lined up with the text of the first, or not",
+			"      at all, as they are in files written by hand. -->"
+		};
+		pset = XmlParameterSet(50, 20, false, "     ");
+		string[] output = Reflow(pset, ".xml", input);
+		Check(output.Length > 4, "The comment with lines flush and lined up was not wrapped");
+		Check(output[0].StartsWith("      <!-- "), "The first line is wrong");
+		Check(
+			output.Skip(1).All(l => l.StartsWith("           ") && !char.IsWhiteSpace(l[11])),
+			"A line after the first is not lined up with the text of the first: " + string.Join(" | ", output)
+		);
+		Check(output.Take(output.Length - 1).All(l => l.Length <= 50), "A line is wider than the wrap width");
+		Check(Tokens(output).SequenceEqual(Tokens(input)), "Reflowing changed the words");
+		Check(Reflow(pset, ".xml", output).SequenceEqual(output), "Reflowing twice changed the result");
+
+		// every line of the comment is found from the cursor, whether or not it has the line start
+		string[] lines =
+		{
+			"      <Before />",
+			"      <!-- Start of a comment",
+			"      flush middle line",
+			"           lined up line",
+			"      end line -->",
+			"      <After />"
+		};
+		TestFileWrapper document = OpenDocument(".xml", lines, out string fileName);
+		for (int line = 1; line <= lines.Length; line++)
+		{
+			EnvDTE.EditPoint pt = document.CreateEditPoint(null);
+			pt.MoveToLineAndOffset(line, 1);
+			bool found = CommentReflowerObj.GetBlockContainingPoint(pset, fileName, pt, out _, out MatchedBlockData bdata);
+			bool inside = (line >= 2) && (line <= 5);
+			Check(found == inside, "A block was " + (found ? "" : "not ") + "found at line " + line);
+			Check(!found || ((bdata.StartLine == 2) && (bdata.EndLine == 5)), "The block at line " + line + " is lines " + bdata.StartLine + " to " + bdata.EndLine);
+		}
+
+		// a line start that is not blank is still needed on every line
+		CheckThrows(
+			() => Reflow(new ParameterSet(), ".cpp", "/* first line of a comment", "no line start on this line */"),
+			"Reflowing a C comment whose second line has no line start"
+		);
+		Console.WriteLine("Optional line start tests PASSED.");
+	}
+
 	static void TestLongWord()
 	{
 		string longWord = new('x', 100);
@@ -1024,6 +1102,7 @@ static class UnitTests
 		TestStartLongerThanLineStart();
 		TestFindBlockFromAnyLine();
 		TestAddedLinesMatchExistingWhitespace();
+		TestOptionalLineStart();
 		TestLongWord();
 		TestNoBlock();
 		TestBlocksAtEdges();
